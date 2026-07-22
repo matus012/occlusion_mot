@@ -138,6 +138,7 @@ def render_clip(
     out_p = outcome_for(seg, pick)
     f0 = max(1, seg.last_visible_frame - PAD_FRAMES)
     f1 = min(mid, seg.reemergence_frame + PAD_FRAMES)
+    tmp = dest.with_suffix(".raw.mp4")
     writer: cv2.VideoWriter | None = None
     for f in range(f0, f1 + 1):
         img = cv2.imread(str(seq.frame_path(f)))
@@ -147,12 +148,24 @@ def render_clip(
         canvas = np.hstack([left, right])
         if writer is None:
             writer = cv2.VideoWriter(
-                str(dest), cv2.VideoWriter_fourcc(*"mp4v"), FPS,
+                str(tmp), cv2.VideoWriter_fourcc(*"mp4v"), FPS,
                 (canvas.shape[1], canvas.shape[0]),
             )
         writer.write(canvas)
     assert writer is not None
     writer.release()
+
+    # cv2's mp4v is unplayable in stock Windows players — transcode to H.264.
+    import subprocess
+
+    import imageio_ffmpeg
+
+    subprocess.run(
+        [imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", str(tmp),
+         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(dest)],
+        check=True, timeout=600,
+    )
+    tmp.unlink()
     log.info("wrote %s (frames %d-%d, gap %d)", dest, f0, f1, seg.gap_length)
 
 
