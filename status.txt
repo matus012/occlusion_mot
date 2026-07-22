@@ -13,11 +13,20 @@ done:
   >= 0.55 retention. time-err stays provisional (user amendment, freezes last).
 - Repo public at github.com/matus012/occulsion_mot (user-approved), main pushed.
 
-next (phase 4 — hidden-state module):
-- design in context.md architecture; src/omot/hidden/: occlusion-aware track state
-  (adaptive buffer, occlusion-conditioned motion model), re-emergence point/time predictor,
-  re-ID gating on reappearance; dev-half for tuning, val-half untouched until eval
-- targets: G1 (HOTA >= 49.48, IDF1 >= 57.78, IDsw <= 359 vs baseline) + frozen G2 subs
-- then P2 carla-feeder (parallel workstream), sim2real, demo
+phase 4 state (HALTED at D18 gate, awaiting user decision):
+- v1 geometric module (classification+buffer+damping+recovery) + v2 lowconf handling
+  built, tested (39 green), tuned on dev across 2 grids (55 runs). Dev results:
+  best = b90_d100_g15: retention 0.310 (base 0.292), coverage 0.696 (base 0.655),
+  center-err 0.0072 (target 0.015 PASS), G1-proxy neutral (dHOTA -0.15, IDsw 420 vs 434).
+  v2 coast mode REGRESSED (0.274) — real MOT low-conf dets are informative; kept as ablation.
+- taxonomy (results/hidden_tuning.json + scratch): 0% buffer expiry; failure mass =
+  PRE_UNMATCHED 22% + POST_NO_DETECTION 20% (detector ceiling) + mid-gap corruption 27%.
+  Geometric ceiling ~0.58 retention; measured mechanisms deliver only +1.8pt.
+- CONCLUSION: retention 0.55 needs appearance re-ID (learned embedding gating) = phases 5/6
+  (CARLA feeder + PERUN training) per mission design. Val-half NOT touched (D18).
 
-blockers: none
+decision needed (D18): spend the single val run on the current candidate (locks G1 parity
++ G2 center-err evidence; retention/coverage would MISS on record), or hold val until
+appearance re-ID exists. Recommendation: hold; proceed to phase 5 (carla-feeder).
+
+blockers: D18 halt — user decision on val run timing

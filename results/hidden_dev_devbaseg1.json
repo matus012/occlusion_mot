@@ -15,5 +15,12 @@
     "time_err_coverage": 0.7559523809523809,
     "reemergence_center_err_med": 0.0068980815762932895,
     "reemergence_time_err_med": 20.0
+  },
+  "g1": {
+    "hota": 50.633452902154474,
+    "idf1": 59.9002566213141,
+    "mota": 49.94249420650588,
+    "idsw": 434,
+    "n_seqs": 7
   }
 }

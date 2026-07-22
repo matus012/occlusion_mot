@@ -1,0 +1,26 @@
+{
+  "config": {
+    "occl_buffer": 90,
+    "vel_damping": 1.0,
+    "recover_gate": 1.5,
+    "occl_overlap_thresh": 0.25,
+    "lowconf_noise_scale": 1.0,
+    "lowconf_mode": "kf"
+  },
+  "g2": {
+    "n_segments": 168,
+    "id_retention": 0.30952380952380953,
+    "pre_match_rate": 0.7797619047619048,
+    "center_err_coverage": 0.6964285714285714,
+    "time_err_coverage": 0.7738095238095238,
+    "reemergence_center_err_med": 0.00717714408005748,
+    "reemergence_time_err_med": 20.0
+  },
+  "g1": {
+    "hota": 50.48707717668744,
+    "idf1": 59.77347814713263,
+    "mota": 50.1759505621835,
+    "idsw": 420,
+    "n_seqs": 7
+  }
+}
