@@ -47,6 +47,12 @@ class HiddenConfig:
     # KF update. Targets the dominant dev failure mode: partial-visibility detections
     # dragging the state during occlusion onset.
     lowconf_noise_scale: float = 3.0  # noise inflation when lowconf_mode == "kf"
+    # Appearance gate (phase 5a, D20). Cosine DISTANCE thresholds on L2-normalized
+    # embeddings; None disables. Applied only when both track and detection carry
+    # embeddings — behavior is unchanged when caches are absent.
+    app_gate_lost: float | None = 0.35  # stage-1 veto: lost track vs high det
+    app_gate_recover: float | None = 0.35  # recovery veto
+    app_ema: float = 0.9  # EMA factor for track embeddings (in base Track.update_emb)
 
 
 class OcclusionAwareTracker(ByteTracker):
@@ -55,6 +61,7 @@ class OcclusionAwareTracker(ByteTracker):
     def __init__(self, config: HiddenConfig | None = None) -> None:
         self.hcfg = config or HiddenConfig()
         super().__init__(self.hcfg.base)
+        self._emb_alpha = self.hcfg.app_ema
 
     def _predict_pool(self, pool: list[Track]) -> None:
         for t in pool:
@@ -86,6 +93,24 @@ class OcclusionAwareTracker(ByteTracker):
         else:
             track.update(tlwh, score, self.frame_id, self._noise_scale_for(score))
 
+    def _gate_stage1_cost(
+        self, cost: np.ndarray, pool: list[Track], high: np.ndarray
+    ) -> np.ndarray:
+        """Appearance veto for LOST tracks in stage 1: a lost track may only re-activate
+        on a detection that looks like it. TRACKED-track matches are left untouched
+        (IoU on adjacent frames is reliable; appearance from ImageNet features is not
+        strong enough to overrule it)."""
+        gate = self.hcfg.app_gate_lost
+        if gate is None or self._high_embs is None or not cost.size:
+            return cost
+        gated = cost.copy()
+        for i, t in enumerate(pool):
+            if t.state is not TrackState.LOST or t.emb is None:
+                continue
+            cos_dist = 1.0 - self._high_embs @ t.emb
+            gated[i, cos_dist > gate] = 1e5
+        return gated
+
     def _recover(
         self, remaining_high: np.ndarray, un_high2: list[int]
     ) -> tuple[list[int], list[Track]]:
@@ -104,6 +129,15 @@ class OcclusionAwareTracker(ByteTracker):
         d_centers = det_boxes[:, :2] + det_boxes[:, 2:4] / 2
         scale = np.sqrt(np.clip(track_boxes[:, 2] * track_boxes[:, 3], 1.0, None))[:, None]
         cost = np.linalg.norm(t_centers[:, None, :] - d_centers[None, :, :], axis=2) / scale
+
+        gate = self.hcfg.app_gate_recover
+        if gate is not None and self._remaining_high_embs is not None:
+            det_embs = self._remaining_high_embs[det_idx]
+            for i, t in enumerate(candidates):
+                if t.emb is None:
+                    continue
+                cos_dist = 1.0 - det_embs @ t.emb
+                cost[i, cos_dist > gate] = 1e5
 
         matches, _, un_det = linear_assignment(cost, self.hcfg.recover_gate)
         recovered: list[Track] = []

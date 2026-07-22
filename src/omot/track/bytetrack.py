@@ -112,6 +112,15 @@ class Track:
         self.end_frame = 0  # last frame with a matched detection
         self.occluded = False  # set by OcclusionAwareTracker at loss time (phase 4)
         self.display_tlwh: np.ndarray | None = None  # det box for coast-only matches
+        self.emb: np.ndarray | None = None  # EMA appearance embedding (phase 5a, D20)
+
+    def update_emb(self, emb: np.ndarray, alpha: float = 0.9) -> None:
+        """EMA-update the track's appearance embedding (L2-normalized input/output)."""
+        if self.emb is None:
+            self.emb = emb.astype(np.float32).copy()
+        else:
+            self.emb = alpha * self.emb + (1.0 - alpha) * emb
+            self.emb /= max(float(np.linalg.norm(self.emb)), 1e-8)
 
     @property
     def tlwh(self) -> np.ndarray:
@@ -177,6 +186,7 @@ class ByteTracker:
         self.lost: list[Track] = []
         self.frame_id = 0
         self._next_id = 0
+        self._emb_alpha = 0.9  # EMA factor for track embeddings (subclass may override)
         # Kalman-coasted predictions of currently-lost tracks for the frame last updated:
         # (M, 6) [x, y, w, h, 0.0, track_id]. The G2 baseline evaluates these (hidden_eval).
         self.coasting: np.ndarray = np.zeros((0, 6))
@@ -211,18 +221,36 @@ class ByteTracker:
         Returns (det indices still unclaimed, tracks recovered)."""
         return un_high2, []
 
-    def update(self, detections: np.ndarray, frame_id: int | None = None) -> np.ndarray:
-        """Advance one frame. detections: (N, 5) [x, y, w, h, score].
+    def _gate_stage1_cost(
+        self, cost: np.ndarray, pool: list[Track], high: np.ndarray
+    ) -> np.ndarray:
+        """Optional extra gating of the stage-1 cost matrix (appearance veto lives here)."""
+        return cost
+
+    def update(
+        self,
+        detections: np.ndarray,
+        frame_id: int | None = None,
+        embeddings: np.ndarray | None = None,
+    ) -> np.ndarray:
+        """Advance one frame. detections: (N, 5) [x, y, w, h, score]; embeddings: optional
+        (N, D) appearance vectors row-aligned with detections (D20).
 
         Returns (M, 6) [x, y, w, h, score, track_id] for activated tracks.
         """
         self.frame_id = self.frame_id + 1 if frame_id is None else frame_id
         cfg = self.cfg
         detections = np.asarray(detections, dtype=np.float64).reshape(-1, 5)
+        if embeddings is not None:
+            assert len(embeddings) == len(detections), "embeddings misaligned with detections"
 
         scores = detections[:, 4]
-        high = detections[scores >= cfg.high_thresh]
+        high_mask = scores >= cfg.high_thresh
+        high = detections[high_mask]
         low = detections[(scores >= cfg.low_thresh) & (scores < cfg.high_thresh)]
+        self._high_embs: np.ndarray | None = (
+            embeddings[high_mask] if embeddings is not None else None
+        )
 
         unconfirmed = [t for t in self.tracked if not t.is_activated]
         confirmed = [t for t in self.tracked if t.is_activated]
@@ -233,7 +261,7 @@ class ByteTracker:
         sim = iou_matrix(np.array([t.tlwh for t in pool]).reshape(-1, 4), high)
         if cfg.fuse_score and sim.size:
             sim = sim * high[:, 4][None, :]
-        cost = 1.0 - sim
+        cost = self._gate_stage1_cost(1.0 - sim, pool, high)
         matches, un_track, un_high = linear_assignment(cost, cfg.match_thresh_first)
 
         activated: list[Track] = []
@@ -248,6 +276,8 @@ class ByteTracker:
             else:
                 track.re_activate(det[:4], float(det[4]), self.frame_id)
                 refound.append(track)
+            if self._high_embs is not None:
+                track.update_emb(self._high_embs[di], self._emb_alpha)
 
         # Stage 2: remaining *tracked* tracks vs low-score detections.
         remain_tracked = [pool[i] for i in un_track if pool[i].state is TrackState.TRACKED]
@@ -268,6 +298,9 @@ class ByteTracker:
         for t in unconfirmed:
             t.predict()
         remaining_high = high[un_high] if len(un_high) else high[:0]
+        self._remaining_high_embs: np.ndarray | None = (
+            self._high_embs[un_high] if self._high_embs is not None and len(un_high) else None
+        )
         cost = 1.0 - iou_matrix(
             np.array([t.tlwh for t in unconfirmed]).reshape(-1, 4), remaining_high
         )
@@ -275,6 +308,8 @@ class ByteTracker:
         for ti, di in matches:
             det = remaining_high[di]
             unconfirmed[ti].update(det[:4], float(det[4]), self.frame_id)
+            if self._remaining_high_embs is not None:
+                unconfirmed[ti].update_emb(self._remaining_high_embs[di], self._emb_alpha)
             activated.append(unconfirmed[ti])
         removed: list[Track] = []
         for i in un_unconf:
@@ -293,6 +328,8 @@ class ByteTracker:
             if float(det[4]) >= cfg.new_track_thresh:
                 track = Track(det[:4], float(det[4]), self.kf)
                 track.activate(self.frame_id, self._new_id())
+                if self._remaining_high_embs is not None:
+                    track.update_emb(self._remaining_high_embs[di], self._emb_alpha)
                 new_tracks.append(track)
 
         # Expire lost tracks beyond the buffer.

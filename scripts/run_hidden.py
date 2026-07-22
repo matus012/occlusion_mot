@@ -45,14 +45,20 @@ def seg_from_dict(d: dict, shift: int) -> OcclusionSegment:
 
 
 def track_hidden(
-    dets_by_frame: dict[int, np.ndarray], frames: range, cfg: HiddenConfig
+    dets_by_frame: dict[int, np.ndarray],
+    frames: range,
+    cfg: HiddenConfig,
+    embs_by_frame: dict[int, np.ndarray] | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     tracker = OcclusionAwareTracker(cfg)
     rows: list[np.ndarray] = []
     coast: list[np.ndarray] = []
     for i, f in enumerate(frames, start=1):
         dets = dets_by_frame.get(f, np.zeros((0, 5)))
-        for x, y, w, h, score, tid in tracker.update(dets, frame_id=i):
+        embs = embs_by_frame.get(f) if embs_by_frame is not None else None
+        if embs is not None and len(embs) != len(dets):
+            raise ValueError(f"frame {f}: {len(embs)} embeddings vs {len(dets)} detections")
+        for x, y, w, h, score, tid in tracker.update(dets, frame_id=i, embeddings=embs):
             rows.append(np.array([i, tid, x, y, w, h, score]))
         for x, y, w, h, score, tid in tracker.coasting:
             coast.append(np.array([i, tid, x, y, w, h, score]))
@@ -70,6 +76,10 @@ def main() -> int:
     ap.add_argument("--noise-scale", type=float, default=3.0,
                     help="measurement-noise inflation for low-confidence matches (kf mode)")
     ap.add_argument("--lowconf-mode", choices=["coast", "kf"], default="coast")
+    ap.add_argument("--app-gate-lost", type=float, default=-1.0,
+                    help="cos-dist veto for lost-track stage-1 matches; negative disables")
+    ap.add_argument("--app-gate-recover", type=float, default=-1.0,
+                    help="cos-dist veto for recovery matches; negative disables")
     ap.add_argument("--tag", default="hidden")
     ap.add_argument("--skip-trackeval", action="store_true")
     ap.add_argument("--canonical", action="store_true",
@@ -91,6 +101,8 @@ def main() -> int:
         occl_overlap_thresh=args.overlap_thresh,
         lowconf_noise_scale=args.noise_scale,
         lowconf_mode=args.lowconf_mode,
+        app_gate_lost=None if args.app_gate_lost < 0 else args.app_gate_lost,
+        app_gate_recover=None if args.app_gate_recover < 0 else args.app_gate_recover,
     )
     seg_index = json.loads(
         (ROOT / "results" / "occlusion_segments.json").read_text(encoding="utf-8")
@@ -104,12 +116,21 @@ def main() -> int:
     trk_dir.mkdir(parents=True, exist_ok=True)
     coast_dir = work / "coasting" / trk_name
 
+    from omot.detect.embed import embed_cache_path, load_cached_embeddings
+
+    use_app = cfg.app_gate_lost is not None or cfg.app_gate_recover is not None
     all_results: list[SegmentResult] = []
     for seq in seqs:
         dets = load_cached_detections(cache_path(args.cache_dir, seq.name, args.model))
+        embs = None
+        if use_app:
+            epath = embed_cache_path(args.cache_dir, seq.name, args.model)
+            if not epath.exists():
+                raise FileNotFoundError(f"embedding cache missing: {epath}")
+            embs = load_cached_embeddings(epath)
         dev, val = half_split_frames(seq.seq_length)
         frames = dev if args.half == "dev" else val
-        rows, coast = track_hidden(dets, frames, cfg)
+        rows, coast = track_hidden(dets, frames, cfg, embs)
         write_mot(trk_dir / f"{seq.name}.txt", rows)
         write_mot(coast_dir / f"{seq.name}.txt", coast)
 
@@ -127,6 +148,7 @@ def main() -> int:
         "occl_buffer": cfg.occl_buffer, "vel_damping": cfg.vel_damping,
         "recover_gate": cfg.recover_gate, "occl_overlap_thresh": cfg.occl_overlap_thresh,
         "lowconf_noise_scale": cfg.lowconf_noise_scale, "lowconf_mode": cfg.lowconf_mode,
+        "app_gate_lost": cfg.app_gate_lost, "app_gate_recover": cfg.app_gate_recover,
     }, "g2": g2}
 
     if not args.skip_trackeval:
