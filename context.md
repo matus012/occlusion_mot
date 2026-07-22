@@ -105,6 +105,14 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   IDF1 58.28, MOTA 45.23, IDsw 359. fuse_score measured WORSE with COCO scores
   (IDF1 -0.3, IDsw +64) -> TrackerConfig.fuse_score default False. All runs deterministic
   across repeats.
+- **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
+  PUBLIC during the rename step despite the instruction to confirm visibility and flag.
+  Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
+  the rename reply; however work PROCEEDED past the flag without waiting for user
+  acknowledgment, and the post-set-url verification checked reachability (ls-remote), not
+  the asked property. BINDING corrective rule: any explicit report-back item must be
+  answered verbatim AND acknowledged before proceeding; never substitute an adjacent check.
+  Repo made PRIVATE by owner action 2026-07-22.
 - **D18 (2026-07-22) Val-half protocol, BINDING [user directive].** (1) All config selection
   on dev-half metrics only; G1-regression proxy on dev-half; val never used to compare or
   select. (2) Exactly ONE config advances; the single canonical val-half run requires
