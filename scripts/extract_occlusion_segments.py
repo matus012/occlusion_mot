@@ -65,12 +65,15 @@ def main() -> int:
         mid = seq.seq_length // 2
         val_gt = seq.gt[seq.gt[:, COL.FRAME] > mid]
         val = extract_segments(val_gt, VIS_LO, VIS_HI, MIN_LEN)
+        dev_gt = seq.gt[seq.gt[:, COL.FRAME] <= mid]
+        dev = extract_segments(dev_gt, VIS_LO, VIS_HI, MIN_LEN)
         out["sequences"][seq.name] = {
             "seq_length": seq.seq_length,
             "val_start_frame": mid + 1,
             "diagonal": seq.diagonal,
             "full": [seg_to_dict(s) for s in full],
             "val_half": [seg_to_dict(s) for s in val],
+            "dev_half": [seg_to_dict(s) for s in dev],
         }
         all_full.extend(full)
         all_val.extend(val)

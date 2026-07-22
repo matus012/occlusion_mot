@@ -110,6 +110,7 @@ class Track:
         self.track_id = 0
         self.start_frame = 0
         self.end_frame = 0  # last frame with a matched detection
+        self.occluded = False  # set by OcclusionAwareTracker at loss time (phase 4)
 
     @property
     def tlwh(self) -> np.ndarray:
@@ -135,6 +136,7 @@ class Track:
         self.is_activated = True
         self.score = score
         self.end_frame = frame_id
+        self.occluded = False
 
     def update(self, tlwh: np.ndarray, score: float, frame_id: int) -> None:
         self.mean, self.covariance = self._kf.update(
@@ -170,6 +172,24 @@ class ByteTracker:
         self._next_id += 1
         return self._next_id
 
+    # -- protected extension hooks (no-ops here; OcclusionAwareTracker overrides) ---------
+    def _predict_pool(self, pool: list[Track]) -> None:
+        for t in pool:
+            t.predict()
+
+    def _classify_lost(self, lost_now: list[Track], active: list[Track]) -> None:
+        """Called with tracks lost this frame and the currently matched tracks."""
+
+    def _buffer_for(self, track: Track) -> int:
+        return self.cfg.track_buffer
+
+    def _recover(
+        self, remaining_high: np.ndarray, un_high2: list[int]
+    ) -> tuple[list[int], list[Track]]:
+        """Last-chance association of leftover high dets before they spawn new tracks.
+        Returns (det indices still unclaimed, tracks recovered)."""
+        return un_high2, []
+
     def update(self, detections: np.ndarray, frame_id: int | None = None) -> np.ndarray:
         """Advance one frame. detections: (N, 5) [x, y, w, h, score].
 
@@ -188,8 +208,7 @@ class ByteTracker:
 
         # Stage 1: confirmed + lost tracks vs high-score detections.
         pool = confirmed + self.lost
-        for t in pool:
-            t.predict()
+        self._predict_pool(pool)
         sim = iou_matrix(np.array([t.tlwh for t in pool]).reshape(-1, 4), high)
         if cfg.fuse_score and sim.size:
             sim = sim * high[:, 4][None, :]
@@ -220,6 +239,7 @@ class ByteTracker:
         for i in un_track2:
             remain_tracked[i].mark_lost()
             lost_now.append(remain_tracked[i])
+        self._classify_lost(lost_now, activated + refound)
 
         # Unconfirmed (1-frame-old) tracks vs remaining high detections.
         for t in unconfirmed:
@@ -238,6 +258,11 @@ class ByteTracker:
             unconfirmed[i].mark_removed()
             removed.append(unconfirmed[i])
 
+        # Recovery hook (phase 4): occluded lost tracks get a geometric last chance
+        # at leftover high dets before those spawn new identities.
+        un_high2, recovered = self._recover(remaining_high, un_high2)
+        refound.extend(recovered)
+
         # New tracks from leftover high-score detections.
         new_tracks: list[Track] = []
         for di in un_high2:
@@ -252,7 +277,7 @@ class ByteTracker:
         for t in self.lost:
             if t.state is TrackState.TRACKED:
                 continue  # re-activated this frame; rehomed below
-            if self.frame_id - t.end_frame > cfg.track_buffer:
+            if self.frame_id - t.end_frame > self._buffer_for(t):
                 t.mark_removed()
             else:
                 surviving_lost.append(t)
