@@ -32,15 +32,25 @@ logger = logging.getLogger("run_baseline")
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def track_ours(dets_by_frame: dict[int, np.ndarray], frames: range) -> np.ndarray:
-    """Run our ByteTracker over `frames` (rebased to 1); returns MOT rows."""
+def track_ours(
+    dets_by_frame: dict[int, np.ndarray], frames: range
+) -> tuple[np.ndarray, np.ndarray]:
+    """Run our ByteTracker over `frames` (rebased to 1).
+
+    Returns (active_rows, coasting_rows) as MOT rows [frame, id, x, y, w, h, conf];
+    coasting rows carry conf 0 (Kalman predictions of lost tracks, consumed by G2 eval).
+    """
     tracker = ByteTracker()
     rows: list[np.ndarray] = []
+    coast: list[np.ndarray] = []
     for i, f in enumerate(frames, start=1):
         dets = dets_by_frame.get(f, np.zeros((0, 5)))
         for x, y, w, h, score, tid in tracker.update(dets, frame_id=i):
             rows.append(np.array([i, tid, x, y, w, h, score]))
-    return np.stack(rows) if rows else np.zeros((0, 7))
+        for x, y, w, h, score, tid in tracker.coasting:
+            coast.append(np.array([i, tid, x, y, w, h, score]))
+    to_arr = lambda r: np.stack(r) if r else np.zeros((0, 7))  # noqa: E731
+    return to_arr(rows), to_arr(coast)
 
 
 def track_reference(dets_by_frame: dict[int, np.ndarray], frames: range) -> np.ndarray:
@@ -95,8 +105,11 @@ def main() -> int:
             )
         dets = load_cached_detections(npz)
         _, val = half_split_frames(seq.seq_length)
-        fn = track_ours if args.tracker == "ours" else track_reference
-        rows = fn(dets, val)
+        if args.tracker == "ours":
+            rows, coast = track_ours(dets, val)
+            write_mot(work / "coasting" / f"{seq.name}.txt", coast)
+        else:
+            rows = track_reference(dets, val)
         write_mot(trk_dir / f"{seq.name}.txt", rows)
         logger.info("%s: %d output rows", seq.name, len(rows))
 
