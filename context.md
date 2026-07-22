@@ -85,6 +85,14 @@ MOT-format output → TrackEval → results/*.json → gates.
   IDF1 58.28, MOTA 45.23, IDsw 359. fuse_score measured WORSE with COCO scores
   (IDF1 -0.3, IDsw +64) -> TrackerConfig.fuse_score default False. All runs deterministic
   across repeats.
+- **D16 (2026-07-22) G2 position/retention thresholds frozen from measured baseline floor**
+  (results/baseline_hidden.json, 133 val-half segments): baseline id_retention 0.263,
+  coasting center-err median 0.0155 diag at 75.2% coverage, time-err median 25.5 frames.
+  Frozen: center_err_med <= 0.015 (beats coasting AND stay-put 0.020), coverage >= 0.90
+  (new criterion — forbids cherry-picking), id_retention >= 0.55 (2.1x baseline).
+  time_err stays provisional per user amendment (freeze_order last); gate-level frozen flag
+  stays false until the hidden-state module exists. The 26.3% baseline retention is the
+  headline motivation number: ByteTrack loses 3 of 4 identities through occlusion.
 - **D14 (2026-07-22) Occlusion-segment definition revised after contact with real GT.**
   D7's rule (all gap frames vis < 0.25, anything in [0.25, 0.5) contaminates) yielded 1
   segment on MOT17-02 because MOT GT visibility decays gradually through the 0.25-0.5 band.

@@ -1,32 +1,23 @@
-phase: 2-baseline
-updated: 2026-07-22 (session 2, interactive; runloop stopped, session owns writes)
+phase: 4-hidden-state
+updated: 2026-07-22 (session 2)
 
 done:
-- Phase 0 scaffold + Phase 1 eval harness (29 tests green, coverage 85.6%, demo end-to-end) —
-  see git log 8461dc6..26189bb
-- Phase 2 deps ready: supervision 0.29.1 (reference ByteTrack), pycocotools, huggingface_hub,
-  hf_transfer; yolo11x.pt weights local, CUDA smoke test SMOKE_OK on 4060
-- D13 mirror path: HF ling1016/MOT17 chosen (ungated, full 21-dir train layout), verifier
-  scripts/verify_mot17.py ready
+- Phases 0-1: scaffold + eval harness (34 tests green, coverage >80%, G3 PASS)
+- Phase 2 COMPLETE — G0 FROZEN (D15): equivalence vs supervision at activation 0.6
+  (dHOTA 0.52, dIDF1 0.07, both <= 1.0). Operating baseline = ours @ 0.25:
+  HOTA 49.98 / IDF1 58.28 / MOTA 45.23 / IDsw 359, MOT17 val-half, cached yolo11x dets.
+- Phase 3 COMPLETE — data verified (D13: revision 024c7873, manifest 49c218a3, cross-mirror
+  GT 7/7 match=1.0); 328 train / 133 val-half occlusion segments (D14); baseline G2 floor
+  measured (D16): id_retention 0.263, coasting center-err 0.0155@75% cov, time-err 25.5f.
+  G2 position/retention thresholds FROZEN: <= 0.015 center-err @ >= 0.90 coverage,
+  >= 0.55 retention. time-err stays provisional (user amendment, freezes last).
+- Repo public at github.com/matus012/occulsion_mot (user-approved), main pushed.
 
-in-progress:
-- MOT17 train download from HF mirror (single instance, hf_transfer + max_workers=16, resumed
-  at ~530/5351 files, ~2.2 files/s -> ETA ~35 min). Log: logs/download_mot17.log
-  CORRECTION of earlier session-2 note: there was never a duplicate/racing downloader — on
-  Windows a venv python.exe is a launcher shim that spawns the base interpreter as a child
-  with an identical command line, so each download shows as two processes. The runloop's
-  original single download was healthy (just slow, small-file latency); killing it was
-  unnecessary (harmless — resume). No venv-rule violation occurred.
+next (phase 4 — hidden-state module):
+- design in context.md architecture; src/omot/hidden/: occlusion-aware track state
+  (adaptive buffer, occlusion-conditioned motion model), re-emergence point/time predictor,
+  re-ID gating on reappearance; dev-half for tuning, val-half untouched until eval
+- targets: G1 (HOTA >= 49.48, IDF1 >= 57.78, IDsw <= 359 vs baseline) + frozen G2 subs
+- then P2 carla-feeder (parallel workstream), sim2real, demo
 
-next:
-- download completes -> scripts/verify_mot17.py --source hf:ling1016/MOT17@<revision>
-  (relax to FRCNN-only img1 if mirror dedups DPM/SDP images; GT equality still checked)
-- fill D13 provenance (revision + manifest sha256) in context.md
-- scripts/cache_detections.py (~2h GPU, FRCNN seqs, 5316 frames)
-- scripts/run_baseline.py --tracker ours && --tracker reference (identical cached detections)
-- G0 check: |dHOTA| <= 1.0, |dIDF1| <= 1.0 -> freeze G0 numbers in gates.yaml, commit "G0: freeze"
-- phase 3: occlusion extractor on MOT17 GT, baseline ID-retention on segments, re-freeze G2
-
-blockers:
-- motchallenge.net still down (mirror path active per D13). Baseline UNVERIFIED until G0
-  freezes numerically (user directive).
+blockers: none

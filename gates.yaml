@@ -55,17 +55,24 @@ gates:
       hidden: results/hidden_state.json
     criteria:
       reemergence_center_err_med:
-        {max: 0.04, key: hidden.reemergence_center_err_med, unit: fraction_of_image_diagonal,
-         freeze_order: 1, provisional: true}
+        {max: 0.015, key: hidden.reemergence_center_err_med, unit: fraction_of_image_diagonal,
+         freeze_order: 1,
+         note: FROZEN 2026-07-22 (D16) — beats baseline coasting median 0.0155 AND the
+               trivial stay-put predictor (median gap displacement 0.020)}
+      center_err_coverage:
+        {min: 0.90, key: hidden.center_err_coverage, freeze_order: 1,
+         note: FROZEN 2026-07-22 (D16) — module must PREDICT on >=90% of segments
+               (baseline coasting covers only 75.2%); blocks cherry-picking easy segments}
       id_retention:
-        {min: 0.60, key: hidden.id_retention, freeze_order: 1, provisional: true,
-         note: re-frozen after baseline retention measured in phase occlusion-segments}
+        {min: 0.55, key: hidden.id_retention, freeze_order: 1,
+         note: FROZEN 2026-07-22 (D16) — 2.1x the measured baseline retention 0.263}
       reemergence_time_err_med:
         {max: 5, key: hidden.reemergence_time_err_med, unit: frames,
          freeze_order: last, provisional: true,
-         note: LAST sub-gate to freeze — never hard-fails / never blocks before hidden-state module exists}
+         note: LAST sub-gate to freeze (user amendment) — never hard-fails / never blocks
+               before hidden-state module exists; baseline median 25.5 frames for reference}
       n_segments:
-        {min: 100, key: hidden.n_segments, note: eval must cover >= 100 occlusion segments}
+        {min: 100, key: hidden.n_segments, note: eval covers 133 val-half segments (D14)}
 
   G3_quality:
     description: Code quality — enforced live by check_gates (runs pytest + ruff + coverage).
