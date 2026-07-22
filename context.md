@@ -126,6 +126,13 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   occlusion. Conclusion: mechanism validated, embedder is the bottleneck; phase 6 trained
   re-ID embedding (CARLA + PERUN) is the designed remedy. D19 amendment trigger NOT fired
   yet — "appearance re-ID measures out" means after the trained embedder, not v0.
+- **D22 (2026-07-22) CARLA client isolation.** The 0.9.15 Windows zip ships ONLY a cp37
+  client wheel; PyPI carries carla==0.9.15 win wheels up to cp310. Sim driving therefore
+  runs in a dedicated py3.10 venv behind a subprocess boundary (feeder CLI); the main
+  py3.11 env never imports carla. Sim binary: tools/CARLA_0.9.15/WindowsNoEditor.
+  Module named omot.sim (not carla) to avoid namespace collision. MockBackend is the
+  projection/visibility reference implementation the CarlaBackend must agree with; mock
+  runs write results/carla_feeder_mock.json — G4 stays PENDING until real-sim renders.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
