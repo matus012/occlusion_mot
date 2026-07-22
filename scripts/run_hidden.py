@@ -70,7 +70,7 @@ def main() -> int:
     ap.add_argument("--tag", default="hidden")
     ap.add_argument("--skip-trackeval", action="store_true")
     ap.add_argument("--canonical", action="store_true",
-                    help="val only: write gates-facing results/tracker_ours.json + hidden_state.json")
+                    help="val only: write gates-facing tracker_ours/hidden_state JSONs")
     ap.add_argument("--data-root", type=Path, default=ROOT / "data" / "MOT17")
     ap.add_argument("--cache-dir", type=Path, default=ROOT / "data" / "cache" / "detections")
     ap.add_argument("--model", default="yolo11x")

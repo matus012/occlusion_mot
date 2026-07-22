@@ -45,7 +45,7 @@ def _ids_after_gap(tracker: ByteTracker, frames: dict[int, np.ndarray], gap: int
     partner_id = None
     for f in sorted(frames):
         out = tracker.update(frames[f], frame_id=f)
-        for x, y, w, h, s, tid in out:
+        for x, y, _w, _h, _s, tid in out:
             if abs(y - 200.0) > 1:
                 continue
             if f <= 20:
@@ -87,7 +87,7 @@ def test_unoccluded_loss_expires_at_base_buffer() -> None:
     tracker = OcclusionAwareTracker(HiddenConfig(base=BASE, vel_damping=1.0))
     seen: dict[int, list[float]] = {}
     for f in sorted(frames):
-        for x, y, w, h, s, tid in tracker.update(frames[f], frame_id=f):
+        for _x, y, _w, _h, _s, tid in tracker.update(frames[f], frame_id=f):
             if abs(y - 200.0) < 1:
                 seen.setdefault(int(tid), []).append(f)
     assert len(seen) == 2, f"expected new id after unoccluded 45f gap, got {seen.keys()}"
