@@ -1,0 +1,33 @@
+{
+  "MOT17-02": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 15430,
+    "ref_rows": 15430,
+    "status": "ok"
+  },
+  "MOT17-04": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 54149,
+    "ref_rows": 54149,
+    "status": "ok"
+  },
+  "MOT17-05": {
+    "status": "ours-missing"
+  },
+  "MOT17-09": {
+    "status": "ours-missing"
+  },
+  "MOT17-10": {
+    "status": "ours-missing"
+  },
+  "MOT17-11": {
+    "status": "ours-missing"
+  },
+  "MOT17-13": {
+    "status": "ours-missing"
+  }
+}
