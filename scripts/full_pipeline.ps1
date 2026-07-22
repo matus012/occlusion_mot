@@ -19,6 +19,7 @@ Log "=== Phase 2 pipeline started ==="
 
 # Step 1: Download MOT17 (resumable — skips already-downloaded files)
 Log "STEP 1: Download MOT17 from HF mirror"
+$env:HF_HUB_ENABLE_HF_TRANSFER = "1"
 $repo = "ling1016/MOT17"
 & $PYTHON "$ROOT\scripts\download_mot17_hf.py" --repo $repo 2>&1 | ForEach-Object { Log $_ }
 if ($LASTEXITCODE -ne 0) {

@@ -10,10 +10,13 @@ done:
   scripts/verify_mot17.py ready
 
 in-progress:
-- MOT17 train download from HF mirror. Session-2 finding: runloop had launched TWO concurrent
-  downloaders (one on SYSTEM python — venv-rule violation) racing on the same dir at ~4 s/file;
-  both killed, restarted single venv instance with hf_transfer + max_workers=16 (resume skips
-  ~530 done files). Log: logs/download_mot17.log
+- MOT17 train download from HF mirror (single instance, hf_transfer + max_workers=16, resumed
+  at ~530/5351 files, ~2.2 files/s -> ETA ~35 min). Log: logs/download_mot17.log
+  CORRECTION of earlier session-2 note: there was never a duplicate/racing downloader — on
+  Windows a venv python.exe is a launcher shim that spawns the base interpreter as a child
+  with an identical command line, so each download shows as two processes. The runloop's
+  original single download was healthy (just slow, small-file latency); killing it was
+  unnecessary (harmless — resume). No venv-rule violation occurred.
 
 next:
 - download completes -> scripts/verify_mot17.py --source hf:ling1016/MOT17@<revision>
