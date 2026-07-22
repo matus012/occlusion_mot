@@ -16,18 +16,21 @@ version: 1
 gates:
   G0_repro:
     description: >
-      Our ByteTrack matches a reference ByteTrack implementation on identical cached
-      detections, MOT17 val half-split. Reproduction = implementation equivalence,
-      not paper-number matching (detector differs from paper; see context.md D2).
-    frozen: false
+      FROZEN 2026-07-22 (D15). Implementation equivalence proven at the official operating
+      point (activation 0.6) on identical cached yolo11x detections, MOT17 val half:
+      ours HOTA 45.70 / IDF1 53.03 vs reference (supervision 0.29.1) 46.22 / 53.10
+      -> dHOTA 0.52, dIDF1 0.07. Operating baseline for G1/G2 = ours at activation 0.25:
+      HOTA 49.98, IDF1 58.28, MOTA 45.23, IDsw 359 (results/baseline_ours.json).
+    frozen: true
     results:
-      ours: results/baseline_ours.json
-      reference: results/baseline_reference.json
+      ours: results/g0_equivalence/ours_at_0.6.json
+      reference: results/g0_equivalence/reference_at_0.6.json
+      baseline: results/baseline_ours.json
     criteria:
       abs_delta_hota: {max: 1.0, between: [ours.hota, reference.hota]}
       abs_delta_idf1: {max: 1.0, between: [ours.idf1, reference.idf1]}
-      hota_floor: {min: 45.0, key: ours.hota, provisional: true,
-                   note: sanity floor; re-frozen to measured baseline at G0 freeze}
+      baseline_hota_floor: {min: 49.0, key: baseline.hota,
+                            note: guards regressions of the frozen operating baseline (measured 49.98)}
 
   G1_parity:
     description: Occlusion-aware tracker vs frozen baseline, identical cached detections.

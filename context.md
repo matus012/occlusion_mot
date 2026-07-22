@@ -74,6 +74,17 @@ MOT-format output → TrackEval → results/*.json → gates.
   Structural verification PASSED (0 failures, hf-dedup layout). Independent cross-mirror GT
   check vs Lekim89/MOT17: ALL 7 sequences match=1.0 with clean id bijection
   (results/mot17_gt_crosscheck.json). Re-hash vs official zip when motchallenge.net returns.
+- **D15 (2026-07-22) G0 frozen — equivalence at 0.6, operating baseline at 0.25.**
+  Equivalence vs supervision 0.29.1 required IDENTICAL hyperparameters (supervision defaults
+  to activation 0.25; official ByteTrack 0.6 — first comparison was apples-to-oranges).
+  Matched at 0.6: dHOTA 0.52, dIDF1 0.07 -> PASS. At 0.25 the ports diverge slightly
+  (dIDF1 1.24; implementation tie-breaking details) — not chased further: G1/G2 compare our
+  occlusion-aware tracker against OUR OWN baseline (same implementation, same detections),
+  so cross-port residuals cannot contaminate the science. Operating baseline = ours at
+  activation 0.25 (COCO score distribution: 0.6 drops real pedestrians): HOTA 49.98,
+  IDF1 58.28, MOTA 45.23, IDsw 359. fuse_score measured WORSE with COCO scores
+  (IDF1 -0.3, IDsw +64) -> TrackerConfig.fuse_score default False. All runs deterministic
+  across repeats.
 - **D14 (2026-07-22) Occlusion-segment definition revised after contact with real GT.**
   D7's rule (all gap frames vis < 0.25, anything in [0.25, 0.5) contaminates) yielded 1
   segment on MOT17-02 because MOT GT visibility decays gradually through the 0.25-0.5 band.

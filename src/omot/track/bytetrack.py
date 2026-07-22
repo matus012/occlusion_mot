@@ -42,6 +42,8 @@ class TrackerConfig:
     match_thresh_unconfirmed: float = 0.7  # max cost accepted for 1-frame-old tracks
     track_buffer: int = 30  # frames a lost track survives
     min_box_area: float = 10.0
+    fuse_score: bool = False  # stage 1 cost = 1 - IoU * det_score; measured WORSE with
+    # COCO-detector scores on MOT17 val-half (D15) — enable only with calibrated detectors
 
 
 def tlwh_to_xyah(tlwh: np.ndarray) -> np.ndarray:
@@ -188,7 +190,10 @@ class ByteTracker:
         pool = confirmed + self.lost
         for t in pool:
             t.predict()
-        cost = 1.0 - iou_matrix(np.array([t.tlwh for t in pool]).reshape(-1, 4), high)
+        sim = iou_matrix(np.array([t.tlwh for t in pool]).reshape(-1, 4), high)
+        if cfg.fuse_score and sim.size:
+            sim = sim * high[:, 4][None, :]
+        cost = 1.0 - sim
         matches, un_track, un_high = linear_assignment(cost, cfg.match_thresh_first)
 
         activated: list[Track] = []

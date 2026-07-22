@@ -24,7 +24,7 @@ from omot.data.mot import export_half_gt, half_split_frames, load_split  # noqa:
 from omot.detect.cache import cache_path, load_cached_detections  # noqa: E402
 from omot.eval.trackeval_runner import run_trackeval  # noqa: E402
 from omot.io.mot_format import write_mot  # noqa: E402
-from omot.track.bytetrack import ByteTracker  # noqa: E402
+from omot.track.bytetrack import ByteTracker, TrackerConfig  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
 logger = logging.getLogger("run_baseline")
@@ -33,14 +33,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def track_ours(
-    dets_by_frame: dict[int, np.ndarray], frames: range
+    dets_by_frame: dict[int, np.ndarray], frames: range, activation: float = 0.6
 ) -> tuple[np.ndarray, np.ndarray]:
     """Run our ByteTracker over `frames` (rebased to 1).
 
     Returns (active_rows, coasting_rows) as MOT rows [frame, id, x, y, w, h, conf];
     coasting rows carry conf 0 (Kalman predictions of lost tracks, consumed by G2 eval).
     """
-    tracker = ByteTracker()
+    tracker = ByteTracker(
+        TrackerConfig(high_thresh=activation, new_track_thresh=activation + 0.1)
+    )
     rows: list[np.ndarray] = []
     coast: list[np.ndarray] = []
     for i, f in enumerate(frames, start=1):
@@ -53,11 +55,23 @@ def track_ours(
     return to_arr(rows), to_arr(coast)
 
 
-def track_reference(dets_by_frame: dict[int, np.ndarray], frames: range) -> np.ndarray:
-    """Reference ByteTrack (supervision) on identical detections; returns MOT rows."""
+def track_reference(
+    dets_by_frame: dict[int, np.ndarray], frames: range, activation: float = 0.6
+) -> np.ndarray:
+    """Reference ByteTrack (supervision) on identical detections; returns MOT rows.
+
+    Hyperparameters matched to our TrackerConfig for implementation-equivalence (G0):
+    same high-score split, 30-frame buffer, 0.8 first-stage matching, 2-hit confirmation.
+    """
     import supervision as sv
 
-    tracker = sv.ByteTrack()
+    tracker = sv.ByteTrack(
+        track_activation_threshold=activation,
+        lost_track_buffer=30,
+        minimum_matching_threshold=0.8,
+        frame_rate=30,
+        minimum_consecutive_frames=2,
+    )
     rows: list[np.ndarray] = []
     for i, f in enumerate(frames, start=1):
         dets = dets_by_frame.get(f, np.zeros((0, 5)))
@@ -83,6 +97,8 @@ def main() -> int:
     ap.add_argument("--cache-dir", type=Path, default=ROOT / "data" / "cache" / "detections")
     ap.add_argument("--model", default="yolo11x", help="detector cache name stem")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--activation", type=float, default=0.6,
+                    help="high-score split / activation threshold for BOTH trackers")
     args = ap.parse_args()
 
     random.seed(args.seed)
@@ -106,10 +122,10 @@ def main() -> int:
         dets = load_cached_detections(npz)
         _, val = half_split_frames(seq.seq_length)
         if args.tracker == "ours":
-            rows, coast = track_ours(dets, val)
+            rows, coast = track_ours(dets, val, activation=args.activation)
             write_mot(work / "coasting" / f"{seq.name}.txt", coast)
         else:
-            rows = track_reference(dets, val)
+            rows = track_reference(dets, val, activation=args.activation)
         write_mot(trk_dir / f"{seq.name}.txt", rows)
         logger.info("%s: %d output rows", seq.name, len(rows))
 
