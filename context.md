@@ -105,6 +105,13 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   IDF1 58.28, MOTA 45.23, IDsw 359. fuse_score measured WORSE with COCO scores
   (IDF1 -0.3, IDsw +64) -> TrackerConfig.fuse_score default False. All runs deterministic
   across repeats.
+- **D18 (2026-07-22) Val-half protocol, BINDING [user directive].** (1) All config selection
+  on dev-half metrics only; G1-regression proxy on dev-half; val never used to compare or
+  select. (2) Exactly ONE config advances; the single canonical val-half run requires
+  explicit user approval — report top-3 dev configs (retention, center-err, dev G1-proxy
+  deltas) + pick + rationale, then HALT. (3) If the val run misses targets, re-tuning +
+  re-running requires explicit approval (contamination decision, user-owned). Enforced in
+  workflow: run_hidden.py --canonical exists but is only invoked after approval.
 - **D17 (2026-07-22) Repo renamed occulsion_mot -> occlusion_mot** (typo fix; rename was
   already applied on GitHub when checked — old URL redirects). Local remote updated to
   https://github.com/matus012/occlusion_mot.git. Visibility re-confirmed PUBLIC and flagged
