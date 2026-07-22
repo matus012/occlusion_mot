@@ -57,10 +57,13 @@ class KalmanFilterCV:
         covariance = self._motion_mat @ covariance @ self._motion_mat.T + motion_cov
         return mean, covariance
 
-    def project(self, mean: np.ndarray, covariance: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        """Project state to measurement space."""
+    def project(
+        self, mean: np.ndarray, covariance: np.ndarray, noise_scale: float = 1.0
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Project state to measurement space; noise_scale inflates measurement noise
+        (used for low-confidence detections — they nudge the state instead of dragging it)."""
         h = float(mean[3])
-        std = np.array(
+        std = noise_scale * np.array(
             [
                 self._std_weight_position * h,
                 self._std_weight_position * h,
@@ -74,10 +77,14 @@ class KalmanFilterCV:
         return mean_proj, cov_proj
 
     def update(
-        self, mean: np.ndarray, covariance: np.ndarray, measurement: np.ndarray
+        self,
+        mean: np.ndarray,
+        covariance: np.ndarray,
+        measurement: np.ndarray,
+        noise_scale: float = 1.0,
     ) -> tuple[np.ndarray, np.ndarray]:
         """Measurement update with [cx, cy, a, h]."""
-        proj_mean, proj_cov = self.project(mean, covariance)
+        proj_mean, proj_cov = self.project(mean, covariance, noise_scale)
         chol = np.linalg.cholesky(proj_cov)
         kalman_gain = np.linalg.solve(
             chol.T, np.linalg.solve(chol, (covariance @ self._update_mat.T).T)

@@ -1,0 +1,17 @@
+{
+  "config": {
+    "occl_buffer": 150,
+    "vel_damping": 0.94,
+    "recover_gate": 3.5,
+    "occl_overlap_thresh": 0.25
+  },
+  "g2": {
+    "n_segments": 168,
+    "id_retention": 0.2619047619047619,
+    "pre_match_rate": 0.7738095238095238,
+    "center_err_coverage": 0.7023809523809523,
+    "time_err_coverage": 0.7619047619047619,
+    "reemergence_center_err_med": 0.010339359269615461,
+    "reemergence_time_err_med": 20.0
+  }
+}

@@ -111,6 +111,7 @@ class Track:
         self.start_frame = 0
         self.end_frame = 0  # last frame with a matched detection
         self.occluded = False  # set by OcclusionAwareTracker at loss time (phase 4)
+        self.display_tlwh: np.ndarray | None = None  # det box for coast-only matches
 
     @property
     def tlwh(self) -> np.ndarray:
@@ -120,6 +121,7 @@ class Track:
         if self.state is not TrackState.TRACKED:
             self.mean[7] = 0.0  # freeze height velocity while not actively tracked
         self.mean, self.covariance = self._kf.predict(self.mean, self.covariance)
+        self.display_tlwh = None
 
     def activate(self, frame_id: int, track_id: int) -> None:
         self.track_id = track_id
@@ -138,10 +140,21 @@ class Track:
         self.end_frame = frame_id
         self.occluded = False
 
-    def update(self, tlwh: np.ndarray, score: float, frame_id: int) -> None:
+    def update(
+        self, tlwh: np.ndarray, score: float, frame_id: int, noise_scale: float = 1.0
+    ) -> None:
         self.mean, self.covariance = self._kf.update(
-            self.mean, self.covariance, tlwh_to_xyah(tlwh)
+            self.mean, self.covariance, tlwh_to_xyah(tlwh), noise_scale
         )
+        self.state = TrackState.TRACKED
+        self.is_activated = True
+        self.score = score
+        self.end_frame = frame_id
+
+    def touch(self, tlwh: np.ndarray, score: float, frame_id: int) -> None:
+        """Confirm presence from a detection WITHOUT updating the motion state
+        (coast-only low-confidence handling): the box is displayed, never trusted."""
+        self.display_tlwh = np.asarray(tlwh, dtype=np.float64).copy()
         self.state = TrackState.TRACKED
         self.is_activated = True
         self.score = score
@@ -183,6 +196,14 @@ class ByteTracker:
     def _buffer_for(self, track: Track) -> int:
         return self.cfg.track_buffer
 
+    def _noise_scale_for(self, score: float) -> float:
+        """Measurement-noise inflation per detection score (1.0 = baseline behavior)."""
+        return 1.0
+
+    def _apply_lowconf_update(self, track: Track, tlwh: np.ndarray, score: float) -> None:
+        """How a stage-2 (low-score) match updates the track. Baseline: full KF update."""
+        track.update(tlwh, score, self.frame_id, self._noise_scale_for(score))
+
     def _recover(
         self, remaining_high: np.ndarray, un_high2: list[int]
     ) -> tuple[list[int], list[Track]]:
@@ -220,7 +241,9 @@ class ByteTracker:
         for ti, di in matches:
             track, det = pool[ti], high[di]
             if track.state is TrackState.TRACKED:
-                track.update(det[:4], float(det[4]), self.frame_id)
+                track.update(
+                    det[:4], float(det[4]), self.frame_id, self._noise_scale_for(float(det[4]))
+                )
                 activated.append(track)
             else:
                 track.re_activate(det[:4], float(det[4]), self.frame_id)
@@ -232,7 +255,7 @@ class ByteTracker:
         matches, un_track2, _ = linear_assignment(cost, cfg.match_thresh_second)
         for ti, di in matches:
             track, det = remain_tracked[ti], low[di]
-            track.update(det[:4], float(det[4]), self.frame_id)
+            self._apply_lowconf_update(track, det[:4], float(det[4]))
             activated.append(track)
 
         lost_now: list[Track] = []
@@ -297,7 +320,11 @@ class ByteTracker:
         ).reshape(-1, 6)
 
         out = [
-            np.r_[t.tlwh, t.score, float(t.track_id)]
+            np.r_[
+                t.display_tlwh if t.display_tlwh is not None else t.tlwh,
+                t.score,
+                float(t.track_id),
+            ]
             for t in self.tracked
             if t.is_activated and t.tlwh[2] * t.tlwh[3] >= cfg.min_box_area
         ]

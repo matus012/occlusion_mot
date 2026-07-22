@@ -109,6 +109,40 @@ def test_recovery_catches_offset_reemergence() -> None:
     assert t_before not in t_after, "tight gate must reject the offset re-emergence"
 
 
+def test_lowconf_noise_scale_resists_partial_det_drag() -> None:
+    # Clean CV phase, then STATIC low-score fragments (partial-visibility, score < high
+    # thresh -> stage 2). Un-inflated updates anchor the track to the fragments (state
+    # corrupted -> id lost at re-emergence); inflated noise lets the prediction sail on,
+    # the track goes lost cleanly and stage-1 re-associates the true re-emergence.
+    def run(mode: str) -> tuple[int | None, set[int]]:
+        cfg = HiddenConfig(
+            base=BASE, vel_damping=1.0, lowconf_mode=mode, lowconf_noise_scale=1.0
+        )
+        tracker = OcclusionAwareTracker(cfg)
+        first_id: int | None = None
+        for f in range(1, 21):
+            out = tracker.update(np.stack([_det(100.0 + 5.0 * (f - 1), 200.0)]), frame_id=f)
+            if len(out):
+                first_id = int(out[0, 5])
+        for f in range(21, 41):  # static fragment: x=200, 80% height, low score
+            frag = np.array([200.0, 200.0, W, H * 0.8, 0.20])
+            tracker.update(np.stack([frag]), frame_id=f)
+        final_ids: set[int] = set()
+        for f in range(41, 44):  # true re-emergence back on trajectory
+            out = tracker.update(np.stack([_det(100.0 + 5.0 * (f - 1), 200.0)]), frame_id=f)
+            final_ids |= {int(t) for t in out[:, 5]} if len(out) else set()
+        return first_id, final_ids
+
+    pre_coast, post_coast = run("coast")
+    assert pre_coast is not None and pre_coast in post_coast, (
+        "coast-only low-conf handling must let the original id survive the fragment phase"
+    )
+    pre_kf, post_kf = run("kf")
+    assert pre_kf not in post_kf, (
+        "full-trust KF updates should be dragged by the fragments and lose the id"
+    )
+
+
 def test_damping_tracks_stopping_agents() -> None:
     # Agent STOPS behind the occluder. Damped coasting stays near the disappearance
     # point; undamped CV coasts far ahead. Compare coasting x at the last gap frame.

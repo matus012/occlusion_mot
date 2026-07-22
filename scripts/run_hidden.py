@@ -67,6 +67,9 @@ def main() -> int:
     ap.add_argument("--damping", type=float, default=0.95)
     ap.add_argument("--recover-gate", type=float, default=1.5)
     ap.add_argument("--overlap-thresh", type=float, default=0.25)
+    ap.add_argument("--noise-scale", type=float, default=3.0,
+                    help="measurement-noise inflation for low-confidence matches (kf mode)")
+    ap.add_argument("--lowconf-mode", choices=["coast", "kf"], default="coast")
     ap.add_argument("--tag", default="hidden")
     ap.add_argument("--skip-trackeval", action="store_true")
     ap.add_argument("--canonical", action="store_true",
@@ -86,6 +89,8 @@ def main() -> int:
         vel_damping=args.damping,
         recover_gate=args.recover_gate,
         occl_overlap_thresh=args.overlap_thresh,
+        lowconf_noise_scale=args.noise_scale,
+        lowconf_mode=args.lowconf_mode,
     )
     seg_index = json.loads(
         (ROOT / "results" / "occlusion_segments.json").read_text(encoding="utf-8")
@@ -121,6 +126,7 @@ def main() -> int:
     out: dict[str, dict] = {"config": {
         "occl_buffer": cfg.occl_buffer, "vel_damping": cfg.vel_damping,
         "recover_gate": cfg.recover_gate, "occl_overlap_thresh": cfg.occl_overlap_thresh,
+        "lowconf_noise_scale": cfg.lowconf_noise_scale, "lowconf_mode": cfg.lowconf_mode,
     }, "g2": g2}
 
     if not args.skip_trackeval:

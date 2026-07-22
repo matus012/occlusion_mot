@@ -42,6 +42,11 @@ class HiddenConfig:
     occl_overlap_thresh: float = 0.25  # IoU with an active track to classify loss as occlusion
     recover_gate: float = 1.5  # max center distance in units of predicted box scale
     recover_min_score: float = 0.35  # min det score eligible for recovery
+    lowconf_mode: str = "coast"  # "coast": stage-2 matches confirm presence but never
+    # touch the motion state (fragment boxes displayed, not trusted); "kf": inflated-noise
+    # KF update. Targets the dominant dev failure mode: partial-visibility detections
+    # dragging the state during occlusion onset.
+    lowconf_noise_scale: float = 3.0  # noise inflation when lowconf_mode == "kf"
 
 
 class OcclusionAwareTracker(ByteTracker):
@@ -71,6 +76,15 @@ class OcclusionAwareTracker(ByteTracker):
 
     def _buffer_for(self, track: Track) -> int:
         return self.hcfg.occl_buffer if track.occluded else self.cfg.track_buffer
+
+    def _noise_scale_for(self, score: float) -> float:
+        return self.hcfg.lowconf_noise_scale if score < self.cfg.high_thresh else 1.0
+
+    def _apply_lowconf_update(self, track: Track, tlwh: np.ndarray, score: float) -> None:
+        if self.hcfg.lowconf_mode == "coast":
+            track.touch(tlwh, score, self.frame_id)
+        else:
+            track.update(tlwh, score, self.frame_id, self._noise_scale_for(score))
 
     def _recover(
         self, remaining_high: np.ndarray, un_high2: list[int]

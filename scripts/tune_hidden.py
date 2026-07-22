@@ -22,18 +22,23 @@ log = logging.getLogger("tune_hidden")
 ROOT = Path(__file__).resolve().parents[1]
 PY = ROOT / ".venv" / "Scripts" / "python.exe"
 
-BUFFERS = [60, 90, 120, 150]
-DAMPINGS = [1.0, 0.97, 0.94]
+BUFFER = 90  # grid 1 showed buffer size is not the binding constraint (taxonomy: 0 expiries)
+MODES = [("coast", 1.0), ("kf", 3.0), ("kf", 5.0)]
+DAMPINGS = [1.0, 0.97]
 GATES = [1.5, 2.5, 3.5]
 OVERLAP = 0.25
 
 
-def run_combo(buffer: int, damping: float, gate: float, overlap: float, tag: str) -> dict:
+def run_combo(
+    buffer: int, damping: float, gate: float, overlap: float, tag: str,
+    noise: float = 1.0, mode: str = "kf",
+) -> dict:
     cmd = [
         str(PY), str(ROOT / "scripts" / "run_hidden.py"), "--half", "dev",
         "--skip-trackeval", "--tag", tag,
         "--occl-buffer", str(buffer), "--damping", str(damping),
         "--recover-gate", str(gate), "--overlap-thresh", str(overlap),
+        "--noise-scale", str(noise), "--lowconf-mode", mode,
     ]
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT, timeout=900)
     if r.returncode != 0:
@@ -51,9 +56,9 @@ def main() -> int:
     log.info("DEV BASELINE g2: %s", base["g2"])
     results.append({"tag": "devbase", **base})
 
-    for buffer, damping, gate in itertools.product(BUFFERS, DAMPINGS, GATES):
-        tag = f"b{buffer}_d{int(damping * 100)}_g{int(gate * 10)}"
-        blob = run_combo(buffer, damping, gate, OVERLAP, tag)
+    for (mode, noise), damping, gate in itertools.product(MODES, DAMPINGS, GATES):
+        tag = f"{mode}{int(noise * 10)}_d{int(damping * 100)}_g{int(gate * 10)}"
+        blob = run_combo(BUFFER, damping, gate, OVERLAP, tag, noise=noise, mode=mode)
         g2 = blob["g2"]
         log.info(
             "%s: retention=%.3f cov=%.3f center=%.4f time=%.1f",
