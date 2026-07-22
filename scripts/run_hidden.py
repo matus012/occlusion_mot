@@ -15,7 +15,6 @@ import json
 import logging
 import random
 import sys
-from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -27,7 +26,7 @@ from omot.detect.cache import cache_path, load_cached_detections  # noqa: E402
 from omot.eval.hidden_eval import SegmentResult, aggregate, evaluate_segments  # noqa: E402
 from omot.eval.occlusion import OcclusionSegment  # noqa: E402
 from omot.hidden.occlusion_tracker import HiddenConfig, OcclusionAwareTracker  # noqa: E402
-from omot.io.mot_format import read_mot, write_mot  # noqa: E402
+from omot.io.mot_format import write_mot  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
 logger = logging.getLogger("run_hidden")
