@@ -66,3 +66,11 @@ MOT-format output → TrackEval → results/*.json → gates.
   cross-variant gt.txt equality) + SHA256 manifest recorded in results/mot17_verification.json.
   Baseline stays UNVERIFIED until G0 freezes numerically. Provenance (filled post-download):
   source=, revision=, manifest_sha256=
+- **D14 (2026-07-22) Occlusion-segment definition revised after contact with real GT.**
+  D7's rule (all gap frames vis < 0.25, anything in [0.25, 0.5) contaminates) yielded 1
+  segment on MOT17-02 because MOT GT visibility decays gradually through the 0.25-0.5 band.
+  Revised: anchors vis >= 0.5; gap frames stay < 0.5; at least one dip < 0.25 (unannotated
+  frames count as occluded); min_len 5; pedestrian class + consider flag only. Calibration:
+  MOT17-02 -> 68 full / 41 val-half segments, median gap 37 frames (n.b. > ByteTrack's
+  default 30-frame track buffer — exactly the failure mode the hidden-state module targets).
+  Same numeric thresholds kept (0.25 / 0.5 / 5); only the contamination semantics changed.

@@ -1,10 +1,13 @@
-"""Occlusion-segment extraction from GT visibility (context.md D7, gates.yaml G2).
+"""Occlusion-segment extraction from GT visibility (context.md D7 revised by D14, gates G2).
 
-Segment definition: for one GT identity, a maximal run of frames between two *visible*
-annotations (visibility >= vis_hi) in which every annotated frame has visibility < vis_lo
-— frames with no annotation at all also count as occluded. The run must span >= min_len
-frames. Runs containing partially-visible annotations (vis in [vis_lo, vis_hi)) are
-contaminated and discarded.
+Segment definition (D14, calibrated on real MOT17 GT where visibility decays gradually):
+for one GT identity, a run of frames between two solidly-visible annotations
+(visibility >= vis_hi) in which every annotated frame stays below vis_hi AND visibility
+dips below vis_lo at least once — frames with no annotation at all count as occluded
+(a fully-unannotated gap satisfies the dip). The gap must span >= min_len frames.
+Runs whose visibility never leaves [vis_lo, vis_hi) are partial occlusions, not segments.
+By default only pedestrian-class rows with the GT consider flag set are used (MOT GT
+carries distractor/static classes and consider=0 rows that must not create segments).
 """
 from __future__ import annotations
 
@@ -37,11 +40,14 @@ def extract_segments(
     vis_lo: float = 0.25,
     vis_hi: float = 0.5,
     min_len: int = 5,
+    pedestrian_only: bool = True,
 ) -> list[OcclusionSegment]:
     """Extract occlusion segments from (N, 9) GT rows for all identities."""
     if gt.size == 0:
         return []
     assert vis_lo <= vis_hi, "vis_lo must not exceed vis_hi"
+    if pedestrian_only:
+        gt = gt[(gt[:, COL.CLS] == 1.0) & (gt[:, COL.CONF] == 1.0)]
     segments: list[OcclusionSegment] = []
     for tid in np.unique(gt[:, COL.ID]).astype(np.int64):
         rows = gt[gt[:, COL.ID] == tid]
@@ -55,8 +61,8 @@ def extract_segments(
             if gap < min_len:
                 continue
             between = vis[a + 1 : b]
-            if between.size and (between >= vis_lo).any():
-                continue  # partially visible in between -> contaminated
+            if between.size and between.min() >= vis_lo:
+                continue  # never dips below vis_lo -> partial occlusion, not a segment
             segments.append(
                 OcclusionSegment(
                     track_id=int(tid),

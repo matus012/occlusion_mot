@@ -43,8 +43,9 @@ gates:
 
   G2_hidden:
     description: >
-      Hidden-state prediction on occlusion segments. Segment def: GT visibility < 0.25
-      for >= 5 consecutive frames, then reappears with visibility >= 0.5.
+      Hidden-state prediction on occlusion segments. Segment def (D14): pedestrian GT
+      between two visibility >= 0.5 anchors, gap >= 5 frames staying < 0.5 with a dip
+      below 0.25 (unannotated frames count as occluded).
     frozen: false
     depends_on: G0_repro
     results:

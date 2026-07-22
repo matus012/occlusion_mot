@@ -44,12 +44,40 @@ def test_short_gap_ignored() -> None:
     assert extract_segments(np.array(rows), min_len=5) == []
 
 
-def test_partial_visibility_contaminates() -> None:
+def test_partial_dip_mid_gap_still_extracts() -> None:
+    # D14: a 0.4-vis frame inside a deep gap does not invalidate the segment,
+    # because visibility dips below vis_lo elsewhere in the gap.
     rows = [_gt_row(f, 1, 10.0 * f, 1.0) for f in range(1, 6)]
     rows += [_gt_row(f, 1, 10.0 * f, 0.1) for f in range(6, 12)]
-    rows[8] = _gt_row(9, 1, 90.0, 0.4)  # vis in [vis_lo, vis_hi) mid-gap
+    rows[8] = _gt_row(9, 1, 90.0, 0.4)
     rows += [_gt_row(f, 1, 10.0 * f, 1.0) for f in range(12, 15)]
+    segs = extract_segments(np.array(rows), min_len=5)
+    assert len(segs) == 1
+    assert segs[0].gap_length == 6
+
+
+def test_no_dip_is_partial_occlusion_not_segment() -> None:
+    # visibility never leaves [vis_lo, vis_hi) during the gap -> not a segment
+    rows = [_gt_row(f, 1, 10.0 * f, 1.0) for f in range(1, 6)]
+    rows += [_gt_row(f, 1, 10.0 * f, 0.35) for f in range(6, 14)]
+    rows += [_gt_row(f, 1, 10.0 * f, 1.0) for f in range(14, 17)]
     assert extract_segments(np.array(rows), min_len=5) == []
+
+
+def test_non_pedestrian_and_ignore_rows_excluded() -> None:
+    rows = []
+    for f in range(1, 30):
+        vis = 0.0 if 10 <= f < 20 else 1.0
+        r = _gt_row(f, 5, 10.0 * f, vis)
+        r[7] = 7.0  # static distractor class
+        rows.append(r)
+        r2 = _gt_row(f, 6, 500.0 + 5.0 * f, vis)
+        r2[6] = 0.0  # consider flag off
+        rows.append(r2)
+    assert extract_segments(np.array(rows), min_len=5) == []
+    # same pattern as a real pedestrian -> extracted
+    ped = [_gt_row(f, 7, 10.0 * f, 0.0 if 10 <= f < 20 else 1.0) for f in range(1, 30)]
+    assert len(extract_segments(np.array(ped), min_len=5)) == 1
 
 
 def test_multiple_ids_independent() -> None:
