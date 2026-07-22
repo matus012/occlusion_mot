@@ -1,27 +1,29 @@
 phase: 2-baseline
-updated: 2026-07-22 (session 1)
+updated: 2026-07-22 (session 2, interactive; runloop stopped, session owns writes)
 
 done:
-- Phase 0 scaffold: git, .venv (py3.11/uv), governance, gates.yaml, runloop.ps1 + check_gates,
-  post-edit hooks, coder/reviewer/eval-runner agents. torch 2.13.0+cu126, CUDA verified on 4060.
-- Phase 1 COMPLETE (reviewer-approved): omot package (kalman, bytetrack, mot loader + half-split
-  + val-half GT export, mot IO, synth generator, trackeval wrapper), 29 synthetic tests green,
-  ruff clean, coverage 85.6% (G3 PASS). demo_synthetic.py runs end-to-end:
-  HOTA 66.77 / IDF1 71.10 / MOTA 80.94 / IDsw 5 on occluded 8-agent scene + rendered mp4.
-- Phase 3 prep: occlusion segment extractor (eval/occlusion.py) + tests, done early while
-  deps installed.
-- Phase 2 prep: detect/cache.py, scripts/cache_detections.py, scripts/run_baseline.py
-  (ours vs reference=supervision on identical cached detections) — code-complete, unexecuted.
+- Phase 0 scaffold + Phase 1 eval harness (29 tests green, coverage 85.6%, demo end-to-end) —
+  see git log 8461dc6..26189bb
+- Phase 2 deps ready: supervision 0.29.1 (reference ByteTrack), pycocotools, huggingface_hub,
+  hf_transfer; yolo11x.pt weights local, CUDA smoke test SMOKE_OK on 4060
+- D13 mirror path: HF ling1016/MOT17 chosen (ungated, full 21-dir train layout), verifier
+  scripts/verify_mot17.py ready
+
+in-progress:
+- MOT17 train download from HF mirror. Session-2 finding: runloop had launched TWO concurrent
+  downloaders (one on SYSTEM python — venv-rule violation) racing on the same dir at ~4 s/file;
+  both killed, restarted single venv instance with hf_transfer + max_workers=16 (resume skips
+  ~530 done files). Log: logs/download_mot17.log
 
 next:
-- retry scripts/download_mot17.ps1 until motchallenge.net is back (check each iteration)
-- uv pip install supervision (reference ByteTrack) + pycocotools; pin in requirements.txt
-- once MOT17 lands: cache_detections.py (yolo11x, ~2h GPU), run_baseline.py both trackers,
-  cross-check |dHOTA| <= 1.0, freeze G0 in gates.yaml (commit "G0: freeze")
-- then phase 3: run occlusion extractor on MOT17 GT, measure baseline ID-retention on segments,
-  re-freeze G2 provisional thresholds
+- download completes -> scripts/verify_mot17.py --source hf:ling1016/MOT17@<revision>
+  (relax to FRCNN-only img1 if mirror dedups DPM/SDP images; GT equality still checked)
+- fill D13 provenance (revision + manifest sha256) in context.md
+- scripts/cache_detections.py (~2h GPU, FRCNN seqs, 5316 frames)
+- scripts/run_baseline.py --tracker ours && --tracker reference (identical cached detections)
+- G0 check: |dHOTA| <= 1.0, |dIDF1| <= 1.0 -> freeze G0 numbers in gates.yaml, commit "G0: freeze"
+- phase 3: occlusion extractor on MOT17 GT, baseline ID-retention on segments, re-freeze G2
 
 blockers:
-- motchallenge.net unreachable (connect timeouts, 2026-07-22). Soft-blocks phase 2 execution
-  only; all phase 2 code is written. Alternative if still down next session: MOT17 mirrors
-  (kaggle requires auth — ask user only if no free mirror found).
+- motchallenge.net still down (mirror path active per D13). Baseline UNVERIFIED until G0
+  freezes numerically (user directive).

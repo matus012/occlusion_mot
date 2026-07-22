@@ -26,17 +26,20 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", default=DEFAULT_REPO)
     ap.add_argument("--dest", type=Path, default=ROOT / "data" / "MOT17")
+    ap.add_argument("--max-workers", type=int, default=16)
     args = ap.parse_args()
 
     info = HfApi().dataset_info(args.repo)
     revision = info.sha
-    log.info("downloading %s @ %s -> %s (train/* only)", args.repo, revision, args.dest)
+    log.info("downloading %s @ %s -> %s (train/* only, %d workers)",
+             args.repo, revision, args.dest, args.max_workers)
     snapshot_download(
         repo_id=args.repo,
         repo_type="dataset",
         revision=revision,
         allow_patterns=["train/*"],
         local_dir=args.dest,
+        max_workers=args.max_workers,
     )
     print(f"MIRROR_OK repo={args.repo} revision={revision}")
     print(f"NEXT: verify with scripts/verify_mot17.py --source hf:{args.repo}@{revision}")
