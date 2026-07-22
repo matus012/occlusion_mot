@@ -29,9 +29,14 @@ def main() -> int:
     ap.add_argument("--model", default="yolo11x.pt")
     ap.add_argument("--device", default=None, help="cuda|cpu (default: auto)")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--only", default=None, help="cache only this sequence name")
     args = ap.parse_args()
 
     seqs = load_split(args.data_root, "train", detector="FRCNN")
+    if args.only is not None:
+        seqs = [s for s in seqs if s.name == args.only]
+        if not seqs:
+            raise SystemExit(f"sequence {args.only!r} not found")
     for seq in seqs:
         cache_detections(
             seq, args.cache_dir, model_name=args.model, device=args.device, seed=args.seed

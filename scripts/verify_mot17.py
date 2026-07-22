@@ -53,8 +53,14 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def verify(data_root: Path) -> tuple[list[str], dict[str, str]]:
-    """Returns (failures, hashes)."""
+def verify(data_root: Path, layout: str = "official") -> tuple[list[str], dict[str, str]]:
+    """Returns (failures, hashes).
+
+    layout="official": every variant dir carries seqinfo/img1/gt/det (the official zip).
+    layout="hf-dedup": images+gt+seqinfo live under FRCNN only; DPM/SDP carry det/det.txt
+    only (ling1016/MOT17 mirror layout, D13). Cross-variant gt equality is then untestable;
+    GT trust rests on spec/stat checks + independent cross-mirror comparison.
+    """
     failures: list[str] = []
     hashes: dict[str, str] = {}
     train = data_root / "train"
@@ -68,6 +74,14 @@ def verify(data_root: Path) -> tuple[list[str], dict[str, str]]:
             seq_dir = train / name
             if not seq_dir.is_dir():
                 failures.append(f"{name}: sequence dir missing")
+                continue
+
+            if layout == "hf-dedup" and det != "FRCNN":
+                det_file = seq_dir / "det" / "det.txt"
+                if not det_file.exists():
+                    failures.append(f"{name}: det/det.txt missing (hf-dedup layout)")
+                else:
+                    hashes[f"{name}/det.txt"] = sha256_file(det_file)
                 continue
 
             ini = seq_dir / "seqinfo.ini"
@@ -121,9 +135,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", type=Path, default=ROOT / "data" / "MOT17")
     ap.add_argument("--source", default="unknown", help="provenance URL/revision to record")
+    ap.add_argument("--layout", choices=["official", "hf-dedup"], default="official")
     args = ap.parse_args()
 
-    failures, hashes = verify(args.data_root)
+    failures, hashes = verify(args.data_root, layout=args.layout)
     manifest = hashlib.sha256(
         json.dumps(hashes, sort_keys=True).encode("utf-8")
     ).hexdigest()
