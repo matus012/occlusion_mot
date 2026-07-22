@@ -40,3 +40,5 @@ gate_report.txt
 *.mp4
 
 viz/*.mp4
+
+tools/

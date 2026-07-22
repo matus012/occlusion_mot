@@ -25,8 +25,14 @@ phase 4 state (HALTED at D18 gate, awaiting user decision):
 - CONCLUSION: retention 0.55 needs appearance re-ID (learned embedding gating) = phases 5/6
   (CARLA feeder + PERUN training) per mission design. Val-half NOT touched (D18).
 
-decision needed (D18): spend the single val run on the current candidate (locks G1 parity
-+ G2 center-err evidence; retention/coverage would MISS on record), or hold val until
-appearance re-ID exists. Recommendation: hold; proceed to phase 5 (carla-feeder).
+D18 RESOLVED (D19): val DEFERRED by user approval; phase 5 underway.
 
-blockers: D18 halt — user decision on val run timing
+phase 5 plan (started):
+- appearance re-ID v0 (D20): embed.py + cache_embeddings.py (ResNet18 features per cached
+  detection, GPU one-pass) -> appearance-gated recovery/lost-matching in OcclusionAwareTracker
+  -> dev grid -> if retention still < 0.55, propose target amendment WITH ceiling analysis
+  (user standing note — no silent re-freeze)
+- CARLA feeder (P2): scenario spec + feeder API mirroring MOTSequence, mock backend first;
+  sim download/install gated on disk space check
+
+blockers: none

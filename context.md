@@ -105,6 +105,20 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   IDF1 58.28, MOTA 45.23, IDsw 359. fuse_score measured WORSE with COCO scores
   (IDF1 -0.3, IDsw +64) -> TrackerConfig.fuse_score default False. All runs deterministic
   across repeats.
+- **D19 (2026-07-22) Val run DEFERRED [user approval] — phase 5 proceeds.** Dev evidence:
+  geometric mechanisms ceiling out at +1.8pt retention (0.292 -> 0.310 over 55 dev runs);
+  42% of segment mass is detector-ceiling (no det at re-emergence / never tracked pre-gap).
+  Path: CARLA feeder (P2) + appearance re-ID gate; val-half stays untouched until the module
+  credibly targets all frozen G2 subs. STANDING NOTE [user]: if appearance re-ID measures out
+  below the 0.55 retention target, PROPOSE a target amendment WITH the ceiling analysis
+  attached — never a silent re-freeze.
+- **D20 (2026-07-22) Appearance re-ID v0 = cached embeddings, no new heavy deps.** Embeddings
+  are precomputed per cached detection (one GPU pass, stored alongside the detection cache)
+  so the tracker stays image-free at association time — same invariant as fixed detections
+  (D1). v0 embedder: torchvision ResNet18 (ImageNet) penultimate features — already
+  installed, deterministic; upgrade path: CARLA/PERUN-trained embedding (phase 6 sim2real,
+  the thesis ablation). Gate design: cosine-distance veto/rescue in lost-track matching and
+  recovery.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
