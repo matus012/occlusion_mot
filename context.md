@@ -119,6 +119,13 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   installed, deterministic; upgrade path: CARLA/PERUN-trained embedding (phase 6 sim2real,
   the thesis ablation). Gate design: cosine-distance veto/rescue in lost-track matching and
   recovery.
+- **D21 (2026-07-22) Appearance gate v0 measured (grid 3, dev).** Best: cos-dist gate 0.45
+  on both lost/recover vetoes + recovery gate 1.5 -> retention 0.327 (geometric-only 0.310,
+  baseline 0.292); center-err 0.0071 (passes frozen 0.015), coverage 0.702. Tighter gates
+  (0.25/0.35) REGRESS — ImageNet ResNet18 features veto correct re-matches under partial
+  occlusion. Conclusion: mechanism validated, embedder is the bottleneck; phase 6 trained
+  re-ID embedding (CARLA + PERUN) is the designed remedy. D19 amendment trigger NOT fired
+  yet — "appearance re-ID measures out" means after the trained embedder, not v0.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

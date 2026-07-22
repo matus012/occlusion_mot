@@ -1,9 +1,9 @@
 {
   "config": {
-    "occl_buffer": 30,
+    "occl_buffer": 90,
     "vel_damping": 1.0,
-    "recover_gate": 0.0001,
-    "occl_overlap_thresh": 1.1,
+    "recover_gate": 3.0,
+    "occl_overlap_thresh": 0.25,
     "lowconf_noise_scale": 1.0,
     "lowconf_mode": "kf",
     "app_gate_lost": null,
@@ -12,10 +12,10 @@
   "g2": {
     "n_segments": 168,
     "id_retention": 0.2916666666666667,
-    "pre_match_rate": 0.7678571428571429,
-    "center_err_coverage": 0.6547619047619048,
-    "time_err_coverage": 0.7559523809523809,
-    "reemergence_center_err_med": 0.0068980815762932895,
+    "pre_match_rate": 0.7797619047619048,
+    "center_err_coverage": 0.7023809523809523,
+    "time_err_coverage": 0.7738095238095238,
+    "reemergence_center_err_med": 0.009023738514484797,
     "reemergence_time_err_med": 20.0
   }
 }

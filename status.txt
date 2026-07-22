@@ -27,12 +27,18 @@ phase 4 state (HALTED at D18 gate, awaiting user decision):
 
 D18 RESOLVED (D19): val DEFERRED by user approval; phase 5 underway.
 
-phase 5 plan (started):
-- appearance re-ID v0 (D20): embed.py + cache_embeddings.py (ResNet18 features per cached
-  detection, GPU one-pass) -> appearance-gated recovery/lost-matching in OcclusionAwareTracker
-  -> dev grid -> if retention still < 0.55, propose target amendment WITH ceiling analysis
-  (user standing note — no silent re-freeze)
-- CARLA feeder (P2): scenario spec + feeder API mirroring MOTSequence, mock backend first;
-  sim download/install gated on disk space check
+phase 5 state:
+- 5a DONE for v0 (D21): appearance gate wired + tested (42 tests); dev grid 3:
+  best = app gate 0.45 + recover 1.5 -> retention 0.327 / cov 0.702 / center 0.0071.
+  ImageNet-embedder ceiling reached; trained re-ID embedding = phase 6 (CARLA+PERUN).
+  Current best overall dev config: b90_d100_g15 + app45 (kf/noise1, damping 1.0).
+- 5b: CARLA 0.9.15 downloading (tools/, background). Next: feeder API mirroring
+  MOTSequence + scenario spec + mock backend; then sim install + >=20 scenarios (G4).
+
+next session order:
+1. CARLA feeder skeleton + mock-backend tests (G4 progress, dataset-free)
+2. CARLA sim install + first rendered occlusion scenario with visibility GT
+3. phase 6 prep: re-ID training set extraction from CARLA GT (identity-labeled crops)
+4. amendment decision per D19 standing note ONLY after trained embedder measures out
 
 blockers: none
