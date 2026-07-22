@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 VENV_PY = ROOT / ".venv" / "Scripts" / "python.exe"
 PYTEST_NO_TESTS_COLLECTED = 5
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
 log = logging.getLogger("check_gates")
 
 
@@ -69,7 +69,8 @@ def eval_criterion(
             return "PENDING", f"{name}: results missing"
         delta = abs(a - b)
         ok = delta <= float(crit["max"])
-        return ("PASS" if ok else "FAIL"), f"{name}: |{a:.2f}-{b:.2f}|={delta:.2f} (max {crit['max']})"
+        detail = f"{name}: |{a:.2f}-{b:.2f}|={delta:.2f} (max {crit['max']})"
+        return ("PASS" if ok else "FAIL"), detail
 
     val = lookup(results, crit["key"]) if "key" in crit else None
 
@@ -92,7 +93,8 @@ def eval_criterion(
         bound = base + float(spec["offset"])
         ok = val >= bound if "rel_min" in crit else val <= bound
         op = ">=" if "rel_min" in crit else "<="
-        return ("PASS" if ok else "FAIL"), f"{name}: {val:.2f} {op} {bound:.2f} (baseline {base:.2f})"
+        detail = f"{name}: {val:.2f} {op} {bound:.2f} (baseline {base:.2f})"
+        return ("PASS" if ok else "FAIL"), detail
 
     if "min" in crit:
         ok = val >= float(crit["min"])

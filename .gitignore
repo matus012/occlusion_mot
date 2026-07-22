@@ -37,3 +37,4 @@ Thumbs.db
 # local
 HARD_FAIL
 gate_report.txt
+*.mp4
