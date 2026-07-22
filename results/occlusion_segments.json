@@ -4,7 +4,7 @@
     "vis_hi": 0.5,
     "min_len": 5
   },
-  "partial": true,
+  "partial": false,
   "sequences": {
     "MOT17-02-FRCNN": {
       "seq_length": 600,
@@ -1976,20 +1976,6410 @@
           "gap_length": 33
         }
       ]
+    },
+    "MOT17-04-FRCNN": {
+      "seq_length": 1050,
+      "val_start_frame": 526,
+      "diagonal": 2202.9071700822983,
+      "full": [
+        {
+          "track_id": 60,
+          "last_visible_frame": 64,
+          "reemergence_frame": 86,
+          "last_visible_box": [
+            795.0,
+            149.0,
+            60.0,
+            174.0
+          ],
+          "reemergence_box": [
+            795.0,
+            149.0,
+            60.0,
+            174.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 66,
+          "last_visible_frame": 116,
+          "reemergence_frame": 156,
+          "last_visible_box": [
+            687.0,
+            180.0,
+            45.0,
+            170.0
+          ],
+          "reemergence_box": [
+            582.0,
+            168.0,
+            63.0,
+            164.0
+          ],
+          "gap_length": 39
+        },
+        {
+          "track_id": 66,
+          "last_visible_frame": 391,
+          "reemergence_frame": 501,
+          "last_visible_box": [
+            502.0,
+            75.0,
+            49.0,
+            168.0
+          ],
+          "reemergence_box": [
+            556.0,
+            62.0,
+            39.0,
+            155.0
+          ],
+          "gap_length": 109
+        },
+        {
+          "track_id": 68,
+          "last_visible_frame": 899,
+          "reemergence_frame": 1003,
+          "last_visible_box": [
+            350.0,
+            171.0,
+            50.0,
+            167.0
+          ],
+          "reemergence_box": [
+            366.0,
+            170.0,
+            53.0,
+            166.0
+          ],
+          "gap_length": 103
+        },
+        {
+          "track_id": 69,
+          "last_visible_frame": 19,
+          "reemergence_frame": 530,
+          "last_visible_box": [
+            231.0,
+            348.0,
+            62.0,
+            214.0
+          ],
+          "reemergence_box": [
+            118.0,
+            285.0,
+            57.0,
+            205.0
+          ],
+          "gap_length": 510
+        },
+        {
+          "track_id": 70,
+          "last_visible_frame": 53,
+          "reemergence_frame": 71,
+          "last_visible_box": [
+            856.0,
+            155.0,
+            58.0,
+            182.0
+          ],
+          "reemergence_box": [
+            847.0,
+            165.0,
+            53.0,
+            181.0
+          ],
+          "gap_length": 17
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 35,
+          "reemergence_frame": 59,
+          "last_visible_box": [
+            913.0,
+            158.0,
+            48.0,
+            162.0
+          ],
+          "reemergence_box": [
+            896.0,
+            175.0,
+            54.0,
+            167.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 74,
+          "last_visible_frame": 229,
+          "reemergence_frame": 249,
+          "last_visible_box": [
+            971.0,
+            122.0,
+            34.0,
+            155.0
+          ],
+          "reemergence_box": [
+            909.0,
+            114.0,
+            45.0,
+            153.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 74,
+          "last_visible_frame": 493,
+          "reemergence_frame": 542,
+          "last_visible_box": [
+            755.0,
+            102.0,
+            49.0,
+            132.0
+          ],
+          "reemergence_box": [
+            754.0,
+            85.0,
+            46.0,
+            150.0
+          ],
+          "gap_length": 48
+        },
+        {
+          "track_id": 75,
+          "last_visible_frame": 610,
+          "reemergence_frame": 991,
+          "last_visible_box": [
+            784.0,
+            53.0,
+            54.0,
+            166.0
+          ],
+          "reemergence_box": [
+            731.0,
+            35.0,
+            58.0,
+            164.0
+          ],
+          "gap_length": 380
+        },
+        {
+          "track_id": 85,
+          "last_visible_frame": 37,
+          "reemergence_frame": 51,
+          "last_visible_box": [
+            409.0,
+            65.0,
+            51.0,
+            165.0
+          ],
+          "reemergence_box": [
+            395.0,
+            52.0,
+            50.0,
+            159.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 87,
+          "last_visible_frame": 218,
+          "reemergence_frame": 331,
+          "last_visible_box": [
+            370.0,
+            43.0,
+            51.0,
+            163.0
+          ],
+          "reemergence_box": [
+            316.0,
+            52.0,
+            52.0,
+            161.0
+          ],
+          "gap_length": 112
+        },
+        {
+          "track_id": 87,
+          "last_visible_frame": 356,
+          "reemergence_frame": 478,
+          "last_visible_box": [
+            329.0,
+            52.0,
+            54.0,
+            162.0
+          ],
+          "reemergence_box": [
+            326.0,
+            56.0,
+            55.0,
+            163.0
+          ],
+          "gap_length": 121
+        },
+        {
+          "track_id": 89,
+          "last_visible_frame": 220,
+          "reemergence_frame": 258,
+          "last_visible_box": [
+            577.0,
+            275.0,
+            55.0,
+            175.0
+          ],
+          "reemergence_box": [
+            680.0,
+            314.0,
+            52.0,
+            174.0
+          ],
+          "gap_length": 37
+        },
+        {
+          "track_id": 89,
+          "last_visible_frame": 291,
+          "reemergence_frame": 327,
+          "last_visible_box": [
+            791.0,
+            351.0,
+            61.0,
+            185.0
+          ],
+          "reemergence_box": [
+            922.0,
+            388.0,
+            67.0,
+            187.0
+          ],
+          "gap_length": 35
+        },
+        {
+          "track_id": 90,
+          "last_visible_frame": 753,
+          "reemergence_frame": 944,
+          "last_visible_box": [
+            289.0,
+            124.0,
+            49.0,
+            168.0
+          ],
+          "reemergence_box": [
+            289.0,
+            126.0,
+            50.0,
+            167.0
+          ],
+          "gap_length": 190
+        },
+        {
+          "track_id": 93,
+          "last_visible_frame": 268,
+          "reemergence_frame": 728,
+          "last_visible_box": [
+            250.0,
+            97.0,
+            45.0,
+            184.0
+          ],
+          "reemergence_box": [
+            209.0,
+            101.0,
+            49.0,
+            185.0
+          ],
+          "gap_length": 459
+        },
+        {
+          "track_id": 119,
+          "last_visible_frame": 412,
+          "reemergence_frame": 466,
+          "last_visible_box": [
+            1785.0,
+            69.0,
+            68.0,
+            166.0
+          ],
+          "reemergence_box": [
+            1729.0,
+            60.0,
+            50.0,
+            166.0
+          ],
+          "gap_length": 53
+        },
+        {
+          "track_id": 120,
+          "last_visible_frame": 437,
+          "reemergence_frame": 456,
+          "last_visible_box": [
+            1756.0,
+            72.0,
+            75.0,
+            171.0
+          ],
+          "reemergence_box": [
+            1696.0,
+            60.0,
+            68.0,
+            172.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 125,
+          "last_visible_frame": 468,
+          "reemergence_frame": 594,
+          "last_visible_box": [
+            357.0,
+            7.0,
+            55.0,
+            135.0
+          ],
+          "reemergence_box": [
+            386.0,
+            84.0,
+            47.0,
+            152.0
+          ],
+          "gap_length": 125
+        }
+      ],
+      "val_half": [
+        {
+          "track_id": 68,
+          "last_visible_frame": 899,
+          "reemergence_frame": 1003,
+          "last_visible_box": [
+            350.0,
+            171.0,
+            50.0,
+            167.0
+          ],
+          "reemergence_box": [
+            366.0,
+            170.0,
+            53.0,
+            166.0
+          ],
+          "gap_length": 103
+        },
+        {
+          "track_id": 75,
+          "last_visible_frame": 610,
+          "reemergence_frame": 991,
+          "last_visible_box": [
+            784.0,
+            53.0,
+            54.0,
+            166.0
+          ],
+          "reemergence_box": [
+            731.0,
+            35.0,
+            58.0,
+            164.0
+          ],
+          "gap_length": 380
+        },
+        {
+          "track_id": 90,
+          "last_visible_frame": 753,
+          "reemergence_frame": 944,
+          "last_visible_box": [
+            289.0,
+            124.0,
+            49.0,
+            168.0
+          ],
+          "reemergence_box": [
+            289.0,
+            126.0,
+            50.0,
+            167.0
+          ],
+          "gap_length": 190
+        }
+      ]
+    },
+    "MOT17-05-FRCNN": {
+      "seq_length": 837,
+      "val_start_frame": 419,
+      "diagonal": 800.0,
+      "full": [
+        {
+          "track_id": 1,
+          "last_visible_frame": 301,
+          "reemergence_frame": 308,
+          "last_visible_box": [
+            72.0,
+            48.0,
+            195.0,
+            445.0
+          ],
+          "reemergence_box": [
+            117.0,
+            50.0,
+            179.0,
+            445.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 2,
+          "last_visible_frame": 260,
+          "reemergence_frame": 270,
+          "last_visible_box": [
+            329.0,
+            144.0,
+            60.0,
+            172.0
+          ],
+          "reemergence_box": [
+            310.0,
+            111.0,
+            55.0,
+            158.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 2,
+          "last_visible_frame": 270,
+          "reemergence_frame": 281,
+          "last_visible_box": [
+            310.0,
+            111.0,
+            55.0,
+            158.0
+          ],
+          "reemergence_box": [
+            269.0,
+            138.0,
+            56.0,
+            144.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 2,
+          "last_visible_frame": 283,
+          "reemergence_frame": 309,
+          "last_visible_box": [
+            261.0,
+            161.0,
+            51.0,
+            142.0
+          ],
+          "reemergence_box": [
+            469.0,
+            172.0,
+            40.0,
+            120.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 4,
+          "last_visible_frame": 17,
+          "reemergence_frame": 32,
+          "last_visible_box": [
+            333.0,
+            192.0,
+            23.0,
+            75.0
+          ],
+          "reemergence_box": [
+            386.0,
+            187.0,
+            21.0,
+            77.0
+          ],
+          "gap_length": 14
+        },
+        {
+          "track_id": 6,
+          "last_visible_frame": 23,
+          "reemergence_frame": 42,
+          "last_visible_box": [
+            201.0,
+            188.0,
+            27.0,
+            81.0
+          ],
+          "reemergence_box": [
+            266.0,
+            183.0,
+            30.0,
+            85.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 8,
+          "last_visible_frame": 169,
+          "reemergence_frame": 182,
+          "last_visible_box": [
+            517.0,
+            190.0,
+            28.0,
+            67.0
+          ],
+          "reemergence_box": [
+            519.0,
+            190.0,
+            25.0,
+            67.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 12,
+          "last_visible_frame": 170,
+          "reemergence_frame": 178,
+          "last_visible_box": [
+            546.0,
+            197.0,
+            22.0,
+            52.0
+          ],
+          "reemergence_box": [
+            545.0,
+            196.0,
+            23.0,
+            54.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 15,
+          "reemergence_frame": 32,
+          "last_visible_box": [
+            341.0,
+            199.0,
+            26.0,
+            69.0
+          ],
+          "reemergence_box": [
+            409.0,
+            189.0,
+            26.0,
+            79.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 40,
+          "reemergence_frame": 162,
+          "last_visible_box": [
+            462.0,
+            185.0,
+            28.0,
+            89.0
+          ],
+          "reemergence_box": [
+            496.0,
+            178.0,
+            34.0,
+            98.0
+          ],
+          "gap_length": 121
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 170,
+          "reemergence_frame": 182,
+          "last_visible_box": [
+            496.0,
+            178.0,
+            34.0,
+            98.0
+          ],
+          "reemergence_box": [
+            496.0,
+            179.0,
+            35.0,
+            97.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 183,
+          "reemergence_frame": 221,
+          "last_visible_box": [
+            496.0,
+            179.0,
+            35.0,
+            97.0
+          ],
+          "reemergence_box": [
+            481.0,
+            181.0,
+            35.0,
+            97.0
+          ],
+          "gap_length": 37
+        },
+        {
+          "track_id": 20,
+          "last_visible_frame": 255,
+          "reemergence_frame": 265,
+          "last_visible_box": [
+            421.0,
+            168.0,
+            37.0,
+            130.0
+          ],
+          "reemergence_box": [
+            376.0,
+            157.0,
+            52.0,
+            164.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 29,
+          "last_visible_frame": 283,
+          "reemergence_frame": 304,
+          "last_visible_box": [
+            112.0,
+            169.0,
+            49.0,
+            156.0
+          ],
+          "reemergence_box": [
+            8.0,
+            86.0,
+            116.0,
+            305.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 30,
+          "last_visible_frame": 281,
+          "reemergence_frame": 288,
+          "last_visible_box": [
+            138.0,
+            133.0,
+            79.0,
+            204.0
+          ],
+          "reemergence_box": [
+            242.0,
+            154.0,
+            60.0,
+            185.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 296,
+          "reemergence_frame": 344,
+          "last_visible_box": [
+            218.0,
+            190.0,
+            44.0,
+            120.0
+          ],
+          "reemergence_box": [
+            506.0,
+            119.0,
+            81.0,
+            235.0
+          ],
+          "gap_length": 47
+        },
+        {
+          "track_id": 33,
+          "last_visible_frame": 320,
+          "reemergence_frame": 333,
+          "last_visible_box": [
+            447.0,
+            142.0,
+            66.0,
+            187.0
+          ],
+          "reemergence_box": [
+            554.0,
+            104.0,
+            102.0,
+            229.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 38,
+          "last_visible_frame": 325,
+          "reemergence_frame": 335,
+          "last_visible_box": [
+            77.0,
+            120.0,
+            74.0,
+            179.0
+          ],
+          "reemergence_box": [
+            32.0,
+            113.0,
+            66.0,
+            185.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 38,
+          "last_visible_frame": 438,
+          "reemergence_frame": 445,
+          "last_visible_box": [
+            147.0,
+            146.0,
+            46.0,
+            128.0
+          ],
+          "reemergence_box": [
+            140.0,
+            153.0,
+            42.0,
+            120.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 41,
+          "last_visible_frame": 322,
+          "reemergence_frame": 341,
+          "last_visible_box": [
+            528.0,
+            155.0,
+            61.0,
+            138.0
+          ],
+          "reemergence_box": [
+            433.0,
+            106.0,
+            63.0,
+            215.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 41,
+          "last_visible_frame": 342,
+          "reemergence_frame": 350,
+          "last_visible_box": [
+            432.0,
+            105.0,
+            68.0,
+            222.0
+          ],
+          "reemergence_box": [
+            491.0,
+            74.0,
+            88.0,
+            302.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 42,
+          "last_visible_frame": 330,
+          "reemergence_frame": 343,
+          "last_visible_box": [
+            -26.0,
+            121.0,
+            71.0,
+            167.0
+          ],
+          "reemergence_box": [
+            -30.0,
+            115.0,
+            81.0,
+            184.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 42,
+          "last_visible_frame": 439,
+          "reemergence_frame": 445,
+          "last_visible_box": [
+            87.0,
+            149.0,
+            49.0,
+            125.0
+          ],
+          "reemergence_box": [
+            85.0,
+            152.0,
+            44.0,
+            125.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 44,
+          "last_visible_frame": 353,
+          "reemergence_frame": 363,
+          "last_visible_box": [
+            191.0,
+            159.0,
+            50.0,
+            114.0
+          ],
+          "reemergence_box": [
+            90.0,
+            175.0,
+            60.0,
+            137.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 47,
+          "last_visible_frame": 346,
+          "reemergence_frame": 372,
+          "last_visible_box": [
+            188.0,
+            201.0,
+            21.0,
+            49.0
+          ],
+          "reemergence_box": [
+            173.0,
+            216.0,
+            26.0,
+            54.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 48,
+          "last_visible_frame": 437,
+          "reemergence_frame": 444,
+          "last_visible_box": [
+            207.0,
+            176.0,
+            31.0,
+            75.0
+          ],
+          "reemergence_box": [
+            196.0,
+            180.0,
+            28.0,
+            73.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 49,
+          "last_visible_frame": 392,
+          "reemergence_frame": 424,
+          "last_visible_box": [
+            390.0,
+            196.0,
+            26.0,
+            81.0
+          ],
+          "reemergence_box": [
+            261.0,
+            187.0,
+            27.0,
+            67.0
+          ],
+          "gap_length": 31
+        },
+        {
+          "track_id": 49,
+          "last_visible_frame": 426,
+          "reemergence_frame": 457,
+          "last_visible_box": [
+            251.0,
+            185.0,
+            21.0,
+            68.0
+          ],
+          "reemergence_box": [
+            251.0,
+            190.0,
+            19.0,
+            60.0
+          ],
+          "gap_length": 30
+        },
+        {
+          "track_id": 52,
+          "last_visible_frame": 513,
+          "reemergence_frame": 529,
+          "last_visible_box": [
+            404.0,
+            94.0,
+            91.0,
+            321.0
+          ],
+          "reemergence_box": [
+            388.0,
+            104.0,
+            95.0,
+            323.0
+          ],
+          "gap_length": 15
+        },
+        {
+          "track_id": 53,
+          "last_visible_frame": 518,
+          "reemergence_frame": 535,
+          "last_visible_box": [
+            490.0,
+            95.0,
+            134.0,
+            338.0
+          ],
+          "reemergence_box": [
+            449.0,
+            94.0,
+            108.0,
+            326.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 53,
+          "last_visible_frame": 571,
+          "reemergence_frame": 580,
+          "last_visible_box": [
+            554.0,
+            53.0,
+            107.0,
+            362.0
+          ],
+          "reemergence_box": [
+            502.0,
+            68.0,
+            107.0,
+            333.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 477,
+          "reemergence_frame": 503,
+          "last_visible_box": [
+            429.0,
+            134.0,
+            50.0,
+            199.0
+          ],
+          "reemergence_box": [
+            355.0,
+            136.0,
+            76.0,
+            214.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 505,
+          "reemergence_frame": 551,
+          "last_visible_box": [
+            356.0,
+            133.0,
+            73.0,
+            218.0
+          ],
+          "reemergence_box": [
+            485.0,
+            122.0,
+            71.0,
+            247.0
+          ],
+          "gap_length": 45
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 554,
+          "reemergence_frame": 588,
+          "last_visible_box": [
+            500.0,
+            122.0,
+            76.0,
+            249.0
+          ],
+          "reemergence_box": [
+            482.0,
+            120.0,
+            104.0,
+            255.0
+          ],
+          "gap_length": 33
+        },
+        {
+          "track_id": 66,
+          "last_visible_frame": 702,
+          "reemergence_frame": 719,
+          "last_visible_box": [
+            260.0,
+            133.0,
+            55.0,
+            178.0
+          ],
+          "reemergence_box": [
+            270.0,
+            145.0,
+            49.0,
+            149.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 778,
+          "reemergence_frame": 824,
+          "last_visible_box": [
+            345.0,
+            105.0,
+            95.0,
+            279.0
+          ],
+          "reemergence_box": [
+            381.0,
+            105.0,
+            96.0,
+            274.0
+          ],
+          "gap_length": 45
+        },
+        {
+          "track_id": 75,
+          "last_visible_frame": 683,
+          "reemergence_frame": 691,
+          "last_visible_box": [
+            17.0,
+            178.0,
+            44.0,
+            103.0
+          ],
+          "reemergence_box": [
+            18.0,
+            162.0,
+            46.0,
+            125.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 75,
+          "last_visible_frame": 692,
+          "reemergence_frame": 701,
+          "last_visible_box": [
+            18.0,
+            160.0,
+            47.0,
+            128.0
+          ],
+          "reemergence_box": [
+            23.0,
+            152.0,
+            53.0,
+            153.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 84,
+          "last_visible_frame": 750,
+          "reemergence_frame": 776,
+          "last_visible_box": [
+            95.0,
+            194.0,
+            24.0,
+            63.0
+          ],
+          "reemergence_box": [
+            41.0,
+            169.0,
+            22.0,
+            93.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 84,
+          "last_visible_frame": 776,
+          "reemergence_frame": 787,
+          "last_visible_box": [
+            41.0,
+            169.0,
+            22.0,
+            93.0
+          ],
+          "reemergence_box": [
+            5.0,
+            170.0,
+            35.0,
+            106.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 85,
+          "last_visible_frame": 744,
+          "reemergence_frame": 753,
+          "last_visible_box": [
+            7.0,
+            172.0,
+            49.0,
+            121.0
+          ],
+          "reemergence_box": [
+            -3.0,
+            164.0,
+            31.0,
+            113.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 89,
+          "last_visible_frame": 756,
+          "reemergence_frame": 764,
+          "last_visible_box": [
+            39.0,
+            166.0,
+            45.0,
+            94.0
+          ],
+          "reemergence_box": [
+            54.0,
+            155.0,
+            40.0,
+            98.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 89,
+          "last_visible_frame": 773,
+          "reemergence_frame": 779,
+          "last_visible_box": [
+            42.0,
+            148.0,
+            47.0,
+            115.0
+          ],
+          "reemergence_box": [
+            65.0,
+            157.0,
+            44.0,
+            117.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 94,
+          "last_visible_frame": 802,
+          "reemergence_frame": 808,
+          "last_visible_box": [
+            417.0,
+            40.0,
+            125.0,
+            404.0
+          ],
+          "reemergence_box": [
+            453.0,
+            37.0,
+            124.0,
+            426.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 96,
+          "last_visible_frame": 765,
+          "reemergence_frame": 784,
+          "last_visible_box": [
+            124.0,
+            171.0,
+            29.0,
+            78.0
+          ],
+          "reemergence_box": [
+            55.0,
+            171.0,
+            40.0,
+            103.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 98,
+          "last_visible_frame": 770,
+          "reemergence_frame": 776,
+          "last_visible_box": [
+            91.0,
+            166.0,
+            29.0,
+            97.0
+          ],
+          "reemergence_box": [
+            91.0,
+            168.0,
+            32.0,
+            97.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 98,
+          "last_visible_frame": 779,
+          "reemergence_frame": 798,
+          "last_visible_box": [
+            101.0,
+            167.0,
+            39.0,
+            100.0
+          ],
+          "reemergence_box": [
+            65.0,
+            158.0,
+            35.0,
+            125.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 98,
+          "last_visible_frame": 829,
+          "reemergence_frame": 836,
+          "last_visible_box": [
+            22.0,
+            131.0,
+            58.0,
+            193.0
+          ],
+          "reemergence_box": [
+            -22.0,
+            111.0,
+            67.0,
+            222.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 99,
+          "last_visible_frame": 805,
+          "reemergence_frame": 813,
+          "last_visible_box": [
+            79.0,
+            164.0,
+            45.0,
+            122.0
+          ],
+          "reemergence_box": [
+            44.0,
+            151.0,
+            45.0,
+            145.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 107,
+          "last_visible_frame": 74,
+          "reemergence_frame": 100,
+          "last_visible_box": [
+            290.0,
+            179.0,
+            27.0,
+            80.0
+          ],
+          "reemergence_box": [
+            289.0,
+            178.0,
+            24.0,
+            86.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 117,
+          "last_visible_frame": 13,
+          "reemergence_frame": 30,
+          "last_visible_box": [
+            392.0,
+            216.0,
+            12.0,
+            32.0
+          ],
+          "reemergence_box": [
+            460.0,
+            206.0,
+            15.0,
+            38.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 117,
+          "last_visible_frame": 38,
+          "reemergence_frame": 50,
+          "last_visible_box": [
+            515.0,
+            206.0,
+            18.0,
+            41.0
+          ],
+          "reemergence_box": [
+            533.0,
+            204.0,
+            22.0,
+            46.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 117,
+          "last_visible_frame": 50,
+          "reemergence_frame": 73,
+          "last_visible_box": [
+            533.0,
+            204.0,
+            22.0,
+            46.0
+          ],
+          "reemergence_box": [
+            586.0,
+            193.0,
+            26.0,
+            57.0
+          ],
+          "gap_length": 22
+        },
+        {
+          "track_id": 117,
+          "last_visible_frame": 73,
+          "reemergence_frame": 85,
+          "last_visible_box": [
+            586.0,
+            193.0,
+            26.0,
+            57.0
+          ],
+          "reemergence_box": [
+            613.0,
+            191.0,
+            29.0,
+            62.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 128,
+          "last_visible_frame": 433,
+          "reemergence_frame": 442,
+          "last_visible_box": [
+            326.0,
+            49.0,
+            159.0,
+            344.0
+          ],
+          "reemergence_box": [
+            257.0,
+            61.0,
+            127.0,
+            329.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 128,
+          "last_visible_frame": 484,
+          "reemergence_frame": 519,
+          "last_visible_box": [
+            225.0,
+            45.0,
+            140.0,
+            401.0
+          ],
+          "reemergence_box": [
+            173.0,
+            25.0,
+            166.0,
+            458.0
+          ],
+          "gap_length": 34
+        },
+        {
+          "track_id": 140,
+          "last_visible_frame": 142,
+          "reemergence_frame": 155,
+          "last_visible_box": [
+            583.0,
+            201.0,
+            17.0,
+            42.0
+          ],
+          "reemergence_box": [
+            578.0,
+            200.0,
+            19.0,
+            44.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 140,
+          "last_visible_frame": 169,
+          "reemergence_frame": 177,
+          "last_visible_box": [
+            574.0,
+            201.0,
+            18.0,
+            40.0
+          ],
+          "reemergence_box": [
+            569.0,
+            200.0,
+            18.0,
+            44.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 141,
+          "last_visible_frame": 759,
+          "reemergence_frame": 779,
+          "last_visible_box": [
+            181.0,
+            192.0,
+            21.0,
+            47.0
+          ],
+          "reemergence_box": [
+            188.0,
+            193.0,
+            21.0,
+            47.0
+          ],
+          "gap_length": 19
+        }
+      ],
+      "val_half": [
+        {
+          "track_id": 38,
+          "last_visible_frame": 438,
+          "reemergence_frame": 445,
+          "last_visible_box": [
+            147.0,
+            146.0,
+            46.0,
+            128.0
+          ],
+          "reemergence_box": [
+            140.0,
+            153.0,
+            42.0,
+            120.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 42,
+          "last_visible_frame": 439,
+          "reemergence_frame": 445,
+          "last_visible_box": [
+            87.0,
+            149.0,
+            49.0,
+            125.0
+          ],
+          "reemergence_box": [
+            85.0,
+            152.0,
+            44.0,
+            125.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 48,
+          "last_visible_frame": 437,
+          "reemergence_frame": 444,
+          "last_visible_box": [
+            207.0,
+            176.0,
+            31.0,
+            75.0
+          ],
+          "reemergence_box": [
+            196.0,
+            180.0,
+            28.0,
+            73.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 49,
+          "last_visible_frame": 426,
+          "reemergence_frame": 457,
+          "last_visible_box": [
+            251.0,
+            185.0,
+            21.0,
+            68.0
+          ],
+          "reemergence_box": [
+            251.0,
+            190.0,
+            19.0,
+            60.0
+          ],
+          "gap_length": 30
+        },
+        {
+          "track_id": 52,
+          "last_visible_frame": 513,
+          "reemergence_frame": 529,
+          "last_visible_box": [
+            404.0,
+            94.0,
+            91.0,
+            321.0
+          ],
+          "reemergence_box": [
+            388.0,
+            104.0,
+            95.0,
+            323.0
+          ],
+          "gap_length": 15
+        },
+        {
+          "track_id": 53,
+          "last_visible_frame": 518,
+          "reemergence_frame": 535,
+          "last_visible_box": [
+            490.0,
+            95.0,
+            134.0,
+            338.0
+          ],
+          "reemergence_box": [
+            449.0,
+            94.0,
+            108.0,
+            326.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 53,
+          "last_visible_frame": 571,
+          "reemergence_frame": 580,
+          "last_visible_box": [
+            554.0,
+            53.0,
+            107.0,
+            362.0
+          ],
+          "reemergence_box": [
+            502.0,
+            68.0,
+            107.0,
+            333.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 477,
+          "reemergence_frame": 503,
+          "last_visible_box": [
+            429.0,
+            134.0,
+            50.0,
+            199.0
+          ],
+          "reemergence_box": [
+            355.0,
+            136.0,
+            76.0,
+            214.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 505,
+          "reemergence_frame": 551,
+          "last_visible_box": [
+            356.0,
+            133.0,
+            73.0,
+            218.0
+          ],
+          "reemergence_box": [
+            485.0,
+            122.0,
+            71.0,
+            247.0
+          ],
+          "gap_length": 45
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 554,
+          "reemergence_frame": 588,
+          "last_visible_box": [
+            500.0,
+            122.0,
+            76.0,
+            249.0
+          ],
+          "reemergence_box": [
+            482.0,
+            120.0,
+            104.0,
+            255.0
+          ],
+          "gap_length": 33
+        },
+        {
+          "track_id": 66,
+          "last_visible_frame": 702,
+          "reemergence_frame": 719,
+          "last_visible_box": [
+            260.0,
+            133.0,
+            55.0,
+            178.0
+          ],
+          "reemergence_box": [
+            270.0,
+            145.0,
+            49.0,
+            149.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 778,
+          "reemergence_frame": 824,
+          "last_visible_box": [
+            345.0,
+            105.0,
+            95.0,
+            279.0
+          ],
+          "reemergence_box": [
+            381.0,
+            105.0,
+            96.0,
+            274.0
+          ],
+          "gap_length": 45
+        },
+        {
+          "track_id": 75,
+          "last_visible_frame": 683,
+          "reemergence_frame": 691,
+          "last_visible_box": [
+            17.0,
+            178.0,
+            44.0,
+            103.0
+          ],
+          "reemergence_box": [
+            18.0,
+            162.0,
+            46.0,
+            125.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 75,
+          "last_visible_frame": 692,
+          "reemergence_frame": 701,
+          "last_visible_box": [
+            18.0,
+            160.0,
+            47.0,
+            128.0
+          ],
+          "reemergence_box": [
+            23.0,
+            152.0,
+            53.0,
+            153.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 84,
+          "last_visible_frame": 750,
+          "reemergence_frame": 776,
+          "last_visible_box": [
+            95.0,
+            194.0,
+            24.0,
+            63.0
+          ],
+          "reemergence_box": [
+            41.0,
+            169.0,
+            22.0,
+            93.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 84,
+          "last_visible_frame": 776,
+          "reemergence_frame": 787,
+          "last_visible_box": [
+            41.0,
+            169.0,
+            22.0,
+            93.0
+          ],
+          "reemergence_box": [
+            5.0,
+            170.0,
+            35.0,
+            106.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 85,
+          "last_visible_frame": 744,
+          "reemergence_frame": 753,
+          "last_visible_box": [
+            7.0,
+            172.0,
+            49.0,
+            121.0
+          ],
+          "reemergence_box": [
+            -3.0,
+            164.0,
+            31.0,
+            113.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 89,
+          "last_visible_frame": 756,
+          "reemergence_frame": 764,
+          "last_visible_box": [
+            39.0,
+            166.0,
+            45.0,
+            94.0
+          ],
+          "reemergence_box": [
+            54.0,
+            155.0,
+            40.0,
+            98.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 89,
+          "last_visible_frame": 773,
+          "reemergence_frame": 779,
+          "last_visible_box": [
+            42.0,
+            148.0,
+            47.0,
+            115.0
+          ],
+          "reemergence_box": [
+            65.0,
+            157.0,
+            44.0,
+            117.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 94,
+          "last_visible_frame": 802,
+          "reemergence_frame": 808,
+          "last_visible_box": [
+            417.0,
+            40.0,
+            125.0,
+            404.0
+          ],
+          "reemergence_box": [
+            453.0,
+            37.0,
+            124.0,
+            426.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 96,
+          "last_visible_frame": 765,
+          "reemergence_frame": 784,
+          "last_visible_box": [
+            124.0,
+            171.0,
+            29.0,
+            78.0
+          ],
+          "reemergence_box": [
+            55.0,
+            171.0,
+            40.0,
+            103.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 98,
+          "last_visible_frame": 770,
+          "reemergence_frame": 776,
+          "last_visible_box": [
+            91.0,
+            166.0,
+            29.0,
+            97.0
+          ],
+          "reemergence_box": [
+            91.0,
+            168.0,
+            32.0,
+            97.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 98,
+          "last_visible_frame": 779,
+          "reemergence_frame": 798,
+          "last_visible_box": [
+            101.0,
+            167.0,
+            39.0,
+            100.0
+          ],
+          "reemergence_box": [
+            65.0,
+            158.0,
+            35.0,
+            125.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 98,
+          "last_visible_frame": 829,
+          "reemergence_frame": 836,
+          "last_visible_box": [
+            22.0,
+            131.0,
+            58.0,
+            193.0
+          ],
+          "reemergence_box": [
+            -22.0,
+            111.0,
+            67.0,
+            222.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 99,
+          "last_visible_frame": 805,
+          "reemergence_frame": 813,
+          "last_visible_box": [
+            79.0,
+            164.0,
+            45.0,
+            122.0
+          ],
+          "reemergence_box": [
+            44.0,
+            151.0,
+            45.0,
+            145.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 128,
+          "last_visible_frame": 433,
+          "reemergence_frame": 442,
+          "last_visible_box": [
+            326.0,
+            49.0,
+            159.0,
+            344.0
+          ],
+          "reemergence_box": [
+            257.0,
+            61.0,
+            127.0,
+            329.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 128,
+          "last_visible_frame": 484,
+          "reemergence_frame": 519,
+          "last_visible_box": [
+            225.0,
+            45.0,
+            140.0,
+            401.0
+          ],
+          "reemergence_box": [
+            173.0,
+            25.0,
+            166.0,
+            458.0
+          ],
+          "gap_length": 34
+        },
+        {
+          "track_id": 141,
+          "last_visible_frame": 759,
+          "reemergence_frame": 779,
+          "last_visible_box": [
+            181.0,
+            192.0,
+            21.0,
+            47.0
+          ],
+          "reemergence_box": [
+            188.0,
+            193.0,
+            21.0,
+            47.0
+          ],
+          "gap_length": 19
+        }
+      ]
+    },
+    "MOT17-09-FRCNN": {
+      "seq_length": 525,
+      "val_start_frame": 263,
+      "diagonal": 2202.9071700822983,
+      "full": [
+        {
+          "track_id": 1,
+          "last_visible_frame": 26,
+          "reemergence_frame": 56,
+          "last_visible_box": [
+            307.0,
+            448.0,
+            106.0,
+            255.0
+          ],
+          "reemergence_box": [
+            371.0,
+            434.0,
+            115.0,
+            280.0
+          ],
+          "gap_length": 29
+        },
+        {
+          "track_id": 1,
+          "last_visible_frame": 162,
+          "reemergence_frame": 190,
+          "last_visible_box": [
+            467.0,
+            385.0,
+            129.0,
+            379.0
+          ],
+          "reemergence_box": [
+            542.0,
+            374.0,
+            167.0,
+            410.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 3,
+          "last_visible_frame": 477,
+          "reemergence_frame": 497,
+          "last_visible_box": [
+            1504.0,
+            453.0,
+            98.0,
+            190.0
+          ],
+          "reemergence_box": [
+            1580.0,
+            448.0,
+            78.0,
+            192.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 4,
+          "last_visible_frame": 452,
+          "reemergence_frame": 464,
+          "last_visible_box": [
+            26.0,
+            274.0,
+            277.0,
+            648.0
+          ],
+          "reemergence_box": [
+            191.0,
+            296.0,
+            288.0,
+            617.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 6,
+          "last_visible_frame": 408,
+          "reemergence_frame": 421,
+          "last_visible_box": [
+            742.0,
+            319.0,
+            141.0,
+            504.0
+          ],
+          "reemergence_box": [
+            897.0,
+            341.0,
+            143.0,
+            455.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 7,
+          "last_visible_frame": 149,
+          "reemergence_frame": 175,
+          "last_visible_box": [
+            306.0,
+            414.0,
+            127.0,
+            346.0
+          ],
+          "reemergence_box": [
+            355.0,
+            406.0,
+            145.0,
+            390.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 7,
+          "last_visible_frame": 177,
+          "reemergence_frame": 191,
+          "last_visible_box": [
+            362.0,
+            404.0,
+            145.0,
+            398.0
+          ],
+          "reemergence_box": [
+            465.0,
+            395.0,
+            132.0,
+            409.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 7,
+          "last_visible_frame": 195,
+          "reemergence_frame": 370,
+          "last_visible_box": [
+            499.0,
+            394.0,
+            139.0,
+            415.0
+          ],
+          "reemergence_box": [
+            1678.0,
+            421.0,
+            100.0,
+            245.0
+          ],
+          "gap_length": 174
+        },
+        {
+          "track_id": 8,
+          "last_visible_frame": 170,
+          "reemergence_frame": 200,
+          "last_visible_box": [
+            464.0,
+            311.0,
+            226.0,
+            562.0
+          ],
+          "reemergence_box": [
+            927.0,
+            327.0,
+            185.0,
+            477.0
+          ],
+          "gap_length": 29
+        },
+        {
+          "track_id": 9,
+          "last_visible_frame": 507,
+          "reemergence_frame": 521,
+          "last_visible_box": [
+            1324.0,
+            455.0,
+            79.0,
+            194.0
+          ],
+          "reemergence_box": [
+            1405.0,
+            459.0,
+            94.0,
+            198.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 10,
+          "last_visible_frame": 174,
+          "reemergence_frame": 207,
+          "last_visible_box": [
+            409.0,
+            397.0,
+            222.0,
+            463.0
+          ],
+          "reemergence_box": [
+            871.0,
+            406.0,
+            197.0,
+            378.0
+          ],
+          "gap_length": 32
+        },
+        {
+          "track_id": 10,
+          "last_visible_frame": 250,
+          "reemergence_frame": 260,
+          "last_visible_box": [
+            1237.0,
+            424.0,
+            112.0,
+            303.0
+          ],
+          "reemergence_box": [
+            1292.0,
+            426.0,
+            98.0,
+            290.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 10,
+          "last_visible_frame": 262,
+          "reemergence_frame": 383,
+          "last_visible_box": [
+            1302.0,
+            428.0,
+            99.0,
+            288.0
+          ],
+          "reemergence_box": [
+            1784.0,
+            448.0,
+            66.0,
+            196.0
+          ],
+          "gap_length": 120
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 246,
+          "reemergence_frame": 294,
+          "last_visible_box": [
+            840.0,
+            312.0,
+            157.0,
+            502.0
+          ],
+          "reemergence_box": [
+            1215.0,
+            353.0,
+            141.0,
+            401.0
+          ],
+          "gap_length": 47
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 325,
+          "reemergence_frame": 368,
+          "last_visible_box": [
+            1314.0,
+            369.0,
+            131.0,
+            349.0
+          ],
+          "reemergence_box": [
+            1404.0,
+            388.0,
+            118.0,
+            312.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 368,
+          "reemergence_frame": 445,
+          "last_visible_box": [
+            1404.0,
+            388.0,
+            118.0,
+            312.0
+          ],
+          "reemergence_box": [
+            1706.0,
+            418.0,
+            92.0,
+            232.0
+          ],
+          "gap_length": 76
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 451,
+          "reemergence_frame": 474,
+          "last_visible_box": [
+            1719.0,
+            418.0,
+            91.0,
+            230.0
+          ],
+          "reemergence_box": [
+            1781.0,
+            420.0,
+            81.0,
+            215.0
+          ],
+          "gap_length": 22
+        },
+        {
+          "track_id": 12,
+          "last_visible_frame": 440,
+          "reemergence_frame": 460,
+          "last_visible_box": [
+            1807.0,
+            422.0,
+            111.0,
+            237.0
+          ],
+          "reemergence_box": [
+            1877.0,
+            422.0,
+            86.0,
+            232.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 13,
+          "last_visible_frame": 447,
+          "reemergence_frame": 464,
+          "last_visible_box": [
+            1760.0,
+            426.0,
+            90.0,
+            230.0
+          ],
+          "reemergence_box": [
+            1806.0,
+            425.0,
+            81.0,
+            221.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 488,
+          "reemergence_frame": 498,
+          "last_visible_box": [
+            1496.0,
+            417.0,
+            103.0,
+            258.0
+          ],
+          "reemergence_box": [
+            1425.0,
+            426.0,
+            90.0,
+            244.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 15,
+          "last_visible_frame": 495,
+          "reemergence_frame": 507,
+          "last_visible_box": [
+            1524.0,
+            419.0,
+            102.0,
+            254.0
+          ],
+          "reemergence_box": [
+            1450.0,
+            427.0,
+            95.0,
+            243.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 21,
+          "last_visible_frame": 83,
+          "reemergence_frame": 174,
+          "last_visible_box": [
+            1314.0,
+            534.0,
+            49.0,
+            128.0
+          ],
+          "reemergence_box": [
+            1332.0,
+            534.0,
+            68.0,
+            148.0
+          ],
+          "gap_length": 90
+        },
+        {
+          "track_id": 22,
+          "last_visible_frame": 94,
+          "reemergence_frame": 169,
+          "last_visible_box": [
+            1338.0,
+            458.0,
+            82.0,
+            210.0
+          ],
+          "reemergence_box": [
+            1375.0,
+            446.0,
+            93.0,
+            232.0
+          ],
+          "gap_length": 74
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 114,
+          "reemergence_frame": 155,
+          "last_visible_box": [
+            1177.0,
+            332.0,
+            168.0,
+            399.0
+          ],
+          "reemergence_box": [
+            1450.0,
+            367.0,
+            146.0,
+            323.0
+          ],
+          "gap_length": 40
+        },
+        {
+          "track_id": 29,
+          "last_visible_frame": 187,
+          "reemergence_frame": 196,
+          "last_visible_box": [
+            -18.0,
+            201.0,
+            387.0,
+            825.0
+          ],
+          "reemergence_box": [
+            203.0,
+            218.0,
+            321.0,
+            773.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 29,
+          "last_visible_frame": 200,
+          "reemergence_frame": 212,
+          "last_visible_box": [
+            254.0,
+            231.0,
+            346.0,
+            737.0
+          ],
+          "reemergence_box": [
+            500.0,
+            252.0,
+            319.0,
+            662.0
+          ],
+          "gap_length": 11
+        }
+      ],
+      "val_half": [
+        {
+          "track_id": 3,
+          "last_visible_frame": 477,
+          "reemergence_frame": 497,
+          "last_visible_box": [
+            1504.0,
+            453.0,
+            98.0,
+            190.0
+          ],
+          "reemergence_box": [
+            1580.0,
+            448.0,
+            78.0,
+            192.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 4,
+          "last_visible_frame": 452,
+          "reemergence_frame": 464,
+          "last_visible_box": [
+            26.0,
+            274.0,
+            277.0,
+            648.0
+          ],
+          "reemergence_box": [
+            191.0,
+            296.0,
+            288.0,
+            617.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 6,
+          "last_visible_frame": 408,
+          "reemergence_frame": 421,
+          "last_visible_box": [
+            742.0,
+            319.0,
+            141.0,
+            504.0
+          ],
+          "reemergence_box": [
+            897.0,
+            341.0,
+            143.0,
+            455.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 9,
+          "last_visible_frame": 507,
+          "reemergence_frame": 521,
+          "last_visible_box": [
+            1324.0,
+            455.0,
+            79.0,
+            194.0
+          ],
+          "reemergence_box": [
+            1405.0,
+            459.0,
+            94.0,
+            198.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 325,
+          "reemergence_frame": 368,
+          "last_visible_box": [
+            1314.0,
+            369.0,
+            131.0,
+            349.0
+          ],
+          "reemergence_box": [
+            1404.0,
+            388.0,
+            118.0,
+            312.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 368,
+          "reemergence_frame": 445,
+          "last_visible_box": [
+            1404.0,
+            388.0,
+            118.0,
+            312.0
+          ],
+          "reemergence_box": [
+            1706.0,
+            418.0,
+            92.0,
+            232.0
+          ],
+          "gap_length": 76
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 451,
+          "reemergence_frame": 474,
+          "last_visible_box": [
+            1719.0,
+            418.0,
+            91.0,
+            230.0
+          ],
+          "reemergence_box": [
+            1781.0,
+            420.0,
+            81.0,
+            215.0
+          ],
+          "gap_length": 22
+        },
+        {
+          "track_id": 12,
+          "last_visible_frame": 440,
+          "reemergence_frame": 460,
+          "last_visible_box": [
+            1807.0,
+            422.0,
+            111.0,
+            237.0
+          ],
+          "reemergence_box": [
+            1877.0,
+            422.0,
+            86.0,
+            232.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 13,
+          "last_visible_frame": 447,
+          "reemergence_frame": 464,
+          "last_visible_box": [
+            1760.0,
+            426.0,
+            90.0,
+            230.0
+          ],
+          "reemergence_box": [
+            1806.0,
+            425.0,
+            81.0,
+            221.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 488,
+          "reemergence_frame": 498,
+          "last_visible_box": [
+            1496.0,
+            417.0,
+            103.0,
+            258.0
+          ],
+          "reemergence_box": [
+            1425.0,
+            426.0,
+            90.0,
+            244.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 15,
+          "last_visible_frame": 495,
+          "reemergence_frame": 507,
+          "last_visible_box": [
+            1524.0,
+            419.0,
+            102.0,
+            254.0
+          ],
+          "reemergence_box": [
+            1450.0,
+            427.0,
+            95.0,
+            243.0
+          ],
+          "gap_length": 11
+        }
+      ]
+    },
+    "MOT17-10-FRCNN": {
+      "seq_length": 654,
+      "val_start_frame": 328,
+      "diagonal": 2202.9071700822983,
+      "full": [
+        {
+          "track_id": 2,
+          "last_visible_frame": 12,
+          "reemergence_frame": 26,
+          "last_visible_box": [
+            1415.0,
+            429.0,
+            71.0,
+            176.0
+          ],
+          "reemergence_box": [
+            1266.0,
+            438.0,
+            74.0,
+            176.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 2,
+          "last_visible_frame": 413,
+          "reemergence_frame": 450,
+          "last_visible_box": [
+            1206.0,
+            300.0,
+            62.0,
+            158.0
+          ],
+          "reemergence_box": [
+            1146.0,
+            324.0,
+            59.0,
+            149.0
+          ],
+          "gap_length": 36
+        },
+        {
+          "track_id": 4,
+          "last_visible_frame": 286,
+          "reemergence_frame": 311,
+          "last_visible_box": [
+            913.0,
+            285.0,
+            60.0,
+            150.0
+          ],
+          "reemergence_box": [
+            842.0,
+            258.0,
+            49.0,
+            155.0
+          ],
+          "gap_length": 24
+        },
+        {
+          "track_id": 6,
+          "last_visible_frame": 4,
+          "reemergence_frame": 48,
+          "last_visible_box": [
+            704.0,
+            421.0,
+            63.0,
+            182.0
+          ],
+          "reemergence_box": [
+            209.0,
+            444.0,
+            68.0,
+            201.0
+          ],
+          "gap_length": 43
+        },
+        {
+          "track_id": 11,
+          "last_visible_frame": 90,
+          "reemergence_frame": 122,
+          "last_visible_box": [
+            -17.0,
+            399.0,
+            83.0,
+            212.0
+          ],
+          "reemergence_box": [
+            -37.0,
+            380.0,
+            97.0,
+            235.0
+          ],
+          "gap_length": 31
+        },
+        {
+          "track_id": 12,
+          "last_visible_frame": 23,
+          "reemergence_frame": 68,
+          "last_visible_box": [
+            822.0,
+            438.0,
+            43.0,
+            115.0
+          ],
+          "reemergence_box": [
+            500.0,
+            424.0,
+            48.0,
+            129.0
+          ],
+          "gap_length": 44
+        },
+        {
+          "track_id": 12,
+          "last_visible_frame": 376,
+          "reemergence_frame": 396,
+          "last_visible_box": [
+            348.0,
+            256.0,
+            150.0,
+            326.0
+          ],
+          "reemergence_box": [
+            342.0,
+            246.0,
+            150.0,
+            348.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 13,
+          "last_visible_frame": 129,
+          "reemergence_frame": 231,
+          "last_visible_box": [
+            778.0,
+            380.0,
+            40.0,
+            116.0
+          ],
+          "reemergence_box": [
+            944.0,
+            367.0,
+            41.0,
+            121.0
+          ],
+          "gap_length": 101
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 492,
+          "reemergence_frame": 535,
+          "last_visible_box": [
+            1121.0,
+            335.0,
+            36.0,
+            89.0
+          ],
+          "reemergence_box": [
+            1150.0,
+            294.0,
+            56.0,
+            110.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 15,
+          "last_visible_frame": 29,
+          "reemergence_frame": 60,
+          "last_visible_box": [
+            344.0,
+            446.0,
+            66.0,
+            188.0
+          ],
+          "reemergence_box": [
+            29.0,
+            445.0,
+            65.0,
+            199.0
+          ],
+          "gap_length": 30
+        },
+        {
+          "track_id": 18,
+          "last_visible_frame": 70,
+          "reemergence_frame": 151,
+          "last_visible_box": [
+            702.0,
+            421.0,
+            35.0,
+            93.0
+          ],
+          "reemergence_box": [
+            927.0,
+            354.0,
+            39.0,
+            104.0
+          ],
+          "gap_length": 80
+        },
+        {
+          "track_id": 18,
+          "last_visible_frame": 167,
+          "reemergence_frame": 178,
+          "last_visible_box": [
+            890.0,
+            344.0,
+            33.0,
+            105.0
+          ],
+          "reemergence_box": [
+            836.0,
+            337.0,
+            34.0,
+            108.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 18,
+          "last_visible_frame": 210,
+          "reemergence_frame": 218,
+          "last_visible_box": [
+            925.0,
+            359.0,
+            39.0,
+            114.0
+          ],
+          "reemergence_box": [
+            954.0,
+            362.0,
+            48.0,
+            126.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 18,
+          "last_visible_frame": 224,
+          "reemergence_frame": 251,
+          "last_visible_box": [
+            982.0,
+            363.0,
+            40.0,
+            121.0
+          ],
+          "reemergence_box": [
+            1071.0,
+            324.0,
+            42.0,
+            127.0
+          ],
+          "gap_length": 26
+        },
+        {
+          "track_id": 18,
+          "last_visible_frame": 294,
+          "reemergence_frame": 307,
+          "last_visible_box": [
+            1040.0,
+            259.0,
+            47.0,
+            140.0
+          ],
+          "reemergence_box": [
+            1028.0,
+            262.0,
+            58.0,
+            142.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 3,
+          "reemergence_frame": 75,
+          "last_visible_box": [
+            627.0,
+            427.0,
+            52.0,
+            137.0
+          ],
+          "reemergence_box": [
+            105.0,
+            439.0,
+            52.0,
+            142.0
+          ],
+          "gap_length": 71
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 86,
+          "reemergence_frame": 112,
+          "last_visible_box": [
+            74.0,
+            420.0,
+            58.0,
+            145.0
+          ],
+          "reemergence_box": [
+            43.0,
+            399.0,
+            58.0,
+            145.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 243,
+          "reemergence_frame": 271,
+          "last_visible_box": [
+            488.0,
+            330.0,
+            49.0,
+            120.0
+          ],
+          "reemergence_box": [
+            586.0,
+            303.0,
+            48.0,
+            114.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 292,
+          "reemergence_frame": 313,
+          "last_visible_box": [
+            499.0,
+            292.0,
+            48.0,
+            114.0
+          ],
+          "reemergence_box": [
+            488.0,
+            273.0,
+            48.0,
+            114.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 345,
+          "reemergence_frame": 389,
+          "last_visible_box": [
+            549.0,
+            299.0,
+            41.0,
+            109.0
+          ],
+          "reemergence_box": [
+            604.0,
+            310.0,
+            41.0,
+            109.0
+          ],
+          "gap_length": 43
+        },
+        {
+          "track_id": 24,
+          "last_visible_frame": 95,
+          "reemergence_frame": 121,
+          "last_visible_box": [
+            828.0,
+            401.0,
+            40.0,
+            123.0
+          ],
+          "reemergence_box": [
+            900.0,
+            379.0,
+            46.0,
+            145.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 172,
+          "reemergence_frame": 270,
+          "last_visible_box": [
+            868.0,
+            350.0,
+            33.0,
+            97.0
+          ],
+          "reemergence_box": [
+            1136.0,
+            308.0,
+            37.0,
+            123.0
+          ],
+          "gap_length": 97
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 271,
+          "reemergence_frame": 284,
+          "last_visible_box": [
+            1137.0,
+            307.0,
+            38.0,
+            123.0
+          ],
+          "reemergence_box": [
+            1067.0,
+            293.0,
+            41.0,
+            128.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 284,
+          "reemergence_frame": 295,
+          "last_visible_box": [
+            1067.0,
+            293.0,
+            41.0,
+            128.0
+          ],
+          "reemergence_box": [
+            1056.0,
+            264.0,
+            40.0,
+            131.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 312,
+          "reemergence_frame": 341,
+          "last_visible_box": [
+            1032.0,
+            275.0,
+            40.0,
+            131.0
+          ],
+          "reemergence_box": [
+            1087.0,
+            290.0,
+            40.0,
+            148.0
+          ],
+          "gap_length": 28
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 341,
+          "reemergence_frame": 384,
+          "last_visible_box": [
+            1087.0,
+            290.0,
+            40.0,
+            148.0
+          ],
+          "reemergence_box": [
+            1141.0,
+            312.0,
+            47.0,
+            163.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 384,
+          "reemergence_frame": 441,
+          "last_visible_box": [
+            1141.0,
+            312.0,
+            47.0,
+            163.0
+          ],
+          "reemergence_box": [
+            1187.0,
+            301.0,
+            57.0,
+            207.0
+          ],
+          "gap_length": 56
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 441,
+          "reemergence_frame": 559,
+          "last_visible_box": [
+            1187.0,
+            301.0,
+            57.0,
+            207.0
+          ],
+          "reemergence_box": [
+            1385.0,
+            217.0,
+            113.0,
+            401.0
+          ],
+          "gap_length": 117
+        },
+        {
+          "track_id": 26,
+          "last_visible_frame": 3,
+          "reemergence_frame": 16,
+          "last_visible_box": [
+            1182.0,
+            418.0,
+            30.0,
+            97.0
+          ],
+          "reemergence_box": [
+            1130.0,
+            427.0,
+            31.0,
+            100.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 26,
+          "last_visible_frame": 17,
+          "reemergence_frame": 25,
+          "last_visible_box": [
+            1126.0,
+            427.0,
+            30.0,
+            99.0
+          ],
+          "reemergence_box": [
+            1052.0,
+            438.0,
+            30.0,
+            99.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 26,
+          "last_visible_frame": 25,
+          "reemergence_frame": 51,
+          "last_visible_box": [
+            1052.0,
+            438.0,
+            30.0,
+            99.0
+          ],
+          "reemergence_box": [
+            832.0,
+            439.0,
+            28.0,
+            109.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 26,
+          "last_visible_frame": 51,
+          "reemergence_frame": 101,
+          "last_visible_box": [
+            832.0,
+            439.0,
+            28.0,
+            109.0
+          ],
+          "reemergence_box": [
+            751.0,
+            391.0,
+            31.0,
+            111.0
+          ],
+          "gap_length": 49
+        },
+        {
+          "track_id": 26,
+          "last_visible_frame": 141,
+          "reemergence_frame": 190,
+          "last_visible_box": [
+            953.0,
+            354.0,
+            31.0,
+            111.0
+          ],
+          "reemergence_box": [
+            918.0,
+            330.0,
+            34.0,
+            115.0
+          ],
+          "gap_length": 48
+        },
+        {
+          "track_id": 30,
+          "last_visible_frame": 114,
+          "reemergence_frame": 125,
+          "last_visible_box": [
+            296.0,
+            414.0,
+            26.0,
+            76.0
+          ],
+          "reemergence_box": [
+            373.0,
+            408.0,
+            26.0,
+            81.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 184,
+          "reemergence_frame": 232,
+          "last_visible_box": [
+            931.0,
+            331.0,
+            40.0,
+            93.0
+          ],
+          "reemergence_box": [
+            983.0,
+            363.0,
+            39.0,
+            99.0
+          ],
+          "gap_length": 47
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 237,
+          "reemergence_frame": 304,
+          "last_visible_box": [
+            986.0,
+            358.0,
+            39.0,
+            100.0
+          ],
+          "reemergence_box": [
+            763.0,
+            271.0,
+            40.0,
+            114.0
+          ],
+          "gap_length": 66
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 317,
+          "reemergence_frame": 341,
+          "last_visible_box": [
+            694.0,
+            283.0,
+            48.0,
+            114.0
+          ],
+          "reemergence_box": [
+            641.0,
+            298.0,
+            39.0,
+            113.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 344,
+          "reemergence_frame": 426,
+          "last_visible_box": [
+            624.0,
+            306.0,
+            39.0,
+            113.0
+          ],
+          "reemergence_box": [
+            273.0,
+            328.0,
+            55.0,
+            145.0
+          ],
+          "gap_length": 81
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 211,
+          "reemergence_frame": 221,
+          "last_visible_box": [
+            923.0,
+            369.0,
+            42.0,
+            104.0
+          ],
+          "reemergence_box": [
+            939.0,
+            373.0,
+            42.0,
+            104.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 221,
+          "reemergence_frame": 268,
+          "last_visible_box": [
+            939.0,
+            373.0,
+            42.0,
+            104.0
+          ],
+          "reemergence_box": [
+            951.0,
+            308.0,
+            41.0,
+            111.0
+          ],
+          "gap_length": 46
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 312,
+          "reemergence_frame": 319,
+          "last_visible_box": [
+            688.0,
+            271.0,
+            38.0,
+            121.0
+          ],
+          "reemergence_box": [
+            680.0,
+            276.0,
+            39.0,
+            120.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 338,
+          "reemergence_frame": 356,
+          "last_visible_box": [
+            627.0,
+            287.0,
+            45.0,
+            119.0
+          ],
+          "reemergence_box": [
+            526.0,
+            318.0,
+            45.0,
+            124.0
+          ],
+          "gap_length": 17
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 367,
+          "reemergence_frame": 418,
+          "last_visible_box": [
+            469.0,
+            327.0,
+            44.0,
+            130.0
+          ],
+          "reemergence_box": [
+            257.0,
+            301.0,
+            61.0,
+            155.0
+          ],
+          "gap_length": 50
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 101,
+          "reemergence_frame": 158,
+          "last_visible_box": [
+            356.0,
+            409.0,
+            34.0,
+            95.0
+          ],
+          "reemergence_box": [
+            595.0,
+            361.0,
+            33.0,
+            105.0
+          ],
+          "gap_length": 56
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 186,
+          "reemergence_frame": 294,
+          "last_visible_box": [
+            476.0,
+            339.0,
+            33.0,
+            109.0
+          ],
+          "reemergence_box": [
+            617.0,
+            281.0,
+            44.0,
+            131.0
+          ],
+          "gap_length": 107
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 360,
+          "reemergence_frame": 385,
+          "last_visible_box": [
+            547.0,
+            323.0,
+            43.0,
+            140.0
+          ],
+          "reemergence_box": [
+            572.0,
+            317.0,
+            42.0,
+            146.0
+          ],
+          "gap_length": 24
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 437,
+          "reemergence_frame": 515,
+          "last_visible_box": [
+            508.0,
+            319.0,
+            45.0,
+            174.0
+          ],
+          "reemergence_box": [
+            345.0,
+            299.0,
+            62.0,
+            275.0
+          ],
+          "gap_length": 77
+        },
+        {
+          "track_id": 41,
+          "last_visible_frame": 69,
+          "reemergence_frame": 93,
+          "last_visible_box": [
+            306.0,
+            446.0,
+            19.0,
+            59.0
+          ],
+          "reemergence_box": [
+            289.0,
+            428.0,
+            19.0,
+            59.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 41,
+          "last_visible_frame": 119,
+          "reemergence_frame": 165,
+          "last_visible_box": [
+            320.0,
+            411.0,
+            21.0,
+            55.0
+          ],
+          "reemergence_box": [
+            535.0,
+            370.0,
+            30.0,
+            59.0
+          ],
+          "gap_length": 45
+        },
+        {
+          "track_id": 44,
+          "last_visible_frame": 256,
+          "reemergence_frame": 278,
+          "last_visible_box": [
+            273.0,
+            313.0,
+            26.0,
+            76.0
+          ],
+          "reemergence_box": [
+            243.0,
+            298.0,
+            26.0,
+            74.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 45,
+          "last_visible_frame": 332,
+          "reemergence_frame": 352,
+          "last_visible_box": [
+            82.0,
+            284.0,
+            54.0,
+            145.0
+          ],
+          "reemergence_box": [
+            13.0,
+            311.0,
+            52.0,
+            153.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 45,
+          "last_visible_frame": 361,
+          "reemergence_frame": 380,
+          "last_visible_box": [
+            -25.0,
+            313.0,
+            52.0,
+            157.0
+          ],
+          "reemergence_box": [
+            -25.0,
+            302.0,
+            51.0,
+            170.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 47,
+          "last_visible_frame": 527,
+          "reemergence_frame": 570,
+          "last_visible_box": [
+            248.0,
+            305.0,
+            28.0,
+            81.0
+          ],
+          "reemergence_box": [
+            126.0,
+            306.0,
+            34.0,
+            96.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 48,
+          "last_visible_frame": 524,
+          "reemergence_frame": 545,
+          "last_visible_box": [
+            273.0,
+            305.0,
+            29.0,
+            83.0
+          ],
+          "reemergence_box": [
+            217.0,
+            288.0,
+            31.0,
+            86.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 50,
+          "last_visible_frame": 403,
+          "reemergence_frame": 427,
+          "last_visible_box": [
+            1005.0,
+            313.0,
+            16.0,
+            43.0
+          ],
+          "reemergence_box": [
+            1016.0,
+            335.0,
+            18.0,
+            45.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 50,
+          "last_visible_frame": 434,
+          "reemergence_frame": 458,
+          "last_visible_box": [
+            1019.0,
+            322.0,
+            17.0,
+            45.0
+          ],
+          "reemergence_box": [
+            988.0,
+            341.0,
+            20.0,
+            47.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 50,
+          "last_visible_frame": 475,
+          "reemergence_frame": 483,
+          "last_visible_box": [
+            988.0,
+            345.0,
+            25.0,
+            49.0
+          ],
+          "reemergence_box": [
+            998.0,
+            353.0,
+            21.0,
+            47.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 200,
+          "reemergence_frame": 228,
+          "last_visible_box": [
+            120.0,
+            355.0,
+            28.0,
+            69.0
+          ],
+          "reemergence_box": [
+            261.0,
+            354.0,
+            28.0,
+            69.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 54,
+          "last_visible_frame": 231,
+          "reemergence_frame": 289,
+          "last_visible_box": [
+            270.0,
+            351.0,
+            28.0,
+            69.0
+          ],
+          "reemergence_box": [
+            198.0,
+            295.0,
+            33.0,
+            77.0
+          ],
+          "gap_length": 57
+        },
+        {
+          "track_id": 56,
+          "last_visible_frame": 298,
+          "reemergence_frame": 318,
+          "last_visible_box": [
+            757.0,
+            275.0,
+            21.0,
+            64.0
+          ],
+          "reemergence_box": [
+            733.0,
+            287.0,
+            21.0,
+            64.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 56,
+          "last_visible_frame": 329,
+          "reemergence_frame": 356,
+          "last_visible_box": [
+            760.0,
+            285.0,
+            21.0,
+            64.0
+          ],
+          "reemergence_box": [
+            728.0,
+            332.0,
+            21.0,
+            64.0
+          ],
+          "gap_length": 26
+        },
+        {
+          "track_id": 56,
+          "last_visible_frame": 471,
+          "reemergence_frame": 490,
+          "last_visible_box": [
+            641.0,
+            338.0,
+            29.0,
+            72.0
+          ],
+          "reemergence_box": [
+            626.0,
+            342.0,
+            29.0,
+            72.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 57,
+          "last_visible_frame": 307,
+          "reemergence_frame": 328,
+          "last_visible_box": [
+            705.0,
+            270.0,
+            20.0,
+            70.0
+          ],
+          "reemergence_box": [
+            728.0,
+            281.0,
+            20.0,
+            70.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 57,
+          "last_visible_frame": 338,
+          "reemergence_frame": 364,
+          "last_visible_box": [
+            716.0,
+            288.0,
+            24.0,
+            71.0
+          ],
+          "reemergence_box": [
+            674.0,
+            329.0,
+            24.0,
+            75.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 57,
+          "last_visible_frame": 441,
+          "reemergence_frame": 467,
+          "last_visible_box": [
+            647.0,
+            325.0,
+            36.0,
+            83.0
+          ],
+          "reemergence_box": [
+            595.0,
+            335.0,
+            36.0,
+            83.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 324,
+          "reemergence_frame": 345,
+          "last_visible_box": [
+            659.0,
+            283.0,
+            22.0,
+            58.0
+          ],
+          "reemergence_box": [
+            656.0,
+            317.0,
+            21.0,
+            66.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 349,
+          "reemergence_frame": 374,
+          "last_visible_box": [
+            651.0,
+            321.0,
+            21.0,
+            66.0
+          ],
+          "reemergence_box": [
+            653.0,
+            330.0,
+            24.0,
+            64.0
+          ],
+          "gap_length": 24
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 401,
+          "reemergence_frame": 417,
+          "last_visible_box": [
+            688.0,
+            306.0,
+            24.0,
+            65.0
+          ],
+          "reemergence_box": [
+            704.0,
+            319.0,
+            24.0,
+            65.0
+          ],
+          "gap_length": 15
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 426,
+          "reemergence_frame": 458,
+          "last_visible_box": [
+            700.0,
+            333.0,
+            24.0,
+            65.0
+          ],
+          "reemergence_box": [
+            679.0,
+            346.0,
+            23.0,
+            62.0
+          ],
+          "gap_length": 31
+        },
+        {
+          "track_id": 68,
+          "last_visible_frame": 575,
+          "reemergence_frame": 581,
+          "last_visible_box": [
+            669.0,
+            303.0,
+            22.0,
+            48.0
+          ],
+          "reemergence_box": [
+            665.0,
+            307.0,
+            23.0,
+            49.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 158,
+          "reemergence_frame": 240,
+          "last_visible_box": [
+            570.0,
+            373.0,
+            24.0,
+            52.0
+          ],
+          "reemergence_box": [
+            711.0,
+            348.0,
+            23.0,
+            51.0
+          ],
+          "gap_length": 81
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 240,
+          "reemergence_frame": 247,
+          "last_visible_box": [
+            711.0,
+            348.0,
+            23.0,
+            51.0
+          ],
+          "reemergence_box": [
+            728.0,
+            341.0,
+            23.0,
+            51.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 250,
+          "reemergence_frame": 257,
+          "last_visible_box": [
+            734.0,
+            338.0,
+            23.0,
+            51.0
+          ],
+          "reemergence_box": [
+            756.0,
+            331.0,
+            22.0,
+            52.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 318,
+          "reemergence_frame": 341,
+          "last_visible_box": [
+            667.0,
+            281.0,
+            25.0,
+            60.0
+          ],
+          "reemergence_box": [
+            676.0,
+            309.0,
+            25.0,
+            61.0
+          ],
+          "gap_length": 22
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 345,
+          "reemergence_frame": 373,
+          "last_visible_box": [
+            672.0,
+            314.0,
+            25.0,
+            61.0
+          ],
+          "reemergence_box": [
+            662.0,
+            334.0,
+            24.0,
+            63.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 373,
+          "reemergence_frame": 407,
+          "last_visible_box": [
+            662.0,
+            334.0,
+            24.0,
+            63.0
+          ],
+          "reemergence_box": [
+            724.0,
+            307.0,
+            22.0,
+            63.0
+          ],
+          "gap_length": 33
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 411,
+          "reemergence_frame": 437,
+          "last_visible_box": [
+            726.0,
+            311.0,
+            22.0,
+            63.0
+          ],
+          "reemergence_box": [
+            724.0,
+            333.0,
+            22.0,
+            63.0
+          ],
+          "gap_length": 25
+        }
+      ],
+      "val_half": [
+        {
+          "track_id": 2,
+          "last_visible_frame": 413,
+          "reemergence_frame": 450,
+          "last_visible_box": [
+            1206.0,
+            300.0,
+            62.0,
+            158.0
+          ],
+          "reemergence_box": [
+            1146.0,
+            324.0,
+            59.0,
+            149.0
+          ],
+          "gap_length": 36
+        },
+        {
+          "track_id": 12,
+          "last_visible_frame": 376,
+          "reemergence_frame": 396,
+          "last_visible_box": [
+            348.0,
+            256.0,
+            150.0,
+            326.0
+          ],
+          "reemergence_box": [
+            342.0,
+            246.0,
+            150.0,
+            348.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 492,
+          "reemergence_frame": 535,
+          "last_visible_box": [
+            1121.0,
+            335.0,
+            36.0,
+            89.0
+          ],
+          "reemergence_box": [
+            1150.0,
+            294.0,
+            56.0,
+            110.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 23,
+          "last_visible_frame": 345,
+          "reemergence_frame": 389,
+          "last_visible_box": [
+            549.0,
+            299.0,
+            41.0,
+            109.0
+          ],
+          "reemergence_box": [
+            604.0,
+            310.0,
+            41.0,
+            109.0
+          ],
+          "gap_length": 43
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 341,
+          "reemergence_frame": 384,
+          "last_visible_box": [
+            1087.0,
+            290.0,
+            40.0,
+            148.0
+          ],
+          "reemergence_box": [
+            1141.0,
+            312.0,
+            47.0,
+            163.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 384,
+          "reemergence_frame": 441,
+          "last_visible_box": [
+            1141.0,
+            312.0,
+            47.0,
+            163.0
+          ],
+          "reemergence_box": [
+            1187.0,
+            301.0,
+            57.0,
+            207.0
+          ],
+          "gap_length": 56
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 441,
+          "reemergence_frame": 559,
+          "last_visible_box": [
+            1187.0,
+            301.0,
+            57.0,
+            207.0
+          ],
+          "reemergence_box": [
+            1385.0,
+            217.0,
+            113.0,
+            401.0
+          ],
+          "gap_length": 117
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 344,
+          "reemergence_frame": 426,
+          "last_visible_box": [
+            624.0,
+            306.0,
+            39.0,
+            113.0
+          ],
+          "reemergence_box": [
+            273.0,
+            328.0,
+            55.0,
+            145.0
+          ],
+          "gap_length": 81
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 338,
+          "reemergence_frame": 356,
+          "last_visible_box": [
+            627.0,
+            287.0,
+            45.0,
+            119.0
+          ],
+          "reemergence_box": [
+            526.0,
+            318.0,
+            45.0,
+            124.0
+          ],
+          "gap_length": 17
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 367,
+          "reemergence_frame": 418,
+          "last_visible_box": [
+            469.0,
+            327.0,
+            44.0,
+            130.0
+          ],
+          "reemergence_box": [
+            257.0,
+            301.0,
+            61.0,
+            155.0
+          ],
+          "gap_length": 50
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 360,
+          "reemergence_frame": 385,
+          "last_visible_box": [
+            547.0,
+            323.0,
+            43.0,
+            140.0
+          ],
+          "reemergence_box": [
+            572.0,
+            317.0,
+            42.0,
+            146.0
+          ],
+          "gap_length": 24
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 437,
+          "reemergence_frame": 515,
+          "last_visible_box": [
+            508.0,
+            319.0,
+            45.0,
+            174.0
+          ],
+          "reemergence_box": [
+            345.0,
+            299.0,
+            62.0,
+            275.0
+          ],
+          "gap_length": 77
+        },
+        {
+          "track_id": 45,
+          "last_visible_frame": 332,
+          "reemergence_frame": 352,
+          "last_visible_box": [
+            82.0,
+            284.0,
+            54.0,
+            145.0
+          ],
+          "reemergence_box": [
+            13.0,
+            311.0,
+            52.0,
+            153.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 45,
+          "last_visible_frame": 361,
+          "reemergence_frame": 380,
+          "last_visible_box": [
+            -25.0,
+            313.0,
+            52.0,
+            157.0
+          ],
+          "reemergence_box": [
+            -25.0,
+            302.0,
+            51.0,
+            170.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 47,
+          "last_visible_frame": 527,
+          "reemergence_frame": 570,
+          "last_visible_box": [
+            248.0,
+            305.0,
+            28.0,
+            81.0
+          ],
+          "reemergence_box": [
+            126.0,
+            306.0,
+            34.0,
+            96.0
+          ],
+          "gap_length": 42
+        },
+        {
+          "track_id": 48,
+          "last_visible_frame": 524,
+          "reemergence_frame": 545,
+          "last_visible_box": [
+            273.0,
+            305.0,
+            29.0,
+            83.0
+          ],
+          "reemergence_box": [
+            217.0,
+            288.0,
+            31.0,
+            86.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 50,
+          "last_visible_frame": 403,
+          "reemergence_frame": 427,
+          "last_visible_box": [
+            1005.0,
+            313.0,
+            16.0,
+            43.0
+          ],
+          "reemergence_box": [
+            1016.0,
+            335.0,
+            18.0,
+            45.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 50,
+          "last_visible_frame": 434,
+          "reemergence_frame": 458,
+          "last_visible_box": [
+            1019.0,
+            322.0,
+            17.0,
+            45.0
+          ],
+          "reemergence_box": [
+            988.0,
+            341.0,
+            20.0,
+            47.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 50,
+          "last_visible_frame": 475,
+          "reemergence_frame": 483,
+          "last_visible_box": [
+            988.0,
+            345.0,
+            25.0,
+            49.0
+          ],
+          "reemergence_box": [
+            998.0,
+            353.0,
+            21.0,
+            47.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 56,
+          "last_visible_frame": 329,
+          "reemergence_frame": 356,
+          "last_visible_box": [
+            760.0,
+            285.0,
+            21.0,
+            64.0
+          ],
+          "reemergence_box": [
+            728.0,
+            332.0,
+            21.0,
+            64.0
+          ],
+          "gap_length": 26
+        },
+        {
+          "track_id": 56,
+          "last_visible_frame": 471,
+          "reemergence_frame": 490,
+          "last_visible_box": [
+            641.0,
+            338.0,
+            29.0,
+            72.0
+          ],
+          "reemergence_box": [
+            626.0,
+            342.0,
+            29.0,
+            72.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 57,
+          "last_visible_frame": 338,
+          "reemergence_frame": 364,
+          "last_visible_box": [
+            716.0,
+            288.0,
+            24.0,
+            71.0
+          ],
+          "reemergence_box": [
+            674.0,
+            329.0,
+            24.0,
+            75.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 57,
+          "last_visible_frame": 441,
+          "reemergence_frame": 467,
+          "last_visible_box": [
+            647.0,
+            325.0,
+            36.0,
+            83.0
+          ],
+          "reemergence_box": [
+            595.0,
+            335.0,
+            36.0,
+            83.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 349,
+          "reemergence_frame": 374,
+          "last_visible_box": [
+            651.0,
+            321.0,
+            21.0,
+            66.0
+          ],
+          "reemergence_box": [
+            653.0,
+            330.0,
+            24.0,
+            64.0
+          ],
+          "gap_length": 24
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 401,
+          "reemergence_frame": 417,
+          "last_visible_box": [
+            688.0,
+            306.0,
+            24.0,
+            65.0
+          ],
+          "reemergence_box": [
+            704.0,
+            319.0,
+            24.0,
+            65.0
+          ],
+          "gap_length": 15
+        },
+        {
+          "track_id": 59,
+          "last_visible_frame": 426,
+          "reemergence_frame": 458,
+          "last_visible_box": [
+            700.0,
+            333.0,
+            24.0,
+            65.0
+          ],
+          "reemergence_box": [
+            679.0,
+            346.0,
+            23.0,
+            62.0
+          ],
+          "gap_length": 31
+        },
+        {
+          "track_id": 68,
+          "last_visible_frame": 575,
+          "reemergence_frame": 581,
+          "last_visible_box": [
+            669.0,
+            303.0,
+            22.0,
+            48.0
+          ],
+          "reemergence_box": [
+            665.0,
+            307.0,
+            23.0,
+            49.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 345,
+          "reemergence_frame": 373,
+          "last_visible_box": [
+            672.0,
+            314.0,
+            25.0,
+            61.0
+          ],
+          "reemergence_box": [
+            662.0,
+            334.0,
+            24.0,
+            63.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 373,
+          "reemergence_frame": 407,
+          "last_visible_box": [
+            662.0,
+            334.0,
+            24.0,
+            63.0
+          ],
+          "reemergence_box": [
+            724.0,
+            307.0,
+            22.0,
+            63.0
+          ],
+          "gap_length": 33
+        },
+        {
+          "track_id": 71,
+          "last_visible_frame": 411,
+          "reemergence_frame": 437,
+          "last_visible_box": [
+            726.0,
+            311.0,
+            22.0,
+            63.0
+          ],
+          "reemergence_box": [
+            724.0,
+            333.0,
+            22.0,
+            63.0
+          ],
+          "gap_length": 25
+        }
+      ]
+    },
+    "MOT17-11-FRCNN": {
+      "seq_length": 900,
+      "val_start_frame": 451,
+      "diagonal": 2202.9071700822983,
+      "full": [
+        {
+          "track_id": 1,
+          "last_visible_frame": 705,
+          "reemergence_frame": 731,
+          "last_visible_box": [
+            914.0,
+            258.0,
+            173.0,
+            430.0
+          ],
+          "reemergence_box": [
+            888.0,
+            184.0,
+            176.0,
+            435.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 1,
+          "last_visible_frame": 744,
+          "reemergence_frame": 761,
+          "last_visible_box": [
+            772.0,
+            182.0,
+            159.0,
+            438.0
+          ],
+          "reemergence_box": [
+            692.0,
+            199.0,
+            170.0,
+            439.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 6,
+          "last_visible_frame": 80,
+          "reemergence_frame": 164,
+          "last_visible_box": [
+            803.0,
+            445.0,
+            61.0,
+            170.0
+          ],
+          "reemergence_box": [
+            711.0,
+            368.0,
+            87.0,
+            272.0
+          ],
+          "gap_length": 83
+        },
+        {
+          "track_id": 10,
+          "last_visible_frame": 401,
+          "reemergence_frame": 469,
+          "last_visible_box": [
+            690.0,
+            311.0,
+            82.0,
+            234.0
+          ],
+          "reemergence_box": [
+            699.0,
+            216.0,
+            116.0,
+            363.0
+          ],
+          "gap_length": 67
+        },
+        {
+          "track_id": 14,
+          "last_visible_frame": 314,
+          "reemergence_frame": 337,
+          "last_visible_box": [
+            1262.0,
+            168.0,
+            203.0,
+            656.0
+          ],
+          "reemergence_box": [
+            1240.0,
+            165.0,
+            249.0,
+            685.0
+          ],
+          "gap_length": 22
+        },
+        {
+          "track_id": 19,
+          "last_visible_frame": 27,
+          "reemergence_frame": 48,
+          "last_visible_box": [
+            852.0,
+            369.0,
+            31.0,
+            112.0
+          ],
+          "reemergence_box": [
+            883.0,
+            479.0,
+            40.0,
+            111.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 170,
+          "reemergence_frame": 304,
+          "last_visible_box": [
+            910.0,
+            333.0,
+            103.0,
+            354.0
+          ],
+          "reemergence_box": [
+            990.0,
+            215.0,
+            110.0,
+            427.0
+          ],
+          "gap_length": 133
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 685,
+          "reemergence_frame": 722,
+          "last_visible_box": [
+            992.0,
+            291.0,
+            151.0,
+            497.0
+          ],
+          "reemergence_box": [
+            1062.0,
+            164.0,
+            155.0,
+            512.0
+          ],
+          "gap_length": 36
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 731,
+          "reemergence_frame": 755,
+          "last_visible_box": [
+            1024.0,
+            146.0,
+            156.0,
+            515.0
+          ],
+          "reemergence_box": [
+            837.0,
+            156.0,
+            156.0,
+            525.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 29,
+          "last_visible_frame": 37,
+          "reemergence_frame": 89,
+          "last_visible_box": [
+            1408.0,
+            412.0,
+            40.0,
+            112.0
+          ],
+          "reemergence_box": [
+            1263.0,
+            428.0,
+            43.0,
+            117.0
+          ],
+          "gap_length": 51
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 454,
+          "reemergence_frame": 556,
+          "last_visible_box": [
+            1138.0,
+            311.0,
+            85.0,
+            251.0
+          ],
+          "reemergence_box": [
+            1565.0,
+            286.0,
+            134.0,
+            395.0
+          ],
+          "gap_length": 101
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 325,
+          "reemergence_frame": 427,
+          "last_visible_box": [
+            697.0,
+            309.0,
+            47.0,
+            151.0
+          ],
+          "reemergence_box": [
+            540.0,
+            319.0,
+            67.0,
+            195.0
+          ],
+          "gap_length": 101
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 459,
+          "reemergence_frame": 540,
+          "last_visible_box": [
+            598.0,
+            304.0,
+            65.0,
+            199.0
+          ],
+          "reemergence_box": [
+            580.0,
+            290.0,
+            78.0,
+            260.0
+          ],
+          "gap_length": 80
+        },
+        {
+          "track_id": 33,
+          "last_visible_frame": 718,
+          "reemergence_frame": 737,
+          "last_visible_box": [
+            747.0,
+            247.0,
+            134.0,
+            357.0
+          ],
+          "reemergence_box": [
+            660.0,
+            178.0,
+            155.0,
+            441.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 33,
+          "last_visible_frame": 755,
+          "reemergence_frame": 777,
+          "last_visible_box": [
+            391.0,
+            136.0,
+            245.0,
+            574.0
+          ],
+          "reemergence_box": [
+            302.0,
+            48.0,
+            304.0,
+            811.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 35,
+          "last_visible_frame": 783,
+          "reemergence_frame": 805,
+          "last_visible_box": [
+            517.0,
+            239.0,
+            137.0,
+            398.0
+          ],
+          "reemergence_box": [
+            498.0,
+            247.0,
+            168.0,
+            483.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 39,
+          "last_visible_frame": 551,
+          "reemergence_frame": 573,
+          "last_visible_box": [
+            1077.0,
+            270.0,
+            126.0,
+            339.0
+          ],
+          "reemergence_box": [
+            1114.0,
+            279.0,
+            135.0,
+            362.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 39,
+          "last_visible_frame": 682,
+          "reemergence_frame": 726,
+          "last_visible_box": [
+            1448.0,
+            259.0,
+            229.0,
+            615.0
+          ],
+          "reemergence_box": [
+            1205.0,
+            101.0,
+            299.0,
+            713.0
+          ],
+          "gap_length": 43
+        },
+        {
+          "track_id": 43,
+          "last_visible_frame": 722,
+          "reemergence_frame": 740,
+          "last_visible_box": [
+            1242.0,
+            309.0,
+            77.0,
+            213.0
+          ],
+          "reemergence_box": [
+            1153.0,
+            278.0,
+            81.0,
+            244.0
+          ],
+          "gap_length": 17
+        },
+        {
+          "track_id": 70,
+          "last_visible_frame": 849,
+          "reemergence_frame": 870,
+          "last_visible_box": [
+            1736.0,
+            330.0,
+            54.0,
+            117.0
+          ],
+          "reemergence_box": [
+            1790.0,
+            265.0,
+            37.0,
+            124.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 72,
+          "last_visible_frame": 881,
+          "reemergence_frame": 891,
+          "last_visible_box": [
+            1850.0,
+            277.0,
+            37.0,
+            100.0
+          ],
+          "reemergence_box": [
+            1774.0,
+            296.0,
+            37.0,
+            100.0
+          ],
+          "gap_length": 9
+        }
+      ],
+      "val_half": [
+        {
+          "track_id": 1,
+          "last_visible_frame": 705,
+          "reemergence_frame": 731,
+          "last_visible_box": [
+            914.0,
+            258.0,
+            173.0,
+            430.0
+          ],
+          "reemergence_box": [
+            888.0,
+            184.0,
+            176.0,
+            435.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 1,
+          "last_visible_frame": 744,
+          "reemergence_frame": 761,
+          "last_visible_box": [
+            772.0,
+            182.0,
+            159.0,
+            438.0
+          ],
+          "reemergence_box": [
+            692.0,
+            199.0,
+            170.0,
+            439.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 685,
+          "reemergence_frame": 722,
+          "last_visible_box": [
+            992.0,
+            291.0,
+            151.0,
+            497.0
+          ],
+          "reemergence_box": [
+            1062.0,
+            164.0,
+            155.0,
+            512.0
+          ],
+          "gap_length": 36
+        },
+        {
+          "track_id": 25,
+          "last_visible_frame": 731,
+          "reemergence_frame": 755,
+          "last_visible_box": [
+            1024.0,
+            146.0,
+            156.0,
+            515.0
+          ],
+          "reemergence_box": [
+            837.0,
+            156.0,
+            156.0,
+            525.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 31,
+          "last_visible_frame": 454,
+          "reemergence_frame": 556,
+          "last_visible_box": [
+            1138.0,
+            311.0,
+            85.0,
+            251.0
+          ],
+          "reemergence_box": [
+            1565.0,
+            286.0,
+            134.0,
+            395.0
+          ],
+          "gap_length": 101
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 459,
+          "reemergence_frame": 540,
+          "last_visible_box": [
+            598.0,
+            304.0,
+            65.0,
+            199.0
+          ],
+          "reemergence_box": [
+            580.0,
+            290.0,
+            78.0,
+            260.0
+          ],
+          "gap_length": 80
+        },
+        {
+          "track_id": 33,
+          "last_visible_frame": 718,
+          "reemergence_frame": 737,
+          "last_visible_box": [
+            747.0,
+            247.0,
+            134.0,
+            357.0
+          ],
+          "reemergence_box": [
+            660.0,
+            178.0,
+            155.0,
+            441.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 33,
+          "last_visible_frame": 755,
+          "reemergence_frame": 777,
+          "last_visible_box": [
+            391.0,
+            136.0,
+            245.0,
+            574.0
+          ],
+          "reemergence_box": [
+            302.0,
+            48.0,
+            304.0,
+            811.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 35,
+          "last_visible_frame": 783,
+          "reemergence_frame": 805,
+          "last_visible_box": [
+            517.0,
+            239.0,
+            137.0,
+            398.0
+          ],
+          "reemergence_box": [
+            498.0,
+            247.0,
+            168.0,
+            483.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 39,
+          "last_visible_frame": 551,
+          "reemergence_frame": 573,
+          "last_visible_box": [
+            1077.0,
+            270.0,
+            126.0,
+            339.0
+          ],
+          "reemergence_box": [
+            1114.0,
+            279.0,
+            135.0,
+            362.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 39,
+          "last_visible_frame": 682,
+          "reemergence_frame": 726,
+          "last_visible_box": [
+            1448.0,
+            259.0,
+            229.0,
+            615.0
+          ],
+          "reemergence_box": [
+            1205.0,
+            101.0,
+            299.0,
+            713.0
+          ],
+          "gap_length": 43
+        },
+        {
+          "track_id": 43,
+          "last_visible_frame": 722,
+          "reemergence_frame": 740,
+          "last_visible_box": [
+            1242.0,
+            309.0,
+            77.0,
+            213.0
+          ],
+          "reemergence_box": [
+            1153.0,
+            278.0,
+            81.0,
+            244.0
+          ],
+          "gap_length": 17
+        },
+        {
+          "track_id": 70,
+          "last_visible_frame": 849,
+          "reemergence_frame": 870,
+          "last_visible_box": [
+            1736.0,
+            330.0,
+            54.0,
+            117.0
+          ],
+          "reemergence_box": [
+            1790.0,
+            265.0,
+            37.0,
+            124.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 72,
+          "last_visible_frame": 881,
+          "reemergence_frame": 891,
+          "last_visible_box": [
+            1850.0,
+            277.0,
+            37.0,
+            100.0
+          ],
+          "reemergence_box": [
+            1774.0,
+            296.0,
+            37.0,
+            100.0
+          ],
+          "gap_length": 9
+        }
+      ]
+    },
+    "MOT17-13-FRCNN": {
+      "seq_length": 750,
+      "val_start_frame": 376,
+      "diagonal": 2202.9071700822983,
+      "full": [
+        {
+          "track_id": 4,
+          "last_visible_frame": 67,
+          "reemergence_frame": 121,
+          "last_visible_box": [
+            1758.0,
+            547.0,
+            40.0,
+            98.0
+          ],
+          "reemergence_box": [
+            1739.0,
+            565.0,
+            56.0,
+            110.0
+          ],
+          "gap_length": 53
+        },
+        {
+          "track_id": 4,
+          "last_visible_frame": 157,
+          "reemergence_frame": 180,
+          "last_visible_box": [
+            1653.0,
+            555.0,
+            47.0,
+            122.0
+          ],
+          "reemergence_box": [
+            1612.0,
+            554.0,
+            50.0,
+            126.0
+          ],
+          "gap_length": 22
+        },
+        {
+          "track_id": 7,
+          "last_visible_frame": 267,
+          "reemergence_frame": 279,
+          "last_visible_box": [
+            1569.0,
+            551.0,
+            82.0,
+            163.0
+          ],
+          "reemergence_box": [
+            1684.0,
+            546.0,
+            64.0,
+            187.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 18,
+          "last_visible_frame": 182,
+          "reemergence_frame": 209,
+          "last_visible_box": [
+            282.0,
+            548.0,
+            30.0,
+            81.0
+          ],
+          "reemergence_box": [
+            179.0,
+            576.0,
+            29.0,
+            76.0
+          ],
+          "gap_length": 26
+        },
+        {
+          "track_id": 19,
+          "last_visible_frame": 41,
+          "reemergence_frame": 53,
+          "last_visible_box": [
+            614.0,
+            534.0,
+            28.0,
+            85.0
+          ],
+          "reemergence_box": [
+            609.0,
+            541.0,
+            27.0,
+            85.0
+          ],
+          "gap_length": 11
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 33,
+          "reemergence_frame": 43,
+          "last_visible_box": [
+            1573.0,
+            518.0,
+            19.0,
+            46.0
+          ],
+          "reemergence_box": [
+            1584.0,
+            512.0,
+            21.0,
+            46.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 51,
+          "reemergence_frame": 73,
+          "last_visible_box": [
+            1586.0,
+            524.0,
+            22.0,
+            46.0
+          ],
+          "reemergence_box": [
+            1586.0,
+            520.0,
+            23.0,
+            50.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 32,
+          "last_visible_frame": 75,
+          "reemergence_frame": 81,
+          "last_visible_box": [
+            1586.0,
+            522.0,
+            20.0,
+            49.0
+          ],
+          "reemergence_box": [
+            1572.0,
+            519.0,
+            25.0,
+            49.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 33,
+          "last_visible_frame": 248,
+          "reemergence_frame": 269,
+          "last_visible_box": [
+            1316.0,
+            570.0,
+            62.0,
+            147.0
+          ],
+          "reemergence_box": [
+            1553.0,
+            594.0,
+            64.0,
+            179.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 26,
+          "reemergence_frame": 37,
+          "last_visible_box": [
+            1555.0,
+            511.0,
+            14.0,
+            43.0
+          ],
+          "reemergence_box": [
+            1561.0,
+            510.0,
+            19.0,
+            52.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 47,
+          "reemergence_frame": 60,
+          "last_visible_box": [
+            1573.0,
+            516.0,
+            18.0,
+            54.0
+          ],
+          "reemergence_box": [
+            1575.0,
+            515.0,
+            22.0,
+            56.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 124,
+          "reemergence_frame": 146,
+          "last_visible_box": [
+            1398.0,
+            528.0,
+            20.0,
+            58.0
+          ],
+          "reemergence_box": [
+            1325.0,
+            530.0,
+            20.0,
+            57.0
+          ],
+          "gap_length": 21
+        },
+        {
+          "track_id": 34,
+          "last_visible_frame": 151,
+          "reemergence_frame": 198,
+          "last_visible_box": [
+            1303.0,
+            533.0,
+            20.0,
+            57.0
+          ],
+          "reemergence_box": [
+            1120.0,
+            536.0,
+            23.0,
+            69.0
+          ],
+          "gap_length": 46
+        },
+        {
+          "track_id": 35,
+          "last_visible_frame": 139,
+          "reemergence_frame": 169,
+          "last_visible_box": [
+            715.0,
+            511.0,
+            12.0,
+            32.0
+          ],
+          "reemergence_box": [
+            558.0,
+            517.0,
+            12.0,
+            35.0
+          ],
+          "gap_length": 29
+        },
+        {
+          "track_id": 35,
+          "last_visible_frame": 171,
+          "reemergence_frame": 184,
+          "last_visible_box": [
+            549.0,
+            516.0,
+            12.0,
+            35.0
+          ],
+          "reemergence_box": [
+            498.0,
+            517.0,
+            13.0,
+            37.0
+          ],
+          "gap_length": 12
+        },
+        {
+          "track_id": 36,
+          "last_visible_frame": 52,
+          "reemergence_frame": 118,
+          "last_visible_box": [
+            555.0,
+            531.0,
+            18.0,
+            87.0
+          ],
+          "reemergence_box": [
+            200.0,
+            553.0,
+            39.0,
+            88.0
+          ],
+          "gap_length": 65
+        },
+        {
+          "track_id": 37,
+          "last_visible_frame": 184,
+          "reemergence_frame": 212,
+          "last_visible_box": [
+            181.0,
+            552.0,
+            21.0,
+            66.0
+          ],
+          "reemergence_box": [
+            28.0,
+            580.0,
+            20.0,
+            77.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 40,
+          "last_visible_frame": 125,
+          "reemergence_frame": 135,
+          "last_visible_box": [
+            1455.0,
+            517.0,
+            18.0,
+            68.0
+          ],
+          "reemergence_box": [
+            1406.0,
+            518.0,
+            19.0,
+            71.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 42,
+          "last_visible_frame": 619,
+          "reemergence_frame": 639,
+          "last_visible_box": [
+            253.0,
+            488.0,
+            20.0,
+            63.0
+          ],
+          "reemergence_box": [
+            263.0,
+            525.0,
+            24.0,
+            58.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 45,
+          "last_visible_frame": 258,
+          "reemergence_frame": 267,
+          "last_visible_box": [
+            1250.0,
+            517.0,
+            24.0,
+            75.0
+          ],
+          "reemergence_box": [
+            1312.0,
+            525.0,
+            30.0,
+            87.0
+          ],
+          "gap_length": 8
+        },
+        {
+          "track_id": 49,
+          "last_visible_frame": 21,
+          "reemergence_frame": 31,
+          "last_visible_box": [
+            829.0,
+            514.0,
+            16.0,
+            46.0
+          ],
+          "reemergence_box": [
+            828.0,
+            538.0,
+            16.0,
+            48.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 52,
+          "last_visible_frame": 273,
+          "reemergence_frame": 287,
+          "last_visible_box": [
+            30.0,
+            606.0,
+            31.0,
+            100.0
+          ],
+          "reemergence_box": [
+            55.0,
+            616.0,
+            40.0,
+            111.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 52,
+          "last_visible_frame": 287,
+          "reemergence_frame": 307,
+          "last_visible_box": [
+            55.0,
+            616.0,
+            40.0,
+            111.0
+          ],
+          "reemergence_box": [
+            62.0,
+            639.0,
+            46.0,
+            120.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 52,
+          "last_visible_frame": 307,
+          "reemergence_frame": 337,
+          "last_visible_box": [
+            62.0,
+            639.0,
+            46.0,
+            120.0
+          ],
+          "reemergence_box": [
+            -20.0,
+            648.0,
+            51.0,
+            141.0
+          ],
+          "gap_length": 29
+        },
+        {
+          "track_id": 60,
+          "last_visible_frame": 72,
+          "reemergence_frame": 79,
+          "last_visible_box": [
+            1588.0,
+            510.0,
+            20.0,
+            59.0
+          ],
+          "reemergence_box": [
+            1567.0,
+            510.0,
+            23.0,
+            59.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 60,
+          "last_visible_frame": 79,
+          "reemergence_frame": 111,
+          "last_visible_box": [
+            1567.0,
+            510.0,
+            23.0,
+            59.0
+          ],
+          "reemergence_box": [
+            1436.0,
+            523.0,
+            23.0,
+            61.0
+          ],
+          "gap_length": 31
+        },
+        {
+          "track_id": 63,
+          "last_visible_frame": 38,
+          "reemergence_frame": 46,
+          "last_visible_box": [
+            1594.0,
+            505.0,
+            23.0,
+            49.0
+          ],
+          "reemergence_box": [
+            1602.0,
+            514.0,
+            23.0,
+            49.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 67,
+          "last_visible_frame": 54,
+          "reemergence_frame": 65,
+          "last_visible_box": [
+            1388.0,
+            511.0,
+            21.0,
+            45.0
+          ],
+          "reemergence_box": [
+            1382.0,
+            501.0,
+            23.0,
+            52.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 68,
+          "last_visible_frame": 357,
+          "reemergence_frame": 423,
+          "last_visible_box": [
+            1505.0,
+            551.0,
+            35.0,
+            88.0
+          ],
+          "reemergence_box": [
+            1160.0,
+            547.0,
+            45.0,
+            127.0
+          ],
+          "gap_length": 65
+        },
+        {
+          "track_id": 70,
+          "last_visible_frame": 369,
+          "reemergence_frame": 375,
+          "last_visible_box": [
+            1507.0,
+            576.0,
+            31.0,
+            95.0
+          ],
+          "reemergence_box": [
+            1511.0,
+            574.0,
+            37.0,
+            100.0
+          ],
+          "gap_length": 5
+        },
+        {
+          "track_id": 72,
+          "last_visible_frame": 98,
+          "reemergence_frame": 122,
+          "last_visible_box": [
+            1371.0,
+            522.0,
+            22.0,
+            54.0
+          ],
+          "reemergence_box": [
+            1276.0,
+            522.0,
+            23.0,
+            52.0
+          ],
+          "gap_length": 23
+        },
+        {
+          "track_id": 72,
+          "last_visible_frame": 148,
+          "reemergence_frame": 156,
+          "last_visible_box": [
+            1171.0,
+            516.0,
+            21.0,
+            59.0
+          ],
+          "reemergence_box": [
+            1138.0,
+            513.0,
+            22.0,
+            61.0
+          ],
+          "gap_length": 7
+        },
+        {
+          "track_id": 73,
+          "last_visible_frame": 81,
+          "reemergence_frame": 107,
+          "last_visible_box": [
+            1407.0,
+            514.0,
+            23.0,
+            51.0
+          ],
+          "reemergence_box": [
+            1320.0,
+            529.0,
+            26.0,
+            55.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 74,
+          "last_visible_frame": 342,
+          "reemergence_frame": 357,
+          "last_visible_box": [
+            1336.0,
+            503.0,
+            23.0,
+            55.0
+          ],
+          "reemergence_box": [
+            1358.0,
+            528.0,
+            21.0,
+            57.0
+          ],
+          "gap_length": 14
+        },
+        {
+          "track_id": 133,
+          "last_visible_frame": 238,
+          "reemergence_frame": 257,
+          "last_visible_box": [
+            1066.0,
+            546.0,
+            33.0,
+            82.0
+          ],
+          "reemergence_box": [
+            1117.0,
+            544.0,
+            36.0,
+            94.0
+          ],
+          "gap_length": 18
+        },
+        {
+          "track_id": 133,
+          "last_visible_frame": 263,
+          "reemergence_frame": 280,
+          "last_visible_box": [
+            1149.0,
+            547.0,
+            39.0,
+            97.0
+          ],
+          "reemergence_box": [
+            1232.0,
+            558.0,
+            44.0,
+            107.0
+          ],
+          "gap_length": 16
+        },
+        {
+          "track_id": 135,
+          "last_visible_frame": 391,
+          "reemergence_frame": 419,
+          "last_visible_box": [
+            1451.0,
+            711.0,
+            90.0,
+            261.0
+          ],
+          "reemergence_box": [
+            926.0,
+            785.0,
+            117.0,
+            337.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 138,
+          "last_visible_frame": 240,
+          "reemergence_frame": 260,
+          "last_visible_box": [
+            1092.0,
+            533.0,
+            39.0,
+            94.0
+          ],
+          "reemergence_box": [
+            1150.0,
+            532.0,
+            47.0,
+            106.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 340,
+          "reemergence_frame": 354,
+          "last_visible_box": [
+            1495.0,
+            519.0,
+            28.0,
+            89.0
+          ],
+          "reemergence_box": [
+            1526.0,
+            550.0,
+            35.0,
+            91.0
+          ],
+          "gap_length": 13
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 390,
+          "reemergence_frame": 417,
+          "last_visible_box": [
+            1540.0,
+            571.0,
+            33.0,
+            101.0
+          ],
+          "reemergence_box": [
+            1278.0,
+            559.0,
+            37.0,
+            117.0
+          ],
+          "gap_length": 26
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 418,
+          "reemergence_frame": 428,
+          "last_visible_box": [
+            1261.0,
+            558.0,
+            37.0,
+            116.0
+          ],
+          "reemergence_box": [
+            1075.0,
+            552.0,
+            43.0,
+            126.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 441,
+          "reemergence_frame": 451,
+          "last_visible_box": [
+            799.0,
+            571.0,
+            40.0,
+            137.0
+          ],
+          "reemergence_box": [
+            555.0,
+            563.0,
+            39.0,
+            153.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 145,
+          "last_visible_frame": 111,
+          "reemergence_frame": 132,
+          "last_visible_box": [
+            1519.0,
+            523.0,
+            21.0,
+            62.0
+          ],
+          "reemergence_box": [
+            1427.0,
+            523.0,
+            21.0,
+            67.0
+          ],
+          "gap_length": 20
+        },
+        {
+          "track_id": 146,
+          "last_visible_frame": 242,
+          "reemergence_frame": 262,
+          "last_visible_box": [
+            1123.0,
+            531.0,
+            40.0,
+            94.0
+          ],
+          "reemergence_box": [
+            1194.0,
+            527.0,
+            35.0,
+            110.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 147,
+          "last_visible_frame": 305,
+          "reemergence_frame": 341,
+          "last_visible_box": [
+            1377.0,
+            556.0,
+            44.0,
+            104.0
+          ],
+          "reemergence_box": [
+            1419.0,
+            567.0,
+            63.0,
+            177.0
+          ],
+          "gap_length": 35
+        },
+        {
+          "track_id": 150,
+          "last_visible_frame": 143,
+          "reemergence_frame": 161,
+          "last_visible_box": [
+            1280.0,
+            517.0,
+            19.0,
+            62.0
+          ],
+          "reemergence_box": [
+            1185.0,
+            517.0,
+            18.0,
+            61.0
+          ],
+          "gap_length": 17
+        },
+        {
+          "track_id": 152,
+          "last_visible_frame": 154,
+          "reemergence_frame": 180,
+          "last_visible_box": [
+            1246.0,
+            515.0,
+            26.0,
+            64.0
+          ],
+          "reemergence_box": [
+            1131.0,
+            511.0,
+            30.0,
+            65.0
+          ],
+          "gap_length": 25
+        },
+        {
+          "track_id": 153,
+          "last_visible_frame": 332,
+          "reemergence_frame": 339,
+          "last_visible_box": [
+            1440.0,
+            533.0,
+            28.0,
+            67.0
+          ],
+          "reemergence_box": [
+            1444.0,
+            524.0,
+            37.0,
+            73.0
+          ],
+          "gap_length": 6
+        },
+        {
+          "track_id": 156,
+          "last_visible_frame": 85,
+          "reemergence_frame": 96,
+          "last_visible_box": [
+            1573.0,
+            515.0,
+            23.0,
+            52.0
+          ],
+          "reemergence_box": [
+            1538.0,
+            524.0,
+            20.0,
+            54.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 156,
+          "last_visible_frame": 96,
+          "reemergence_frame": 116,
+          "last_visible_box": [
+            1538.0,
+            524.0,
+            20.0,
+            54.0
+          ],
+          "reemergence_box": [
+            1463.0,
+            527.0,
+            20.0,
+            58.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 157,
+          "last_visible_frame": 291,
+          "reemergence_frame": 321,
+          "last_visible_box": [
+            1353.0,
+            540.0,
+            31.0,
+            115.0
+          ],
+          "reemergence_box": [
+            1510.0,
+            578.0,
+            34.0,
+            137.0
+          ],
+          "gap_length": 29
+        },
+        {
+          "track_id": 157,
+          "last_visible_frame": 324,
+          "reemergence_frame": 392,
+          "last_visible_box": [
+            1526.0,
+            577.0,
+            34.0,
+            145.0
+          ],
+          "reemergence_box": [
+            1472.0,
+            694.0,
+            113.0,
+            249.0
+          ],
+          "gap_length": 67
+        },
+        {
+          "track_id": 160,
+          "last_visible_frame": 325,
+          "reemergence_frame": 411,
+          "last_visible_box": [
+            1519.0,
+            559.0,
+            28.0,
+            77.0
+          ],
+          "reemergence_box": [
+            1706.0,
+            613.0,
+            60.0,
+            162.0
+          ],
+          "gap_length": 85
+        },
+        {
+          "track_id": 163,
+          "last_visible_frame": 391,
+          "reemergence_frame": 437,
+          "last_visible_box": [
+            1334.0,
+            562.0,
+            49.0,
+            106.0
+          ],
+          "reemergence_box": [
+            700.0,
+            551.0,
+            48.0,
+            117.0
+          ],
+          "gap_length": 45
+        },
+        {
+          "track_id": 166,
+          "last_visible_frame": 46,
+          "reemergence_frame": 57,
+          "last_visible_box": [
+            1489.0,
+            505.0,
+            19.0,
+            52.0
+          ],
+          "reemergence_box": [
+            1488.0,
+            510.0,
+            19.0,
+            52.0
+          ],
+          "gap_length": 10
+        },
+        {
+          "track_id": 167,
+          "last_visible_frame": 110,
+          "reemergence_frame": 135,
+          "last_visible_box": [
+            1340.0,
+            517.0,
+            22.0,
+            52.0
+          ],
+          "reemergence_box": [
+            1241.0,
+            522.0,
+            24.0,
+            52.0
+          ],
+          "gap_length": 24
+        },
+        {
+          "track_id": 170,
+          "last_visible_frame": 293,
+          "reemergence_frame": 321,
+          "last_visible_box": [
+            1210.0,
+            525.0,
+            21.0,
+            75.0
+          ],
+          "reemergence_box": [
+            1340.0,
+            550.0,
+            24.0,
+            64.0
+          ],
+          "gap_length": 27
+        }
+      ],
+      "val_half": [
+        {
+          "track_id": 42,
+          "last_visible_frame": 619,
+          "reemergence_frame": 639,
+          "last_visible_box": [
+            253.0,
+            488.0,
+            20.0,
+            63.0
+          ],
+          "reemergence_box": [
+            263.0,
+            525.0,
+            24.0,
+            58.0
+          ],
+          "gap_length": 19
+        },
+        {
+          "track_id": 135,
+          "last_visible_frame": 391,
+          "reemergence_frame": 419,
+          "last_visible_box": [
+            1451.0,
+            711.0,
+            90.0,
+            261.0
+          ],
+          "reemergence_box": [
+            926.0,
+            785.0,
+            117.0,
+            337.0
+          ],
+          "gap_length": 27
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 390,
+          "reemergence_frame": 417,
+          "last_visible_box": [
+            1540.0,
+            571.0,
+            33.0,
+            101.0
+          ],
+          "reemergence_box": [
+            1278.0,
+            559.0,
+            37.0,
+            117.0
+          ],
+          "gap_length": 26
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 418,
+          "reemergence_frame": 428,
+          "last_visible_box": [
+            1261.0,
+            558.0,
+            37.0,
+            116.0
+          ],
+          "reemergence_box": [
+            1075.0,
+            552.0,
+            43.0,
+            126.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 142,
+          "last_visible_frame": 441,
+          "reemergence_frame": 451,
+          "last_visible_box": [
+            799.0,
+            571.0,
+            40.0,
+            137.0
+          ],
+          "reemergence_box": [
+            555.0,
+            563.0,
+            39.0,
+            153.0
+          ],
+          "gap_length": 9
+        },
+        {
+          "track_id": 163,
+          "last_visible_frame": 391,
+          "reemergence_frame": 437,
+          "last_visible_box": [
+            1334.0,
+            562.0,
+            49.0,
+            106.0
+          ],
+          "reemergence_box": [
+            700.0,
+            551.0,
+            48.0,
+            117.0
+          ],
+          "gap_length": 45
+        }
+      ]
     }
   },
   "stats_full": {
-    "n_segments": 68.0,
-    "gap_median": 37.0,
-    "gap_p90": 179.60000000000002,
-    "displacement_median_diag": 0.005779600511175,
-    "displacement_p90_diag": 0.05647605364831398
+    "n_segments": 328.0,
+    "gap_median": 25.0,
+    "gap_p90": 97.30000000000001,
+    "displacement_median_diag": 0.025258711979944927,
+    "displacement_p90_diag": 0.11160456750245192
   },
   "stats_val_half": {
-    "n_segments": 41.0,
-    "gap_median": 34.0,
-    "gap_p90": 78.0,
-    "displacement_median_diag": 0.004539455922523694,
-    "displacement_p90_diag": 0.06129778460618387
+    "n_segments": 133.0,
+    "gap_median": 25.0,
+    "gap_p90": 76.8,
+    "displacement_median_diag": 0.019915723005143025,
+    "displacement_p90_diag": 0.09015115638531304
   }
 }

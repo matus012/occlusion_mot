@@ -68,8 +68,12 @@ MOT-format output → TrackEval → results/*.json → gates.
   `Morrison1025/MOT17`). Official site publishes no checksums -> verification is structural
   (scripts/verify_mot17.py: official seqLength/resolution table, frame counts, GT ranges,
   cross-variant gt.txt equality) + SHA256 manifest recorded in results/mot17_verification.json.
-  Baseline stays UNVERIFIED until G0 freezes numerically. Provenance (filled post-download):
-  source=, revision=, manifest_sha256=
+  Baseline stays UNVERIFIED until G0 freezes numerically. Provenance (2026-07-22):
+  source=hf:ling1016/MOT17, revision=024c7873a46e0944ba711726bdfd9fc58bc8c2f1,
+  manifest_sha256=49c218a399e616b9abe40d5d7a24556075483e41b1d90c9dd444580a6a9c2c27.
+  Structural verification PASSED (0 failures, hf-dedup layout). Independent cross-mirror GT
+  check vs Lekim89/MOT17: ALL 7 sequences match=1.0 with clean id bijection
+  (results/mot17_gt_crosscheck.json). Re-hash vs official zip when motchallenge.net returns.
 - **D14 (2026-07-22) Occlusion-segment definition revised after contact with real GT.**
   D7's rule (all gap frames vis < 0.25, anything in [0.25, 0.5) contaminates) yielded 1
   segment on MOT17-02 because MOT GT visibility decays gradually through the 0.25-0.5 band.

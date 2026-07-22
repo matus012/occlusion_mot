@@ -16,18 +16,43 @@
     "status": "ok"
   },
   "MOT17-05": {
-    "status": "ours-missing"
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 3387,
+    "ref_rows": 3387,
+    "status": "ok"
   },
   "MOT17-09": {
-    "status": "ours-missing"
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 5761,
+    "ref_rows": 5761,
+    "status": "ok"
   },
   "MOT17-10": {
-    "status": "ours-missing"
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 8153,
+    "ref_rows": 8153,
+    "status": "ok"
   },
   "MOT17-11": {
-    "status": "ours-missing"
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 4706,
+    "ref_rows": 4706,
+    "status": "ok"
   },
   "MOT17-13": {
-    "status": "ours-missing"
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 5907,
+    "ref_rows": 5907,
+    "status": "ok"
   }
 }
