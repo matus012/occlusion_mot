@@ -1,0 +1,7 @@
+{
+  "a1_pick_retains": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\a1_pick_retains_MOT17-04-FRCNN_t66_gap109.mp4",
+  "a2_pick_retains": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\a2_pick_retains_MOT17-10-FRCNN_t23_gap71.mp4",
+  "b_pick_tracker_failure": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\b_pick_tracker_failure_MOT17-02-FRCNN_t36_gap128.mp4",
+  "c_detector_ceiling": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\c_detector_ceiling_MOT17-02-FRCNN_t68_gap145.mp4",
+  "summary_png": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\summary_retention_grid.png"
+}
