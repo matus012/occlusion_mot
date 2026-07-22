@@ -57,3 +57,12 @@ MOT-format output → TrackEval → results/*.json → gates.
   hidden-state module exists. [User amendment 2026-07-22]
 - **D12 (2026-07-22) Any GitHub remote stays private**; making it public requires explicit user
   approval. [User amendment 2026-07-22]
+- **D13 (2026-07-22) MOT17 mirror fallback.** motchallenge.net down all session. User directive:
+  free reputable mirror allowed after the official-site poller window; verify structure/hashes
+  vs official spec; log source + hashes here; no paid/credential-gated mirrors. Chosen mirror:
+  HF `ling1016/MOT17` (ungated, full 21-dir train layout verified via API; fallback
+  `Morrison1025/MOT17`). Official site publishes no checksums -> verification is structural
+  (scripts/verify_mot17.py: official seqLength/resolution table, frame counts, GT ranges,
+  cross-variant gt.txt equality) + SHA256 manifest recorded in results/mot17_verification.json.
+  Baseline stays UNVERIFIED until G0 freezes numerically. Provenance (filled post-download):
+  source=, revision=, manifest_sha256=
