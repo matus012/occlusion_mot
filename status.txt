@@ -35,10 +35,17 @@ phase 5 state:
 - 5b: CARLA 0.9.15 downloading (tools/, background). Next: feeder API mirroring
   MOTSequence + scenario spec + mock backend; then sim install + >=20 scenarios (G4).
 
+- 5b: feeder DONE for mock (D22): omot.sim scenario templates + MockBackend, 24 scenarios /
+  237 segments rendered + round-tripped (results/carla_feeder_mock.json). CARLA 0.9.15
+  downloaded + extracted (tools/CARLA_0.9.15/WindowsNoEditor). 46 tests green.
+
 next session order:
-1. CARLA feeder skeleton + mock-backend tests (G4 progress, dataset-free)
-2. CARLA sim install + first rendered occlusion scenario with visibility GT
-3. phase 6 prep: re-ID training set extraction from CARLA GT (identity-labeled crops)
-4. amendment decision per D19 standing note ONLY after trained embedder measures out
+1. sim venv: uv venv --python 3.10 .venv-sim && uv pip install carla==0.9.15 (PyPI has
+   win cp310 wheels; the zip ships cp37 only — D22); launch server headless (-RenderOffScreen)
+2. CarlaBackend: subprocess driver rendering the SAME scenario specs; validate projection /
+   visibility agreement vs MockBackend on a shared scenario; real renders -> G4 freeze
+3. phase 6: re-ID training set from sim GT (identity-labeled crops across occlusion events),
+   train embedding (local prototyping -> PERUN for full runs), swap into embed cache,
+   re-grid dev; amendment decision per D19 only after this measures out
 
 blockers: none
