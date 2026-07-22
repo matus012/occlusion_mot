@@ -27,6 +27,26 @@ runloop.ps1               autonomous outer loop (claude -p per iteration, fresh 
 Data flow: video/frames → cached detections (run once) → tracker (baseline | occlusion-aware) →
 MOT-format output → TrackEval → results/*.json → gates.
 
+## Hidden-state module design (phase 4, v1 — geometric, no learned parts)
+Measured failure modes it targets (D16): 26.3% retention (buffer expiry: gap p90 77f > 30f
+buffer; IoU re-match fails after coasting drift), coasting coverage 75%, stay-put-like motion
+(median gap displacement 0.02 diag — occluded pedestrians barely move).
+Design — `OcclusionAwareTracker(ByteTracker)` via 4 protected hooks added to the base
+(no behavior change when unused; verified by byte-identical baseline reruns):
+1. `_classify_lost`: at loss time, mark track `occluded=True` if its box overlaps any other
+   tracked box (IoU >= occl_overlap_thresh) — inter-object occlusion; else normal loss.
+2. `_buffer_for`: occluded tracks live `occl_buffer` frames (default 90) vs 30 baseline.
+3. `_predict_pool`: velocity damping `vel_damping^t` for LOST tracks — interpolates between
+   pure CV coasting and stay-put, matching the measured displacement distribution.
+4. `_recover`: recovery association stage before new-track spawning — unclaimed high dets vs
+   occluded lost tracks, cost = center distance / predicted box scale (gate `recover_gate`),
+   catches re-emergences where IoU is zero after drift but geometry still identifies the track.
+Re-emergence outputs: per-frame coasting boxes of occluded tracks (position while hidden,
+G2 center-err channel); re-emergence time prediction deferred to v2 (time-err sub-gate is
+last-frozen per user amendment). Tuning: grid on dev-half only (occl_buffer, vel_damping,
+recover_gate), objective = G2 retention/center-err/coverage, G1-regression check via
+TrackEval on top candidates; val-half touched exactly once for final numbers.
+
 ## Decisions
 - **D1 (2026-07-22) Fixed-detections design.** Detector inference runs once, cached to
   `data/cache/detections/`. All tracker comparisons use identical cached detections —
@@ -85,6 +105,10 @@ MOT-format output → TrackEval → results/*.json → gates.
   IDF1 58.28, MOTA 45.23, IDsw 359. fuse_score measured WORSE with COCO scores
   (IDF1 -0.3, IDsw +64) -> TrackerConfig.fuse_score default False. All runs deterministic
   across repeats.
+- **D17 (2026-07-22) Repo renamed occulsion_mot -> occlusion_mot** (typo fix; rename was
+  already applied on GitHub when checked — old URL redirects). Local remote updated to
+  https://github.com/matus012/occlusion_mot.git. Visibility re-confirmed PUBLIC and flagged
+  to user per instruction (matches the D12 approval; user decides any change themselves).
 - **D16 (2026-07-22) G2 position/retention thresholds frozen from measured baseline floor**
   (results/baseline_hidden.json, 133 val-half segments): baseline id_retention 0.263,
   coasting center-err median 0.0155 diag at 75.2% coverage, time-err median 25.5 frames.
