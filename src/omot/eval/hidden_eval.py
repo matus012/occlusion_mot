@@ -26,7 +26,6 @@ from dataclasses import dataclass
 import numpy as np
 
 from omot.eval.occlusion import OcclusionSegment
-from omot.io.mot_format import COL
 from omot.track.bytetrack import iou_matrix
 
 logger = logging.getLogger(__name__)
@@ -67,7 +66,9 @@ def evaluate_segments(
     match_iou: float = 0.5,
 ) -> list[SegmentResult]:
     """Evaluate one sequence's segments against tracker outputs."""
-    active = np.asarray(active, dtype=np.float64).reshape(-1, active.shape[-1] if active.size else 6)
+    active = np.asarray(active, dtype=np.float64).reshape(
+        -1, active.shape[-1] if active.size else 6
+    )
     coasting = np.asarray(coasting, dtype=np.float64).reshape(
         -1, coasting.shape[-1] if coasting.size else 6
     )
