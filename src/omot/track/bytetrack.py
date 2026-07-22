@@ -160,6 +160,9 @@ class ByteTracker:
         self.lost: list[Track] = []
         self.frame_id = 0
         self._next_id = 0
+        # Kalman-coasted predictions of currently-lost tracks for the frame last updated:
+        # (M, 6) [x, y, w, h, 0.0, track_id]. The G2 baseline evaluates these (hidden_eval).
+        self.coasting: np.ndarray = np.zeros((0, 6))
 
     def _new_id(self) -> int:
         self._next_id += 1
@@ -258,6 +261,10 @@ class ByteTracker:
         seen: set[int] = set()
         self.tracked = [t for t in self.tracked if not (id(t) in seen or seen.add(id(t)))]
         self.lost = surviving_lost + lost_now
+
+        self.coasting = np.array(
+            [np.r_[t.tlwh, 0.0, float(t.track_id)] for t in self.lost]
+        ).reshape(-1, 6)
 
         out = [
             np.r_[t.tlwh, t.score, float(t.track_id)]
