@@ -37,7 +37,9 @@ MOT-format output → TrackEval → results/*.json → gates.
   identical detections. Optional later: MOT-finetune a detector on PERUN.
 - **D3 (2026-07-22) Own ByteTrack implementation** in src/omot/track (Kalman + two-stage IoU,
   no learned parts) because the hidden-state module extends tracker internals. Cross-checked vs
-  reference impl (boxmot or supervision) for G0.
+  reference impl (supervision) for G0. NOTE: supervision deprecates ByteTrack at v0.30 —
+  the exact pin supervision==0.29.1 in requirements.txt is what keeps the G0 reference
+  reproducible; do not bump it.
 - **D4 (2026-07-22) Eval protocol** = MOT17 train half-split (first half dev / second half val,
   ByteTrack ablation protocol). HOTA/IDF1/IDsw via TrackEval; motmetrics cross-check.
 - **D5 (2026-07-22) numpy pinned 1.26.4** — TrackEval unmaintained, breaks on numpy 2.x.
@@ -55,8 +57,10 @@ MOT-format output → TrackEval → results/*.json → gates.
 - **D11 (2026-07-22) G2 freeze order**: reemergence position error + id_retention freeze first;
   reemergence_time_err_med is the LAST sub-gate to freeze and never hard-fails before the
   hidden-state module exists. [User amendment 2026-07-22]
-- **D12 (2026-07-22) Any GitHub remote stays private**; making it public requires explicit user
-  approval. [User amendment 2026-07-22]
+- **D12 (2026-07-22, updated) GitHub remote.** Original rule: remotes stay private without
+  explicit approval. 2026-07-22: user created public repo matus012/occulsion_mot and gave
+  one-line approval to push publicly (AGPL-3.0 already in place). Remote `origin` set; repo
+  is PUBLIC by explicit user approval.
 - **D13 (2026-07-22) MOT17 mirror fallback.** motchallenge.net down all session. User directive:
   free reputable mirror allowed after the official-site poller window; verify structure/hashes
   vs official spec; log source + hashes here; no paid/credential-gated mirrors. Chosen mirror:
