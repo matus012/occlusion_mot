@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ML / data
+data/
+logs/
+runs/
+weights/
+*.pth
+*.pt
+*.tar
+*.onnx
+*.engine
+*.npz
+!tests/fixtures/**/*.npz
+
+# results: keep metric JSONs, ignore raw dumps
+results/**/raw/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# local
+HARD_FAIL
+gate_report.txt

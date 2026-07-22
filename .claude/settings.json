@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd /c \".venv\\Scripts\\python.exe scripts\\hook_postedit.py\"",
+            "timeout": 480
+          }
+        ]
+      }
+    ]
+  }
+}

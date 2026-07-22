@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omot"
+version = "0.1.0"
+description = "Occlusion-aware multi-object tracking with hidden-agent state prediction (P1) and CARLA occlusion-scenario feeder (P2)"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-only" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["data", "logs", "results"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

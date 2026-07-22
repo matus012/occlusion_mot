@@ -1,0 +1,82 @@
+# Quality gates — scripts/check_gates.py is the executable interpretation.
+#
+# Semantics:
+# - A criterion is {min: x} or {max: x} against a key in the gate's results JSON,
+#   or {rel_min/rel_max: {source: <file>:<key>, offset: <f>}} resolved at check time.
+# - frozen: false + missing results  -> gate reports PENDING (loop continues, NEVER hard-fails).
+# - frozen: false + results present -> gate is evaluated advisorily; freezing = setting frozen: true
+#   and replacing provisional numbers with measured ones (commit that change with message "Gx: freeze").
+# - Freeze protocol: G0 freezes FIRST; G1/G2 relative thresholds become meaningful only after G0.
+# - AMENDMENT (2026-07-22): G2.reemergence_time_err_med carries freeze_order: last — it must NOT
+#   hard-fail (or count against gate passage) before the hidden-state module exists and it is
+#   explicitly frozen. G2 position error and id_retention freeze first.
+# - Hard failure: only via a HARD_FAIL marker file in repo root (check_gates exits 2).
+version: 1
+
+gates:
+  G0_repro:
+    description: >
+      Our ByteTrack matches a reference ByteTrack implementation on identical cached
+      detections, MOT17 val half-split. Reproduction = implementation equivalence,
+      not paper-number matching (detector differs from paper; see context.md D2).
+    frozen: false
+    results:
+      ours: results/baseline_ours.json
+      reference: results/baseline_reference.json
+    criteria:
+      abs_delta_hota: {max: 1.0, between: [ours.hota, reference.hota]}
+      abs_delta_idf1: {max: 1.0, between: [ours.idf1, reference.idf1]}
+      hota_floor: {min: 45.0, key: ours.hota, provisional: true,
+                   note: sanity floor; re-frozen to measured baseline at G0 freeze}
+
+  G1_parity:
+    description: Occlusion-aware tracker vs frozen baseline, identical cached detections.
+    frozen: false
+    depends_on: G0_repro
+    results:
+      ours: results/tracker_ours.json
+      baseline: results/baseline_ours.json
+    criteria:
+      hota: {rel_min: {source: "results/baseline_ours.json:hota", offset: -0.5}, key: ours.hota}
+      idf1: {rel_min: {source: "results/baseline_ours.json:idf1", offset: -0.5}, key: ours.idf1}
+      idsw: {rel_max: {source: "results/baseline_ours.json:idsw", offset: 0}, key: ours.idsw}
+
+  G2_hidden:
+    description: >
+      Hidden-state prediction on occlusion segments. Segment def: GT visibility < 0.25
+      for >= 5 consecutive frames, then reappears with visibility >= 0.5.
+    frozen: false
+    depends_on: G0_repro
+    results:
+      hidden: results/hidden_state.json
+    criteria:
+      reemergence_center_err_med:
+        {max: 0.04, key: hidden.reemergence_center_err_med, unit: fraction_of_image_diagonal,
+         freeze_order: 1, provisional: true}
+      id_retention:
+        {min: 0.60, key: hidden.id_retention, freeze_order: 1, provisional: true,
+         note: re-frozen after baseline retention measured in phase occlusion-segments}
+      reemergence_time_err_med:
+        {max: 5, key: hidden.reemergence_time_err_med, unit: frames,
+         freeze_order: last, provisional: true,
+         note: LAST sub-gate to freeze — never hard-fails / never blocks before hidden-state module exists}
+      n_segments:
+        {min: 100, key: hidden.n_segments, note: eval must cover >= 100 occlusion segments}
+
+  G3_quality:
+    description: Code quality — enforced live by check_gates (runs pytest + ruff + coverage).
+    frozen: true
+    criteria:
+      pytest: pass
+      ruff: clean
+      coverage_core: {min: 0.80, paths: [src/omot]}
+
+  G4_carla:
+    description: CARLA occlusion-scenario feeder (P2).
+    frozen: true
+    results:
+      feeder: results/carla_feeder.json
+    criteria:
+      n_scenarios: {min: 20, key: feeder.n_scenarios}
+      has_visibility_gt: {equals: true, key: feeder.has_visibility_gt}
+      demo_runs: {equals: true, key: feeder.demo_runs}

@@ -1,0 +1,17 @@
+phase: 1-eval-harness
+updated: 2026-07-22 (session 1)
+
+done:
+- Phase 0 scaffold: git init (main), .venv (py3.11/uv), governance files, gates.yaml,
+  runloop.ps1 + check_gates.py, post-edit hooks, coder/reviewer/eval-runner agents
+
+in-progress:
+- deps installing in background (torch cu126, ultralytics, motmetrics, TrackEval@12c8791b)
+- Phase 1: src/omot skeleton + synthetic test suite + demo_synthetic.py
+
+next:
+- pytest green on synthetic suite; run demo_synthetic end-to-end
+- start MOT17 download (background, ~5.5GB)
+- Phase 2: detection caching + baseline ByteTrack + reference cross-check -> freeze G0
+
+blockers: none
