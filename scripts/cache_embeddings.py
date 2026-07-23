@@ -28,14 +28,21 @@ def main() -> int:
     ap.add_argument("--model", default="yolo11x")
     ap.add_argument("--device", default=None)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--weights", type=Path, default=None,
+                    help="train_reid.py checkpoint; default = ImageNet trunk")
+    ap.add_argument("--tag", default="imagenet",
+                    help="embedder tag baked into cache filenames")
     args = ap.parse_args()
+    assert (args.weights is None) == (args.tag == "imagenet"), \
+        "--weights requires a non-imagenet --tag (and vice versa)"
 
     seqs = load_split(args.data_root, "train", detector="FRCNN")
     for seq in seqs:
         det_cache = cache_path(args.cache_dir, seq.name, args.model)
         if not det_cache.exists():
             raise FileNotFoundError(f"detection cache missing: {det_cache}")
-        cache_embeddings(seq, det_cache, args.cache_dir, device=args.device, seed=args.seed)
+        cache_embeddings(seq, det_cache, args.cache_dir, device=args.device,
+                         seed=args.seed, weights=args.weights, embedder_tag=args.tag)
     logger.info("all %d sequences embedded", len(seqs))
     return 0
 

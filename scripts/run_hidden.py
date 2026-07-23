@@ -80,6 +80,8 @@ def main() -> int:
                     help="cos-dist veto for lost-track stage-1 matches; negative disables")
     ap.add_argument("--app-gate-recover", type=float, default=-1.0,
                     help="cos-dist veto for recovery matches; negative disables")
+    ap.add_argument("--embedder-tag", default="imagenet",
+                    help="which embedding cache to consume (see cache_embeddings --tag)")
     ap.add_argument("--tag", default="hidden")
     ap.add_argument("--skip-trackeval", action="store_true")
     ap.add_argument("--canonical", action="store_true",
@@ -124,7 +126,7 @@ def main() -> int:
         dets = load_cached_detections(cache_path(args.cache_dir, seq.name, args.model))
         embs = None
         if use_app:
-            epath = embed_cache_path(args.cache_dir, seq.name, args.model)
+            epath = embed_cache_path(args.cache_dir, seq.name, args.model, args.embedder_tag)
             if not epath.exists():
                 raise FileNotFoundError(f"embedding cache missing: {epath}")
             embs = load_cached_embeddings(epath)
