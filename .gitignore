@@ -41,6 +41,11 @@ gate_report.txt
 
 viz/*.mp4
 
+# D39 demo package: MOT17-derived clips stay untracked (dataset-derived, D37); the
+# CARLA-only demo clip is synthetic content and IS committable (negated below).
+demo/clips/
+!demo/s5_carla.mp4
+
 tools/
 
 progress.txt

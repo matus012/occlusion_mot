@@ -366,6 +366,22 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   low-vis crops to the occluded-query protocol — survives: the [0.1,0.5) band is fully
   retained; only sliver crops are dropped). NOTE: occ_rank1 numbers under the new
   bounds are NOT comparable to pre-D38 values (protocol refinement).
+- **D39 (2026-07-23) Demo package [user directive], built + cold-read reviewed.**
+  demo/ guided tour S0-S8 (README.md) for technical colleagues: problem teaser ->
+  baseline failure -> geometric coasting -> ImageNet veto -> trained embedder (incl.
+  paired-test honesty: p=0.26 n.s.) -> CARLA data engine -> detector arm (train-on-dev
+  caveat burned into the clip itself) -> scaling story -> gate scoreboard. Renderer:
+  scripts/render_demo.py (segment auto-pick by legibility x outcome pattern; 0.5x
+  slow-mo through the occlusion window; legend strip; hero.mp4 = S1->S4 same segment
+  MOT17-09:t10:f174-207 + CARLA tail). TWO RULE CHANGES, precedent-setting:
+  (a) license-guard PNG allowlist extended to demo/ (CARLA-derived teaser + blueprint
+  grid are committable; crops_* still banned everywhere); (b) .gitignore negation
+  !demo/s5_carla.mp4 under the global *.mp4 block — CARLA-only renders are synthetic
+  content, committable per D37; ALL MOT17-derived clips live in gitignored
+  demo/clips/ with a regeneration one-liner in the README. Verified: every README
+  path exists, numbers cross-checked to results/*.json by the cold-read reviewer;
+  S8 scoreboard pinned to the conv app0.45 config. PC crash mid-review-fix
+  2026-07-23: working tree survived intact; downloads resumed from HF cache.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

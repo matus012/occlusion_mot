@@ -48,9 +48,10 @@ def test_no_tracked_binary_blobs_outside_fixtures() -> None:
 
 
 def test_tracked_pngs_are_plots_only() -> None:
-    """PNGs are committable only as plots under viz/, never as crop grids."""
+    """PNGs are committable only as plots under viz/ or demo/ (D39 demo package —
+    CARLA-derived teaser/blueprint-grid PNGs), never as MOT/dataset crop grids."""
     pngs = [f for f in tracked_files() if f.lower().endswith(".png")]
-    outside_viz = [f for f in pngs if not f.startswith("viz/")]
-    assert not outside_viz, f"tracked PNGs outside viz/: {outside_viz}"
+    outside_viz = [f for f in pngs if not (f.startswith("viz/") or f.startswith("demo/"))]
+    assert not outside_viz, f"tracked PNGs outside viz/ or demo/: {outside_viz}"
     crop_named = [f for f in pngs if Path(f).name.startswith("crops_")]
     assert not crop_named, f"dataset-derived crop grids tracked: {crop_named}"
