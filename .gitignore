@@ -44,3 +44,4 @@ viz/*.mp4
 tools/
 
 progress.txt
+results/scaling_study.log

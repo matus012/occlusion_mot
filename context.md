@@ -273,6 +273,17 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   detector moves the CEILING, the embedder moves retention WITHIN scope. Artifacts:
   results/hidden_dev_ftdet_{geom,conv_app45}.json, viz/detector_arm_dev.png,
   checkpoint data/models/det_finetune/y11s_proto (gitignored).
+- **D32 (2026-07-23) L6: identity-scaling runner built + smoke-validated; LOCAL-MAX
+  queue complete.** scaling_study.py (nested identity subsets via seeded-shuffle
+  prefix; crash-safe incremental resume; fixed yolo11x detections, dev only). Smoke
+  (3 epochs, fractions 0.25/1.0): 76 ids -> assoc 0.526 / occ-rank1 0.852; 305 ids ->
+  assoc 0.567 / 0.891 (identical denominator n=97). Identity count moves tracker-level
+  assoc even at 3 epochs (+4.1pt for 4x ids) — supports D29's claim that identities,
+  not epochs, are the binding constraint; full 4-fraction 40-epoch curve is cheap on
+  PERUN and sizes the required identity pool. L1-L6 all DONE. Remaining queue (D26):
+  PERUN embedder training + 3-arm ablation, detector workstream at scale, D18 val
+  request (canonical val + null-config run + taxonomy report + G2a-paired), phase 7
+  demo. Artifacts: results/scaling_study.json, viz/scaling_study.png.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
