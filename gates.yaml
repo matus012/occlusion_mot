@@ -53,19 +53,29 @@ gates:
     depends_on: G0_repro
     results:
       hidden: results/hidden_state.json
+    # D26 (2026-07-23): retention gate SPLIT + coverage made conditional. Val-time
+    # STANDING REQUIREMENT: report the failure taxonomy (pre_match_rate, oracle_ceiling)
+    # alongside metrics so amendment premises are verifiable (aggregate emits them).
     criteria:
       reemergence_center_err_med:
         {max: 0.015, key: hidden.reemergence_center_err_med, unit: fraction_of_image_diagonal,
          freeze_order: 1,
          note: FROZEN 2026-07-22 (D16) — beats baseline coasting median 0.0155 AND the
                trivial stay-put predictor (median gap displacement 0.020)}
-      center_err_coverage:
-        {min: 0.90, key: hidden.center_err_coverage, freeze_order: 1,
-         note: FROZEN 2026-07-22 (D16) — module must PREDICT on >=90% of segments
-               (baseline coasting covers only 75.2%); blocks cherry-picking easy segments}
+      cov_prematched:
+        {min: 0.90, key: hidden.cov_prematched, freeze_order: 1,
+         note: AMENDED 2026-07-23 (D26) — definitional repair of D16 coverage (which was
+               arithmetically capped by pre_match_rate 0.768); conditional on pre-matched
+               segments; functions as a regression floor on val (dev currently 0.914)}
+      id_retention_assoc:
+        {min: 0.45, key: hidden.id_retention_assoc, freeze_order: 1,
+         note: G2a AMENDED 2026-07-23 (D26) — association-scope retention (pre-matched
+               AND post-detectable segments); measures the module, not the detector}
       id_retention:
-        {min: 0.55, key: hidden.id_retention, freeze_order: 1,
-         note: FROZEN 2026-07-22 (D16) — 2.1x the measured baseline retention 0.263}
+        {min: 0.55, key: hidden.id_retention, freeze_order: last, provisional: true,
+         note: G2b RETAINED 2026-07-23 (D26) — end-to-end retention, CONTINGENT on the
+               detector-upgrade workstream (MOT/CARLA-finetuned detector on PERUN raising
+               the oracle ceiling); must not hard-fail before that workstream lands}
       reemergence_time_err_med:
         {max: 5, key: hidden.reemergence_time_err_med, unit: frames,
          freeze_order: last, provisional: true,

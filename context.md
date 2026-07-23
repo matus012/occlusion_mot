@@ -183,6 +183,17 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   raises the ceiling itself; anticipated in D2); (b) redefine coverage as conditional on
   pre-matched segments, threshold 0.90 (definitional fix of an impossible criterion, not
   a weakening — unconditional 0.90 > pre-match ceiling 0.768).
+- **D26 (2026-07-23) G2 amendment DECIDED [user].** (1) Coverage: conditional on
+  pre-matched segments, >= 0.90 — logged explicitly as a definitional repair of an
+  impossible criterion (D16 error acknowledged: unconditional coverage was capped by
+  pre_match_rate); functions as a regression floor on val. (2) Retention SPLIT:
+  G2a association-scope >= 0.45 (amended; measures the module) / G2b end-to-end >= 0.55
+  RETAINED, contingent on the detector-upgrade workstream (option b: MOT/CARLA-finetuned
+  detector on PERUN, raising the oracle ceiling itself). (3) STANDING REQUIREMENT: at
+  val time, compute and report the same failure taxonomy (pre_match_rate, oracle ceiling)
+  on val alongside metrics so amendment premises are verifiable — aggregate() now emits
+  these automatically. (4) Queue unchanged: PERUN embedder training + 3-arm ablation ->
+  detector workstream -> D18 val-run request.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

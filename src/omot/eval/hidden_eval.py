@@ -115,15 +115,34 @@ def evaluate_segments(
 
 
 def aggregate(results: list[SegmentResult]) -> dict[str, float | int]:
-    """Aggregate to the gates.yaml G2 schema."""
+    """Aggregate to the gates.yaml G2 schema (incl. D26 split-gate metrics).
+
+    - id_retention          end-to-end over ALL segments (G2b; detector-capped)
+    - id_retention_assoc    association scope: segments where the tracker had the target
+                            pre-gap AND a detection matched GT at re-emergence (G2a)
+    - cov_prematched        prediction coverage conditional on pre-matched segments
+                            (D26 definitional repair: unconditional coverage is capped
+                            by pre_match_rate)
+    Taxonomy fields (pre_match_rate, oracle_ceiling) ship with every aggregate so the
+    D26 val-time guard is automatic.
+    """
     n = len(results)
     center = [r.center_err for r in results if r.center_err is not None]
     time_e = [r.time_err for r in results if r.time_err is not None]
+    n_pre = sum(r.pre_id is not None for r in results)
+    assoc = [r for r in results if r.pre_id is not None and r.post_id is not None]
+    n_retained = sum(r.id_retained for r in results)
     out: dict[str, float | int] = {
         "n_segments": n,
-        "id_retention": float(np.mean([r.id_retained for r in results])) if n else 0.0,
-        "pre_match_rate": float(np.mean([r.pre_id is not None for r in results])) if n else 0.0,
+        "id_retention": n_retained / n if n else 0.0,
+        "id_retention_assoc": (
+            sum(r.id_retained for r in assoc) / len(assoc) if assoc else 0.0
+        ),
+        "n_assoc_scope": len(assoc),
+        "pre_match_rate": n_pre / n if n else 0.0,
+        "oracle_ceiling": len(assoc) / n if n else 0.0,  # max achievable id_retention
         "center_err_coverage": len(center) / n if n else 0.0,
+        "cov_prematched": len(center) / n_pre if n_pre else 0.0,
         "time_err_coverage": len(time_e) / n if n else 0.0,
     }
     out["reemergence_center_err_med"] = float(np.median(center)) if center else float("nan")
