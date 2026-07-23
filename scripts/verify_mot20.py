@@ -45,9 +45,10 @@ MOT20_SPEC: dict[str, tuple[int, int, int]] = {
     "MOT20-03": (2405, 1173, 880),
     "MOT20-05": (3315, 1654, 1080),
 }
-# MOTChallenge annotation classes 1-12 (1=pedestrian ... 12=reflection); anything outside
-# this range cannot come from a genuine MOTChallenge gt.txt.
-ALLOWED_CLASSES = set(range(1, 13))
+# MOTChallenge annotation classes: 1-12 (1=pedestrian ... 12=reflection) plus MOT20's
+# class 13 "crowd" (non-evaluation regions; verified conf-flag 0 on all 2489 such rows
+# in MOT20-03). Anything outside 1-13 cannot come from a genuine MOT20 gt.txt.
+ALLOWED_CLASSES = set(range(1, 14))
 
 
 def sha256_file(path: Path) -> str:
@@ -130,7 +131,7 @@ def verify(
                 if bad_classes:
                     seq_failures.append(
                         f"{name}: gt class column has out-of-spec values {bad_classes} "
-                        f"(allowed 1-12)"
+                        f"(allowed 1-13)"
                     )
                 vis = gt[:, COL.VIS]
                 vis_ok = bool(vis.min() >= 0.0 and vis.max() <= 1.0)

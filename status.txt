@@ -102,10 +102,11 @@ A/B/C/D in mission.md (P2 claim = D>C, >=3 seeds); integration tooling committed
 (072141b). D38 split-policy correction APPLIED pre-extraction: 80/20 manifest-pinned
 MOT20 split, disjointness guard test (G3-enforced), vis bounds query [0.10,0.50) /
 gallery >=0.60 (from MOT20 vis distribution; occ_rank1 not comparable pre/post).
-MOT20 download ~5GB in progress (PC crash 2026-07-23 interrupted at ~45%; resumed
-from HF cache — 01/02 complete, 03 partial, 05 + Market pending); then verify ->
-extract -> index -> pool report -> guards -> occluded-query check -> labeled sanity
-run -> PERUN doc v2 (user reviews before submission approval).
+D37/D38 CHAIN COMPLETE (D40, 2026-07-24): MOT20 + Market verified/extracted/indexed
+(provenance + manifest pinned). Pool: 3,520 train ids / 509k crops (11.5x); occluded-
+query eval 506 ids / 422 answerable under D38 bounds. Guards 8/8. Sanity run (labeled,
+1 seed, 3 ep): no collapse, metrics monotone. perun_sweep_v2.md DELIVERED — awaiting
+user review before any PERUN submission.
 D39 demo package DONE (interleaved per directive): demo/README.md tour S0-S8 +
 5 clips + hero.mp4 + CARLA teaser/blueprint grid; MOT17-derived clips gitignored
 (demo/clips/), CARLA content committed; cold-read reviewed.
@@ -113,8 +114,8 @@ D39 demo package DONE (interleaved per directive): demo/README.md tour S0-S8 +
 Next (D26 queue): PERUN 4-arm ablation per doc v2 (blocked: PERUN access + doc
 approval), detector workstream at scale, D18 val request per val_manifest.md,
 phase 7 demo.
-blockers: PERUN access (user); D18 val approval (user); crops-PNG history-purge
-approval (user, optional)
+blockers: perun_sweep_v2.md review (user); PERUN access (user); D18 val approval
+(user); crops-PNG history-purge approval (user, optional)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 

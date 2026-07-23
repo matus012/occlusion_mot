@@ -1,0 +1,65 @@
+{
+  "source": "hf:Lekim89/MOT20",
+  "revision": "5fcaa0ef66906b63195a44672ec260d033545ef4",
+  "data_root": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\data\\MOT20",
+  "passed": true,
+  "n_failures": 0,
+  "per_seq": {
+    "MOT20-01": {
+      "seqinfo_ok": true,
+      "img_count_ok": true,
+      "gt_exists": true,
+      "frame_range_ok": true,
+      "class_ok": true,
+      "vis_ok": true,
+      "n_imgs": 429,
+      "n_gt_rows": 26647,
+      "passed": true
+    },
+    "MOT20-02": {
+      "seqinfo_ok": true,
+      "img_count_ok": true,
+      "gt_exists": true,
+      "frame_range_ok": true,
+      "class_ok": true,
+      "vis_ok": true,
+      "n_imgs": 2782,
+      "n_gt_rows": 202215,
+      "passed": true
+    },
+    "MOT20-03": {
+      "seqinfo_ok": true,
+      "img_count_ok": true,
+      "gt_exists": true,
+      "frame_range_ok": true,
+      "class_ok": true,
+      "vis_ok": true,
+      "n_imgs": 2405,
+      "n_gt_rows": 356728,
+      "passed": true
+    },
+    "MOT20-05": {
+      "seqinfo_ok": true,
+      "img_count_ok": true,
+      "gt_exists": true,
+      "frame_range_ok": true,
+      "class_ok": true,
+      "vis_ok": true,
+      "n_imgs": 3315,
+      "n_gt_rows": 751330,
+      "passed": true
+    }
+  },
+  "failures": [],
+  "manifest_sha256": "530c67c3d0cc38496830d2a628770998a1b67b02e366dcd0226ada2463773057",
+  "file_sha256": {
+    "MOT20-01/seqinfo.ini": "5850098d845d1a92c4b8649ee7ab4e2b7ef2b0a2104eb855cdef9a8e93da0a5e",
+    "MOT20-01/gt.txt": "89fd0196d67a5eb6011a470dc2a49b02255403b49e8848031cdf99add8a36d9c",
+    "MOT20-02/seqinfo.ini": "e94c47840038e71e84613eeda0a9635728de1e488b56c5b05b16f68ff7305a44",
+    "MOT20-02/gt.txt": "10abe457a67d9919a9cbfe821d3619c8e6174c2b0ed7ecf4cb68c1fd6cad58de",
+    "MOT20-03/seqinfo.ini": "fb62095bce77a2e422e258d76266d767c7ea04816e8462f631b9b65ec2a64b5e",
+    "MOT20-03/gt.txt": "350fbc950c6dc00e3cc8a71358b3d0b8958906c8be57a7bf5fb9db34bff70f28",
+    "MOT20-05/seqinfo.ini": "1834b94212c439addf4662acba986e80f63f1b2a22f4f92ef7181ee2be47088e",
+    "MOT20-05/gt.txt": "6da1ad9a528c39203c181aa93fc492d194358c50856695a7fe17656c928f5c17"
+  }
+}

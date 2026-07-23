@@ -382,6 +382,26 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   path exists, numbers cross-checked to results/*.json by the cold-read reviewer;
   S8 scoreboard pinned to the conv app0.45 config. PC crash mid-review-fix
   2026-07-23: working tree survived intact; downloads resumed from HF cache.
+- **D40 (2026-07-24) D37/D38 integration COMPLETE + PERUN sweep doc v2 delivered.**
+  (1) MOT20 verified vs official spec (429/2782/2405/3315 frames, resolutions, GT
+  ranges) after one verifier fix: MOT20 legitimately adds GT class 13 "crowd"
+  (2,489 rows in MOT20-03, ALL conf-flag 0 = non-evaluation) — ALLOWED_CLASSES
+  widened to 1-13. Provenance: hf:Lekim89/MOT20 @ 5fcaa0ef (same author as the D13
+  MOT17 cross-check mirror), manifest sha256 530c67c3d0cc...3057
+  (results/mot20_verification.json). Market: hf:aveocr @ b5e654a4, canonical file
+  counts PASSED; 1,500 usable ids after junk exclusion (0000/-1).
+  (2) POOL REPORT: train 3,520 ids / 509k crops (mot17_dev 269, sim 36, mot20 1,715,
+  market1501 1,500) — 11.5x pre-integration; occluded-query eval 506 vis-tagged ids
+  (66/9/431), 422 answerable under D38 bounds (was 58). Disjointness + license guards
+  8/8 green incl. mot20 manifest re-hash. (3) SANITY RUN (labeled: single seed, 3 ep,
+  NO tracker-level claims): combined pool trains without collapse — loss 8.46->7.81,
+  occ-rank1 0.239->0.290->0.329 monotone. Absolute occ-rank1 NOT comparable to
+  pre-D38 values (harder bounds + 6.7x eval identities; a 3,520-class CE head gets
+  only 600 steps in 3 ep). (4) perun_sweep_v2.md delivered: arms A-D, log-scale pools
+  {300, 1k, 2k, 3.52k} x 3 seeds, detector arm at scale, <= 25 H200h (ceiling 40),
+  pre-registered decision rules incl. D>C verdict criteria and the D35 val-manifest
+  interaction (PERUN winner at val requires user-approved manifest amendment).
+  AWAITING user review of the doc before any PERUN submission.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
