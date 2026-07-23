@@ -164,24 +164,29 @@ def render_plot(study: dict, out_path: Path) -> None:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    results = sorted(study["results"], key=lambda r: r["n_train_ids"])
-    n_ids = [r["n_train_ids"] for r in results]
-    assoc = [r["id_retention_assoc"] for r in results]
-    occ_rank1 = [r["occ_rank1"] for r in results]
-
+    seeds = sorted({r.get("identity_seed", 0) for r in study["results"]})
     fig, ax1 = plt.subplots(figsize=(7, 5))
     ax1.set_xlabel("n_train_ids")
     ax1.set_ylabel("id_retention_assoc (G2a)", color="tab:blue")
-    ax1.plot(n_ids, assoc, "o-", color="tab:blue", label="id_retention_assoc")
+    ax2 = ax1.twinx()
+    ax2.set_ylabel("occ_rank1", color="tab:green")
+    for seed in seeds:
+        results = sorted(
+            (r for r in study["results"] if r.get("identity_seed", 0) == seed),
+            key=lambda r: r["n_train_ids"],
+        )
+        n_ids = [r["n_train_ids"] for r in results]
+        ax1.plot(n_ids, [r["id_retention_assoc"] for r in results], "o-",
+                 color="tab:blue", alpha=1.0 if seed == seeds[0] else 0.55,
+                 label=f"id_retention_assoc (seed {seed})")
+        ax2.plot(n_ids, [r["occ_rank1"] for r in results], "s--",
+                 color="tab:green", alpha=1.0 if seed == seeds[0] else 0.55,
+                 label=f"occ_rank1 (seed {seed})")
     ax1.axhline(IMAGENET_NULL, color="gray", linestyle="--", linewidth=1,
                 label=f"ImageNet null ({IMAGENET_NULL})")
     ax1.axhline(G2A_FLOOR, color="tab:red", linestyle=":", linewidth=1,
                 label=f"G2a floor ({G2A_FLOOR})")
     ax1.tick_params(axis="y", labelcolor="tab:blue")
-
-    ax2 = ax1.twinx()
-    ax2.set_ylabel("occ_rank1", color="tab:green")
-    ax2.plot(n_ids, occ_rank1, "s--", color="tab:green", label="occ_rank1")
     ax2.tick_params(axis="y", labelcolor="tab:green")
 
     lines1, labels1 = ax1.get_legend_handles_labels()
@@ -206,6 +211,9 @@ def main() -> int:
                     "cache_embeddings.py subprocesses (None = let them auto-select)")
     ap.add_argument("--force", action="store_true",
                     help="re-run fractions even if already present / checkpointed")
+    ap.add_argument("--out", type=Path, default=STUDY_JSON,
+                    help="study JSON path; the plot lands at viz/<stem>.png. Use a "
+                         "fresh path when changing epochs so curves never mix.")
     args = ap.parse_args()
     for f in args.fractions:
         assert 0.0 < f <= 1.0, f"--fractions entries must be in (0, 1], got {f}"
@@ -216,21 +224,21 @@ def main() -> int:
     python_exe = sys.executable
     train_reid_mod = _load_module("train_reid_ss", SCRIPTS_DIR / "train_reid.py")
 
-    study = load_study(STUDY_JSON)
+    study = load_study(args.out)
     study["config"] = {
-        "sources": args.sources, "epochs": args.epochs, "seed": args.seed,
-        "gate": GATE_CONFIG,
+        "sources": args.sources, "epochs": args.epochs, "gate": GATE_CONFIG,
     }
-    done_fracs = {r["fraction"] for r in study["results"]}
+    # runs are keyed by (fraction, identity_seed) so multi-seed curves accumulate
+    done_runs = {(r["fraction"], r.get("identity_seed", 0)) for r in study["results"]}
 
     for frac in args.fractions:
-        if frac in done_fracs and not args.force:
-            logger.info("fraction %.3f already in %s, skipping (--force to re-run)",
-                        frac, STUDY_JSON)
+        if (frac, args.seed) in done_runs and not args.force:
+            logger.info("fraction %.3f seed %d already in %s, skipping (--force to re-run)",
+                        frac, args.seed, args.out)
             continue
 
         pct = pct_str(frac)
-        tag = f"scale{pct}"
+        tag = f"scale{pct}s{args.seed}"
         ckpt = ROOT / "data" / "models" / f"reid_{tag}.pt"
         t0 = time.time()
 
@@ -261,6 +269,8 @@ def main() -> int:
 
         entry = {
             "fraction": frac,
+            "identity_seed": args.seed,
+            "epochs": args.epochs,
             "n_train_ids": n_train_ids,
             "occ_rank1": occ_rank1,
             "id_retention_assoc": float(g2["id_retention_assoc"]),
@@ -268,12 +278,16 @@ def main() -> int:
             "id_retention": float(g2["id_retention"]),
             "center_err": float(g2["reemergence_center_err_med"]),
         }
-        study["results"] = [r for r in study["results"] if r["fraction"] != frac] + [entry]
-        save_study(STUDY_JSON, study)
-        logger.info("fraction %.3f done in %.0fs: %s", frac, time.time() - t0, entry)
+        study["results"] = [
+            r for r in study["results"]
+            if not (r["fraction"] == frac and r.get("identity_seed", 0) == args.seed)
+        ] + [entry]
+        save_study(args.out, study)
+        logger.info("fraction %.3f seed %d done in %.0fs: %s",
+                    frac, args.seed, time.time() - t0, entry)
 
-    render_plot(study, VIZ_PATH)
-    logger.info("-> %s", STUDY_JSON)
+    render_plot(study, ROOT / "viz" / f"{args.out.stem}.png")
+    logger.info("-> %s", args.out)
     return 0
 
 

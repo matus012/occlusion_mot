@@ -284,6 +284,36 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   PERUN embedder training + 3-arm ablation, detector workstream at scale, D18 val
   request (canonical val + null-config run + taxonomy report + G2a-paired), phase 7
   demo. Artifacts: results/scaling_study.json, viz/scaling_study.png.
+- **D33 (2026-07-23) Strategy correction [user directive].** "Local done" was wrong
+  under L3+L6: epochs are dead as a lever (L3), identities bind (L6), rendering is
+  local. DATA WORK IS THE LOCAL FRONTIER. PERUN case restated: fast sweeps over
+  ENLARGED identity pools + detector finetune at scale — NOT longer training on
+  current data.
+- **D34 (2026-07-23) Identity-ceiling audit (server-verified).** (a) CARLA 0.9.15
+  install has 51 walker blueprints (walker.pedestrian.0001-0051; live
+  blueprint-library dump); 6 child models (0009-0014) unusable under teleport control
+  (D22) -> 45 usable adults; v4 render set already uses ALL 45 (walkers_meta union) —
+  the sim blueprint-identity ceiling is EXHAUSTED. (b) Cheap sim diversity levers:
+  union of modifiable attributes across all 51 walker blueprints = {role_name,
+  ros_name, is_invincible, speed} — ZERO appearance attributes; CARLA's texture API
+  targets named static map meshes, not skeletal walker actors; weather/lighting vary
+  illumination, not identity -> intra-identity augmentation only, ~0 identity-
+  equivalent gain (and L3 showed the training-side lever is saturated). Genuine sim
+  identity scaling needs UE4-editor clothing/material variants — exceeds the 1-day
+  cap, REJECTED as a local lever. (c) Real-data option sheet delivered (response
+  2026-07-23): recommendation = MOT20-train tracklets (~2.2k ids, visibility-tagged,
+  pipeline reuse, zero MOT17-val contamination) + Market-1501 (1.5k ids, trivially
+  disjoint); MSMT17 optional after the L6 curve sizes the need. NO integration done —
+  user decides.
+- **D35 (2026-07-23) Val manifest FROZEN (val_manifest.md, committed val-invariant).**
+  Pre-registers the single D18 val event: R1 canonical (conv app0.45, gate-bearing),
+  R2 ImageNet null instrument, R3 proto secondary (report-only), R4 baseline
+  reference, R5 paired test (--canonical merge), R6 detector-arm secondary with
+  mandatory honest label (trained on dev half; val = first honest read). Checkpoint
+  SHA256s + commit pinned in the manifest; pass/fail table maps every gate criterion
+  to its JSON key; pre-registered expectations (G2a-paired underpowered pre-PERUN;
+  floor margin ~0.4 sigma) prevent outcome re-narration. Val stays blocked on user
+  approval; misses -> report + HALT (D18.3).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
