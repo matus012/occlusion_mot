@@ -35,3 +35,18 @@ Exactly ONE writing session at a time (the orchestrator / current runloop iterat
 
 ## Commits
 Commit at logical checkpoints (tests green, module complete, gate frozen) — not one giant commit. Imperative messages; reference gate IDs where relevant (e.g. "G0: freeze baseline numbers").
+
+## Response protocol (D27, binding for every Builder response)
+- **VISUAL-FIRST**: any milestone with viewable output ships the visual, not just metrics.
+  Defaults: annotated video (track boxes, occlusion-state coloring, coasting/recovery
+  markers, hidden-agent predicted pose), qualitative crop grids, plots. End of response:
+  artifact path(s) + one-line open command. Metric deltas: short table (<= 8 rows),
+  never prose lists of numbers.
+- **CTA FOOTER**: the final line of every response is exactly one of:
+    CTA: REVIEW — <what to look at>
+    CTA: PICK — <options>
+    CTA: WAIT — <running task> — ETA <hh:mm>
+    CTA: STUCK — <blocker + what's needed from user>
+    CTA: DOWNLOADING <what> — ETA <hh:mm>
+    CTA: DONE — <next queued item>
+  ETA is mandatory for WAIT/DOWNLOADING.

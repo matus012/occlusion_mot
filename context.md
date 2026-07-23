@@ -194,6 +194,21 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   on val alongside metrics so amendment premises are verifiable — aggregate() now emits
   these automatically. (4) Queue unchanged: PERUN embedder training + 3-arm ablation ->
   detector workstream -> D18 val-run request.
+- **D27 (2026-07-23) Response protocol [user directive, binding]:** VISUAL-FIRST (every
+  viewable milestone ships annotated video / crop grids / plots + artifact paths + open
+  command; metric deltas as tables <= 8 rows) and a mandatory CTA FOOTER (REVIEW / PICK /
+  WAIT+ETA / STUCK / DOWNLOADING+ETA / DONE) as the final line of every response.
+  Encoded in CLAUDE.md. Concurrent: LOCAL-MAX phase L1-L6 (G2a audit; viz pipeline;
+  local embedder best-effort; 3-arm ablation dry-run; detector-finetune prototype;
+  scaling-study runner) — dev-half only, commit per item.
+- **D28-PROPOSAL (2026-07-23) G2a recalibration [audit-triggered, PENDING user].**
+  L1 audit under identical denominators (dev, n_assoc ~97): baseline assoc-retention
+  0.505, geometric 0.531, ImageNet-gated 0.556/0.552, proto-trained 0.598. G2a >= 0.45
+  is non-discriminative (baseline clears by 5.5pt; calibration error: threshold derived
+  on end-to-end scale, assoc denominator inflates all configs ~1.7x). PROPOSAL: G2a
+  >= 0.58 (~1.5 sigma above baseline at n=97, above off-the-shelf-appearance nulls,
+  met by current proto 0.598). Single change; no other gate touched. Audit artifacts:
+  results/hidden_dev_audit_{base,geom,in45,in40}.json.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
