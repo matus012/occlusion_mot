@@ -265,7 +265,7 @@ def main() -> int:
         )
         assigned: dict[int, int] = {}
         used_ids: set[int] = set()
-        for c, wid, iid in flat:
+        for _c, wid, iid in flat:
             if wid in assigned or iid in used_ids:
                 continue
             assigned[wid] = iid
