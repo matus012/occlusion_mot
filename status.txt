@@ -58,9 +58,13 @@ Dev status under D26 gates (best config: b90 d1.0 g1.5 app0.40 proto embedder):
   id_retention_assoc 0.598 (G2a >= 0.45 PASS on dev) | cov_prematched 0.915 (PASS)
   center_err 0.0055 (PASS) | oracle_ceiling 0.577 | end-to-end 0.345 (G2b pending detector)
 
-queue (unchanged, D26): 1. PERUN full embedder training + 3-arm ablation (access in
-flight, user side; slurm/train_reid.sbatch ready) 2. detector workstream (MOT/CARLA
-finetune -> raise ceiling, G2b) 3. D18 val-run request (with val taxonomy report)
-4. phase 7 demo + README
+LOCAL-MAX phase (user directive, see D27): L1 DONE (G2a audit -> D28 proposal >= 0.58
+PENDING user; audit table in context.md). Next: L2 viz/demo pipeline (D27 reference
+implementation), L3 local embedder to convergence, L4 3-arm ablation dry-run,
+L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
+Then (D26 queue): PERUN training + ablation, detector workstream, D18 val request
+(with val taxonomy report), phase 7 demo.
 
-blockers: PERUN access (user side)
+session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
+
+blockers: D28 decision (user, non-blocking for L2-L6); PERUN access (user side)
