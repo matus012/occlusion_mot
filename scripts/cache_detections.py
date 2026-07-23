@@ -26,20 +26,33 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", type=Path, default=ROOT / "data" / "MOT17")
     ap.add_argument("--cache-dir", type=Path, default=ROOT / "data" / "cache" / "detections")
-    ap.add_argument("--model", default="yolo11x.pt")
+    ap.add_argument("--model", default="yolo11x.pt", help="cache tag key (filenames)")
+    ap.add_argument("--weights", type=Path, default=None,
+                    help="optional custom checkpoint path (e.g. a finetuned .pt); when set, "
+                         "--model must differ from the default so the yolo11x cache is never "
+                         "overwritten (FIXED DETECTIONS invariant)")
     ap.add_argument("--device", default=None, help="cuda|cpu (default: auto)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--only", default=None, help="cache only this sequence name")
     args = ap.parse_args()
+
+    if args.weights is not None:
+        assert args.model != ap.get_default("model"), (
+            "--weights requires a non-default --model cache tag "
+            "(never overwrite the yolo11x cache; e.g. --model yolo11s_ft)"
+        )
 
     seqs = load_split(args.data_root, "train", detector="FRCNN")
     if args.only is not None:
         seqs = [s for s in seqs if s.name == args.only]
         if not seqs:
             raise SystemExit(f"sequence {args.only!r} not found")
+    model_path = str(args.weights) if args.weights is not None else args.model
+    cache_tag = Path(args.model).stem
     for seq in seqs:
         cache_detections(
-            seq, args.cache_dir, model_name=args.model, device=args.device, seed=args.seed
+            seq, args.cache_dir, model_name=model_path, device=args.device, seed=args.seed,
+            cache_tag=cache_tag,
         )
     logger.info("all %d sequences cached", len(seqs))
     return 0

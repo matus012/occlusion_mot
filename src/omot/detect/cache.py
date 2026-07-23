@@ -49,12 +49,19 @@ def cache_detections(
     conf_floor: float = 0.05,
     seed: int = 0,
     overwrite: bool = False,
+    cache_tag: str | None = None,
 ) -> Path:
     """Detect persons on every frame of `seq`; save (frames, boxes) npz; return path.
 
     boxes: (N, 5) [x, y, w, h, score] tlwh; frames: (N,) 1-based frame ids.
+    `model_name` is passed straight to the ultralytics `YOLO(...)` constructor (a bare
+    model name like "yolo11x.pt" or a path to a custom checkpoint). `cache_tag` keys the
+    cache filename (FIXED DETECTIONS invariant: a custom checkpoint must never collide
+    with an existing cache tag); defaults to `Path(model_name).stem` when omitted, which
+    keeps the default-tag behavior byte-identical to before this argument existed.
     """
-    out = cache_path(cache_dir, seq.name, Path(model_name).stem)
+    tag = cache_tag if cache_tag is not None else Path(model_name).stem
+    out = cache_path(cache_dir, seq.name, tag)
     if out.exists() and not overwrite:
         logger.info("cache hit: %s", out)
         return out
@@ -88,7 +95,7 @@ def cache_detections(
     frames = np.concatenate(frames_col) if frames_col else np.zeros(0, dtype=np.int32)
     boxes = np.concatenate(boxes_col) if boxes_col else np.zeros((0, 5), dtype=np.float32)
     out.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(out, frames=frames, boxes=boxes, model=Path(model_name).stem, seed=seed)
+    np.savez_compressed(out, frames=frames, boxes=boxes, model=tag, seed=seed)
     logger.info("cached %d detections over %d frames", len(boxes), seq.seq_length)
     return out
 
