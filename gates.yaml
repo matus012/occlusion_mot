@@ -68,9 +68,19 @@ gates:
                arithmetically capped by pre_match_rate 0.768); conditional on pre-matched
                segments; functions as a regression floor on val (dev currently 0.914)}
       id_retention_assoc:
-        {min: 0.45, key: hidden.id_retention_assoc, freeze_order: 1,
-         note: G2a AMENDED 2026-07-23 (D26) — association-scope retention (pre-matched
-               AND post-detectable segments); measures the module, not the detector}
+        {min: 0.58, key: hidden.id_retention_assoc, freeze_order: 1,
+         note: G2a-floor AMENDED 2026-07-23 (D28-final) — REGRESSION-FLOOR semantics only
+               (same as cov_prematched), NOT the module claim; recalibrated from the L1
+               audit (baseline assoc 0.505 + 1.5 sigma at n=97; dev best 0.598)}
+      g2a_paired_p:
+        {max: 0.05, key: hidden.g2a_paired_p, freeze_order: 1,
+         note: G2a-paired (D28-final) — THE discriminating criterion. Trained embedder vs
+               ImageNet-R18 null on the IDENTICAL segment set (intersection of both
+               configs' association scopes; fixed denominator kills per-config n drift).
+               McNemar exact one-sided p < 0.05. Produced by scripts/paired_test.py
+               (--canonical merges p + discordant counts + outcome vectors reference into
+               hidden_state.json). Inclusion rule (hidden_eval IoU>=0.5 pre/post match),
+               intersection definition, and test code are VAL-INVARIANT from this commit.}
       id_retention:
         {min: 0.55, key: hidden.id_retention, freeze_order: last, provisional: true,
          note: G2b RETAINED 2026-07-23 (D26) — end-to-end retention, CONTINGENT on the

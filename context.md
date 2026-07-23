@@ -209,6 +209,27 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   >= 0.58 (~1.5 sigma above baseline at n=97, above off-the-shelf-appearance nulls,
   met by current proto 0.598). Single change; no other gate touched. Audit artifacts:
   results/hidden_dev_audit_{base,geom,in45,in40}.json.
+- **D28-FINAL (2026-07-23) G2a two-part recalibration DECIDED [user, option 3].**
+  (1) G2a-floor: id_retention_assoc >= 0.58 at val — regression-floor semantics ONLY
+  (like cov_prematched), not the module claim. (2) G2a-paired, THE discriminating
+  criterion: trained embedder beats the ImageNet-R18 null on the IDENTICAL segment set
+  (intersection of both configs' association scopes — fixed denominator, kills the
+  per-config n drift from audit caveat a); per-segment paired outcomes -> McNemar exact
+  one-sided, p < 0.05; result JSON carries outcome vectors + discordant counts + p
+  alongside the taxonomy guard. (3) FROZEN val-invariant from this commit: segment
+  inclusion rule (hidden_eval IoU>=0.5 pre/post), intersection-denominator definition,
+  paired-test code path (src/omot/eval/paired.py + scripts/paired_test.py; --canonical
+  merges into hidden_state.json). Note: the val paired test requires running the null
+  config at val as a measurement instrument — this is part of the single canonical val
+  event, not a second candidate (D18 intact). (4) Dev paired run (immediate, report-not-
+  tune): proto vs in45 null — n=97, retention 0.598 vs 0.557, discordant 14/10,
+  p=0.271; vs in40 — n=95, 0.611 vs 0.558, 16/11, p=0.221. NOT significant pre-L3, as
+  expected; L3 convergence training is the margin-builder. (5) gates.yaml updated
+  (floor 0.58 + g2a_paired_p <= 0.05); standalone 0.45 formulation dropped; G2b
+  untouched. (6) Deletions approved & executed: stray 0-byte files None/int removed;
+  the D23 buggy render sets (~35GB) were ALREADY ABSENT from disk (data/sim holds only
+  carla_render v4 4.5GB + carla_render_10bp 4.5GB + scenarios 0.3GB) — nothing
+  adjacent deleted per D-INCIDENT rule; carla_render_10bp kept per D24.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

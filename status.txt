@@ -63,11 +63,16 @@ PENDING user; audit table in context.md). L2 DONE 2026-07-23: render_dev_viz.py
 parameterized (any two tracker tags via CLI, --pngs-only iteration mode) + re-ID
 pre/post crop grid added; rendered hidden_audit_base vs hidden_d26best -> viz/
 (4 clips, summary grid 29.2%->34.5%, crops_assoc_scope.png 58/97 retained);
-reviewer APPROVE. Next: L3 local embedder to convergence, L4 3-arm ablation dry-run,
-L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
+reviewer APPROVE. D28 RESOLVED as D28-FINAL [user, option 3]: G2a split into floor
+(assoc >= 0.58, regression semantics) + paired McNemar vs ImageNet null on the
+intersection denominator (p < 0.05, THE module claim); paired path frozen val-invariant
+(src/omot/eval/paired.py, scripts/paired_test.py); dev paired: 0.598 vs 0.557, n=97,
+p=0.271 (not significant pre-L3, expected). gates.yaml updated.
+L3 RUNNING: embedder convergence training (local best-effort). Then L4 3-arm ablation
+dry-run, L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
 Then (D26 queue): PERUN training + ablation, detector workstream, D18 val request
 (with val taxonomy report), phase 7 demo.
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 
-blockers: D28 decision (user, non-blocking for L2-L6); PERUN access (user side)
+blockers: PERUN access (user side)

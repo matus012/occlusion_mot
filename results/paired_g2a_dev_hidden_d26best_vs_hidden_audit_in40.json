@@ -1,0 +1,491 @@
+{
+  "n_total_segments": 168,
+  "n_intersection": 95,
+  "retained_a": 58,
+  "retained_b": 53,
+  "retention_a": 0.6105263157894737,
+  "retention_b": 0.5578947368421052,
+  "discordant_a_only": 16,
+  "discordant_b_only": 11,
+  "p_value": 0.22103416919708252,
+  "outcomes": [
+    {
+      "key": "MOT17-02-FRCNN:t14:f206-238",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-02-FRCNN:t27:f90-147",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-02-FRCNN:t36:f56-185",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-02-FRCNN:t38:f281-292",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-02-FRCNN:t39:f174-192",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-02-FRCNN:t39:f218-264",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-02-FRCNN:t39:f267-277",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-02-FRCNN:t59:f142-177",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-02-FRCNN:t62:f151-277",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-04-FRCNN:t60:f64-86",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t66:f116-156",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t66:f391-501",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t70:f53-71",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t71:f35-59",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t74:f229-249",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t87:f218-331",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-04-FRCNN:t87:f356-478",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-04-FRCNN:t89:f220-258",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-04-FRCNN:t89:f291-327",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t2:f260-270",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t2:f270-281",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t2:f283-309",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t8:f169-182",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t12:f170-178",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t14:f15-32",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t14:f40-162",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t14:f170-182",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t14:f183-221",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t20:f255-265",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t29:f283-304",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t30:f281-288",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t33:f320-333",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t38:f325-335",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t41:f322-341",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-05-FRCNN:t41:f342-350",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t44:f353-363",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t47:f346-372",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-05-FRCNN:t107:f74-100",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-09-FRCNN:t1:f26-56",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-09-FRCNN:t1:f162-190",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-09-FRCNN:t7:f149-175",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-09-FRCNN:t10:f174-207",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-09-FRCNN:t10:f250-260",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-09-FRCNN:t21:f83-174",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-09-FRCNN:t22:f94-169",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-09-FRCNN:t23:f114-155",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-09-FRCNN:t29:f200-212",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t2:f12-26",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t4:f286-311",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t6:f4-48",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t13:f129-231",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t15:f29-60",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t18:f70-151",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t18:f167-178",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t18:f210-218",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t18:f224-251",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t18:f294-307",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t23:f3-75",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t23:f86-112",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t24:f95-121",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t25:f172-270",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t25:f271-284",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t25:f284-295",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t26:f51-101",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t26:f141-190",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t31:f184-232",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-10-FRCNN:t44:f256-278",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t56:f298-318",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-10-FRCNN:t71:f250-257",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-11-FRCNN:t6:f80-164",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-11-FRCNN:t14:f314-337",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-11-FRCNN:t19:f27-48",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-11-FRCNN:t25:f170-304",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-11-FRCNN:t32:f325-427",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-13-FRCNN:t18:f182-209",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t32:f51-73",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-13-FRCNN:t33:f248-269",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t34:f124-146",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t36:f52-118",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-13-FRCNN:t40:f125-135",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t49:f21-31",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t52:f273-287",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t52:f287-307",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t52:f307-337",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t60:f72-79",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t70:f369-375",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t133:f238-257",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t133:f263-280",
+      "a": true,
+      "b": false
+    },
+    {
+      "key": "MOT17-13-FRCNN:t138:f240-260",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t142:f340-354",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t145:f111-132",
+      "a": false,
+      "b": false
+    },
+    {
+      "key": "MOT17-13-FRCNN:t146:f242-262",
+      "a": false,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t156:f85-96",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t156:f96-116",
+      "a": true,
+      "b": true
+    },
+    {
+      "key": "MOT17-13-FRCNN:t157:f291-321",
+      "a": false,
+      "b": false
+    }
+  ],
+  "tag_a": "hidden_d26best",
+  "tag_b": "hidden_audit_in40",
+  "half": "dev"
+}
