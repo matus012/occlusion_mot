@@ -156,6 +156,16 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   carla_render_v1_buggy / _v2_buggy pending user approval to delete (~35GB).
   Re-ID dataset extracted from v3: 161 identities, 59,563 crops (occlusion-tagged),
   identity-disjoint 131/30 split -> data/sim/reid (phase 6 training input, PERUN).
+- **D24 (2026-07-23) Re-ID identity audit [user-prompted] + two-source training design.**
+  Audit: 161 sim identity labels collapsed onto 10 unique blueprints (walker_id % n_bps
+  reused the same models every scenario) — contrastive supervision would be poisoned
+  (identical-appearance pairs as negatives). Mitigation: (1) sim identities relabeled to
+  BLUEPRINT level (appearance-correct; 45-class ceiling = CARLA's without texture mods);
+  (2) driver diversifies blueprints per scenario (seed*31 + wid*7 mod n_bps) + emits
+  walkers_meta.json; v4 re-render; v3 kept as carla_render_10bp (tracking GT still valid);
+  (3) MOT17 DEV-HALF tracklet identities added as a real-domain source (D18-compliant):
+  335 identities / 46,859 crops with GT visibility tags. Sim2real ablation now 3-armed:
+  ImageNet vs sim-only vs sim+dev-real.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

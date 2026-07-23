@@ -145,8 +145,13 @@ def main() -> int:
             key=lambda b: b.id,
         )
         walkers: dict[int, carla.Actor] = {}
+        bp_of_walker: dict[int, str] = {}
         for slot, wspec in enumerate(spec["walkers"]):
-            bp = walker_bps[wspec["walker_id"] % len(walker_bps)]
+            # Deterministic per-scenario diversification: walker_id alone reuses the
+            # same few blueprints in every scenario (D24 audit: 161 labels on 10
+            # appearances). Seed-mixing spreads assignments across all adult models.
+            bp_idx = (int(spec["seed"]) * 31 + wspec["walker_id"] * 7) % len(walker_bps)
+            bp = walker_bps[bp_idx]
             if bp.has_attribute("is_invincible"):
                 bp.set_attribute("is_invincible", "true")
             # Spawn at a spaced holding slot far behind the camera (dense crowds collide
@@ -161,8 +166,9 @@ def main() -> int:
             lx, ly = walker_pos(wspec["waypoints"], wspec["speed"], 0.0)
             actor.set_transform(carla.Transform(frame_conv.to_world(lx, ly, 1.1)))
             walkers[wspec["walker_id"]] = actor
+            bp_of_walker[wspec["walker_id"]] = bp.id
             actors.append(actor)
-            print(f"WALKER {wspec['walker_id']} actor_id={actor.id}")
+            print(f"WALKER {wspec['walker_id']} actor_id={actor.id} bp={bp.id}")
 
         # --- occluders: best-fit static props ----------------------------------------
         prop_ids = ["static.prop.container", "static.prop.box03", "static.prop.box02"]
@@ -320,6 +326,11 @@ def main() -> int:
             encoding="utf-8",
         )
         (seq_dir / "scenario.json").write_text(json.dumps(spec, indent=2), encoding="utf-8")
+        (seq_dir / "walkers_meta.json").write_text(
+            json.dumps({"blueprint_of_walker": {str(k): v for k, v in bp_of_walker.items()}},
+                       indent=2),
+            encoding="utf-8",
+        )
         print(f"SIM_RENDER_OK {spec['scenario_id']} frames={n_frames} gt_rows={len(gt_lines)}")
         return 0
     finally:
