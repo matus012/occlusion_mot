@@ -146,12 +146,13 @@ def main() -> int:
         )
         walkers: dict[int, carla.Actor] = {}
         bp_of_walker: dict[int, str] = {}
+        # D24 diversification with a hard uniqueness guarantee: same-blueprint walkers
+        # in one scenario collide in instance segmentation (shared skeletal-mesh ids —
+        # caught by the duplicate-id assert). Per-scenario seeded permutation gives
+        # within-scenario uniqueness and cross-scenario diversity over all adult models.
+        perm = np.random.default_rng(int(spec["seed"])).permutation(len(walker_bps))
         for slot, wspec in enumerate(spec["walkers"]):
-            # Deterministic per-scenario diversification: walker_id alone reuses the
-            # same few blueprints in every scenario (D24 audit: 161 labels on 10
-            # appearances). Seed-mixing spreads assignments across all adult models.
-            bp_idx = (int(spec["seed"]) * 31 + wspec["walker_id"] * 7) % len(walker_bps)
-            bp = walker_bps[bp_idx]
+            bp = walker_bps[int(perm[slot % len(walker_bps)])]
             if bp.has_attribute("is_invincible"):
                 bp.set_attribute("is_invincible", "true")
             # Spawn at a spaced holding slot far behind the camera (dense crowds collide
