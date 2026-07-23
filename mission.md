@@ -13,7 +13,17 @@ Plus **P2**: a CARLA feeder generating occlusion scenarios with GT visibility an
 3. **occlusion-segments** — extract occlusion-segment index from MOT17(/20) GT (visibility < 0.25 for ≥ 5 consecutive frames, reappears at ≥ 0.5); measure baseline ID-retention on segments → re-freeze G2 provisional thresholds.
 4. **hidden-state** — occlusion-aware track state: motion model during occlusion, re-emergence point/time prediction, re-ID gating on reappearance → gates G1 + G2.
 5. **carla-feeder (P2)** — scenario generation, visibility GT, feeder API mirroring the MOT loader → G4.
-6. **sim2real-ablation** — hidden-state module trained/evaluated on CARLA vs MOT occlusion segments (heavy training on PERUN, not the 4060).
+6. **sim2real-ablation** — re-ID embedder arm structure (D37 redesign; PERUN scale):
+   - **A** ImageNet null (no training)
+   - **B** sim-only (CARLA renders)
+   - **C** real-only (MOT17-dev tracklets + MOT20-train tracklets + Market-1501)
+   - **D** sim+real (B's data + C's data)
+   The P2 claim rides on **D > C** (sim adds on top of real data), NOT just B > A.
+   Protocol (D36): >= 3 seeds per arm; single-seed tracker-level deltas < ~6pt are
+   noise — arm comparisons use multi-seed means at tracker level plus retrieval-level
+   occluded-query metrics. License hygiene (D37): dataset-derived content never enters
+   the repo or any remote (guard: tests/test_license_guard.py). Heavy training on
+   PERUN, not the 4060.
 7. **demo** — demo video + README.
 
 ## Working loop (each runloop iteration)

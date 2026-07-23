@@ -96,9 +96,17 @@ POST-LOCAL-MAX CONSOLIDATION (user directive 2026-07-23, D33-D35):
   still rising at 305). D32 smoke claim downgraded. PERUN sweep must use log-scale
   pools (needs 2c data adds) + >= 3 seeds; single-seed tracker deltas < ~6pt = noise.
 
-Next (D26 queue): PERUN embedder training + 3-arm ablation (blocked: PERUN access),
-detector workstream at scale, D18 val request per val_manifest.md, phase 7 demo.
-blockers: PERUN access (user); 2c data-source decision (user); D18 val approval (user)
+D37 (2c verdict) IN PROGRESS: license hygiene DONE (.gitignore + guard test; crops
+PNG untracked — history purge pending user approval); ablation redesigned to arms
+A/B/C/D in mission.md (P2 claim = D>C, >=3 seeds); MOT20 + Market-1501 download/
+integration next; then pool report + occluded-query ext + sanity run; then PERUN
+sweep design doc v2 (user reviews before submission approval).
+
+Next (D26 queue): PERUN 4-arm ablation per doc v2 (blocked: PERUN access + doc
+approval), detector workstream at scale, D18 val request per val_manifest.md,
+phase 7 demo.
+blockers: PERUN access (user); D18 val approval (user); crops-PNG history-purge
+approval (user, optional)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 

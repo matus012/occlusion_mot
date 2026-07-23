@@ -45,3 +45,15 @@ tools/
 
 progress.txt
 results/scaling_study.log
+
+# D37 license hygiene: NO dataset-derived content (crops/images/frame dumps/
+# serialized embeddings) in repo or any remote — loaders, manifests, SHA256s,
+# download docs only. Enforced by tests/test_license_guard.py.
+data/reid/
+data/MOT20/
+data/Market-1501/
+*.jpg
+*.jpeg
+*.bmp
+*.webp
+viz/crops_*.png

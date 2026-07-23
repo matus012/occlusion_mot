@@ -329,6 +329,24 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   (~300 -> ~2k -> ~4k+), score retrieval + multi-seed tracker means (>= 3 seeds),
   and treat single-seed tracker deltas < ~6pt as noise. Artifacts:
   results/scaling_curve_local.json, viz/scaling_curve_local.png (P2-writeup figure).
+- **D37 (2026-07-23) 2c verdict + integration [user]: MOT20-train tracklets first,
+  Market-1501 second.** (1) Order binding: MOT20's visibility tags extend the
+  occluded-query protocol — validate that pipeline before Market's plain crops.
+  (2) LICENSE HYGIENE (binding): no dataset-derived content (crops/images/frame
+  dumps/serialized embeddings) in repo or ANY remote — loaders, manifests, SHA256s,
+  download docs only. Enforced: .gitignore block + tests/test_license_guard.py
+  (data/ must have zero tracked files; no raw-image extensions tracked anywhere; no
+  weight/embedding blobs outside tests/fixtures; PNGs = plots under viz/ only).
+  RETROACTIVE FIX: viz/crops_assoc_scope.png (MOT17 GT crops) was tracked+pushed —
+  untracked at this commit; NOTE it persists in git history; full purge = history
+  rewrite + force-push, PENDING user approval. (3) Ablation redesigned in mission.md
+  BEFORE any training on new data: arms A ImageNet / B sim-only / C real-only
+  (MOT17-dev + MOT20 + Market) / D sim+real; P2 claim = D > C; >= 3 seeds per arm
+  (D36). (4) Post-integration verification owed: pool-size report, occluded-query
+  eval extended to MOT20, one SMALL single-seed retrieval sanity run (labeled; no
+  tracker-level claims). (5) val_manifest.md untouched (training pools only).
+  (6) Final artifact before PERUN submission approval: sweep design doc v2
+  (log-scale pools ~300/~1k/~2k/~4k, >= 3 seeds, arms A-D, GPUh per arm).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
