@@ -246,6 +246,18 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   detector workstream (raises n and scope). Dev config selection unchanged rules-wise;
   current top-3 dev configs for any future D18 val request: conv_app45 (0.604),
   d26best/proto_app40 (0.598), in45 (0.556).
+- **D30 (2026-07-23) L4: 3-arm ablation dry-run complete.** sim-only arm trained
+  (reid_simonly, 40 ep, occ-rank1 0.933 on sim-val — not cross-arm comparable at
+  retrieval level), cached as embedder tag `simonly`; dev sweep best 0.577 @ app0.50
+  (n=97, e2e 0.333). Tracker-level ordering: ImageNet 0.556 < sim-only 0.577 <
+  sim+real 0.604 — sim2real transfer positive, real data additive on top. Paired
+  (fixed denominators): sim-only vs ImageNet 6/4 discordant p=0.377; sim+real vs
+  sim-only 10/8 p=0.407 — all n.s. at n~97. Dry-run verdict: pipeline validated
+  end-to-end, effect DIRECTION consistent across arms, local power insufficient
+  (~2x-3x more discordant pairs needed for p<0.05 at these effect sizes) — the real
+  3-arm ablation is the PERUN run (mission phase 6). Artifacts:
+  results/hidden_dev_simonly_app{30..50}.json, paired_g2a_dev_* (2 new),
+  viz/ablation_3arm_dev.png.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

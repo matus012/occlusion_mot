@@ -72,8 +72,10 @@ L3 DONE (D29): reid_conv occ-rank1 0.957; dev best assoc 0.604 @ app0.45 — con
 hypothesis REFUTED (conv==proto at tracker level, 58/58, discordant 6/6; paired vs
 ImageNet null p=0.262 n.s.). Appearance saturated ~0.60 assoc locally; margin for
 G2a-paired must come from PERUN-scale identities and/or detector workstream.
-Next: L4 3-arm ablation dry-run (needs sim-only arm trained), L5 detector-finetune
-prototype (yolo11s, separate arm), L6 scaling-study runner.
+L4 DONE (D30): 3-arm dry-run — ImageNet 0.556 < sim-only 0.577 < sim+real 0.604 (dev,
+per-arm best gates); all paired tests n.s. at n~97; pipeline + effect direction
+validated, significance deferred to PERUN. viz/ablation_3arm_dev.png.
+Next: L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
 Then (D26 queue): PERUN training + ablation, detector workstream, D18 val request
 (with val taxonomy report), phase 7 demo.
 
