@@ -68,8 +68,12 @@ reviewer APPROVE. D28 RESOLVED as D28-FINAL [user, option 3]: G2a split into flo
 intersection denominator (p < 0.05, THE module claim); paired path frozen val-invariant
 (src/omot/eval/paired.py, scripts/paired_test.py); dev paired: 0.598 vs 0.557, n=97,
 p=0.271 (not significant pre-L3, expected). gates.yaml updated.
-L3 RUNNING: embedder convergence training (local best-effort). Then L4 3-arm ablation
-dry-run, L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
+L3 DONE (D29): reid_conv occ-rank1 0.957; dev best assoc 0.604 @ app0.45 — convergence
+hypothesis REFUTED (conv==proto at tracker level, 58/58, discordant 6/6; paired vs
+ImageNet null p=0.262 n.s.). Appearance saturated ~0.60 assoc locally; margin for
+G2a-paired must come from PERUN-scale identities and/or detector workstream.
+Next: L4 3-arm ablation dry-run (needs sim-only arm trained), L5 detector-finetune
+prototype (yolo11s, separate arm), L6 scaling-study runner.
 Then (D26 queue): PERUN training + ablation, detector workstream, D18 val request
 (with val taxonomy report), phase 7 demo.
 

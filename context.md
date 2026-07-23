@@ -230,6 +230,22 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   the D23 buggy render sets (~35GB) were ALREADY ABSENT from disk (data/sim holds only
   carla_render v4 4.5GB + carla_render_10bp 4.5GB + scenarios 0.3GB) — nothing
   adjacent deleted per D-INCIDENT rule; carla_render_10bp kept per D24.
+- **D29 (2026-07-23) L3 result: convergence training saturates — hypothesis REFUTED.**
+  reid_conv (40 epochs, sim+dev-real, occ-rank1 0.888 -> 0.957 at epoch 33) cached as
+  embedder tag `conv`; dev grid app 0.30-0.50 at b90/d1.0/g1.5/kf1.0: best assoc 0.604
+  @ app0.45 (n=96, e2e 0.345, center 0.0064). vs proto: +0.6pt assoc, IDENTICAL
+  retained count (58/58), discordant 6/6 (p=0.61) — the two trained embedders agree on
+  84/96 segments. vs ImageNet null (paired, D28 criterion): 0.604 vs 0.562, discordant
+  13/9, p=0.262 — still NOT significant on dev. The session-handoff hypothesis
+  (convergence adds +2-4pt) is refuted: retrieval gains are flattered by near-duplicate
+  galleries as suspected; tracker-level appearance signal saturates ~0.60 assoc with
+  yolo11x detections. Residual failures are appearance-hard (blur/crowd-handoff per
+  crops_assoc_scope.png). IMPLICATION for G2a-paired at val (n~76): local-training
+  effect size (~4pt vs null, ~22 discordant) is underpowered; the margin must come from
+  PERUN-scale training (305 train ids is the binding constraint, not epochs) and/or the
+  detector workstream (raises n and scope). Dev config selection unchanged rules-wise;
+  current top-3 dev configs for any future D18 val request: conv_app45 (0.604),
+  d26best/proto_app40 (0.598), in45 (0.556).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
