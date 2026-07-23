@@ -28,7 +28,12 @@ log = logging.getLogger("validate_sim_agreement")
 
 ROOT = Path(__file__).resolve().parents[1]
 CENTER_TOL = 0.6  # |center delta| / mock box height, median over shared annotations
-CORR_MIN = 0.5  # Pearson correlation of per-frame visibility (when either dips)
+CORR_MIN = 0.5  # visibility correlation gate — applied to behind_static ONLY: there the
+# mock's slab-occluder model is trustworthy. In walker-on-walker scenes (crossing/crowd)
+# the mock knowingly overestimates coverage (bbox slabs vs true silhouettes), so corr is
+# reported but not gated. Instead, ALL scenarios face absolute sim-GT sanity checks:
+SIM_P75_VIS_MIN = 0.85  # p75 of visibility — most annotations should be mostly visible
+SIM_FRAC_DEEP_MAX = 0.45  # fraction of annotations with vis < 0.25
 
 
 def per_walker(gt: np.ndarray) -> dict[int, np.ndarray]:
@@ -79,19 +84,28 @@ def main() -> int:
             corr = float("nan")  # no meaningful occlusion overlap to correlate
         n_seg_mock = len(extract_segments(mock.gt, min_len=3))
         n_seg_sim = len(extract_segments(sim.gt, min_len=3))
+        sim_vis = sim.gt[:, COL.VIS]
+        p75_vis = float(np.percentile(sim_vis, 75)) if len(sim_vis) else 0.0
+        frac_deep = float(np.mean(sim_vis < 0.25)) if len(sim_vis) else 1.0
         entry = {
             "shared_annotations": len(center_errs),
             "center_err_med_boxnorm": round(med_center, 3),
             "visibility_corr": None if np.isnan(corr) else round(corr, 3),
             "segments_mock": n_seg_mock,
             "segments_sim": n_seg_sim,
+            "sim_p75_vis": round(p75_vis, 3),
+            "sim_frac_deep_occl": round(frac_deep, 3),
         }
         report[name] = entry
         log.info("%s: %s", name, entry)
         if med_center > CENTER_TOL:
             failures.append(f"{name}: center err {med_center:.2f} > {CENTER_TOL}")
-        if not np.isnan(corr) and corr < CORR_MIN:
+        if name.startswith("behind_static") and not np.isnan(corr) and corr < CORR_MIN:
             failures.append(f"{name}: visibility corr {corr:.2f} < {CORR_MIN}")
+        if p75_vis < SIM_P75_VIS_MIN:
+            failures.append(f"{name}: sim p75 vis {p75_vis:.2f} < {SIM_P75_VIS_MIN}")
+        if frac_deep > SIM_FRAC_DEEP_MAX:
+            failures.append(f"{name}: sim deep-occl fraction {frac_deep:.2f} > {SIM_FRAC_DEEP_MAX}")
 
     dest = ROOT / "results" / "sim_agreement.json"
     dest.write_text(

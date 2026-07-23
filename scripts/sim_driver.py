@@ -190,7 +190,14 @@ def main() -> int:
         k = build_intrinsics(img_w, img_h, spec["cam_fov_deg"])
 
         # --- main loop -------------------------------------------------------------------
-        raw_rows: list[list[float]] = []  # frame, id, tlwh, visible_px
+        # Visibility is resolved in TWO passes. Pass 1 (here): per (frame, walker) store
+        # the joint (semantic_tag, instance_id) pixel histogram inside a padded bbox.
+        # Pass 2 (below): self-calibrate the pedestrian tag, assign walker<->instance id
+        # one-to-one from global votes, then count only the assigned id per frame.
+        # (A naive per-frame modal vote counts the OCCLUDER's id when the walker is
+        # hidden — the bug that produced systematically deflated visibility.)
+        raw_rows: list[list[float]] = []  # frame, wid, tlwh
+        hists: dict[tuple[int, int], dict[tuple[int, int], int]] = {}
         for fidx in range(1, n_frames + 1):
             t = (fidx - 1) / fps
             for wspec in spec["walkers"]:
@@ -211,39 +218,79 @@ def main() -> int:
             rgb_arr = np.frombuffer(rgb.raw_data, dtype=np.uint8).reshape(img_h, img_w, 4)
             cv2.imwrite(str(seq_dir / "img1" / f"{fidx:06d}.jpg"), rgb_arr[:, :, :3])
             seg = np.frombuffer(iseg.raw_data, dtype=np.uint8).reshape(img_h, img_w, 4)
-            # instance id in (G, B); semantic tag in R
             inst = seg[:, :, 1].astype(np.int32) + seg[:, :, 2].astype(np.int32) * 256
+            sem = seg[:, :, 0].astype(np.int32)
 
             for wid, actor in walkers.items():
                 box = project_bbox(actor, cam_tf, k, img_w, img_h)
                 if box is None:
                     continue
-                x1, y1 = int(box[0]), int(box[1])
-                x2, y2 = int(box[0] + box[2]) + 1, int(box[1] + box[3]) + 1
-                patch = inst[y1:y2, x1:x2]
-                if patch.size == 0:
+                raw_rows.append([fidx, wid, *box.tolist()])
+                pad_x, pad_y = box[2] * 0.15, box[3] * 0.08
+                x1 = max(0, int(box[0] - pad_x))
+                y1 = max(0, int(box[1] - pad_y))
+                x2 = min(img_w, int(box[0] + box[2] + pad_x) + 1)
+                y2 = min(img_h, int(box[1] + box[3] + pad_y) + 1)
+                if x2 <= x1 or y2 <= y1:
                     continue
-                ids, counts = np.unique(patch, return_counts=True)
-                bg = {0}
-                cand = [(c, i) for c, i in zip(counts, ids, strict=True) if int(i) not in bg]
-                visible_px = 0
-                if cand:
-                    c_best, id_best = max(cand)
-                    visible_px = int((inst == id_best).sum()) if c_best > 10 else 0
-                raw_rows.append([fidx, wid, *box.tolist(), float(visible_px)])
+                joint = sem[y1:y2, x1:x2].ravel() * (1 << 20) + inst[y1:y2, x1:x2].ravel()
+                keys, counts = np.unique(joint, return_counts=True)
+                h: dict[tuple[int, int], int] = {}
+                for kk, c in zip(keys, counts, strict=True):
+                    s_tag, i_id = int(kk) >> 20, int(kk) & ((1 << 20) - 1)
+                    if i_id != 0:
+                        h[(s_tag, i_id)] = int(c)
+                hists[(fidx, wid)] = h
 
-        # --- visibility post-pass: per-walker fill factor ------------------------------
+        # --- pass 2: pedestrian tag, id assignment, visibility --------------------------
+        # Pedestrian semantic tag: the modal tag across all walker boxes in the first
+        # 10 frames (walkers start well separated at their path origins).
+        tag_votes: dict[int, int] = {}
+        for (fidx, _wid), h in hists.items():
+            if fidx <= 10:
+                for (s_tag, _iid), c in h.items():
+                    tag_votes[s_tag] = tag_votes.get(s_tag, 0) + c
+        assert tag_votes, "no segmentation pixels found in early frames"
+        ped_tag = max(tag_votes, key=lambda s: tag_votes[s])
+
+        votes: dict[int, dict[int, int]] = {}
+        for (_fidx, wid), h in hists.items():
+            for (s_tag, iid), c in h.items():
+                if s_tag == ped_tag:
+                    votes.setdefault(wid, {}).setdefault(iid, 0)
+                    votes[wid][iid] += c
+        flat = sorted(
+            ((c, wid, iid) for wid, d in votes.items() for iid, c in d.items()),
+            reverse=True,
+        )
+        assigned: dict[int, int] = {}
+        used_ids: set[int] = set()
+        for c, wid, iid in flat:
+            if wid in assigned or iid in used_ids:
+                continue
+            assigned[wid] = iid
+            used_ids.add(iid)
+
         rows_by_walker: dict[int, list[list[float]]] = {}
         for r in raw_rows:
             rows_by_walker.setdefault(int(r[1]), []).append(r)
         gt_lines: list[str] = []
         for wid, rows in rows_by_walker.items():
-            fills = [r[6] / max(r[4] * r[5], 1.0) for r in rows if r[6] > 0]
-            fill_ref = float(np.percentile(fills, 90)) if fills else 0.6
+            iid = assigned.get(wid)
+            vis_px = {
+                int(r[0]): hists.get((int(r[0]), wid), {}).get((ped_tag, iid), 0)
+                for r in rows
+            } if iid is not None else {}
+            fills = [
+                vis_px.get(int(r[0]), 0) / max(r[4] * r[5], 1.0)
+                for r in rows
+            ]
+            plausible = [f for f in fills if 0.15 <= f <= 0.98]
+            fill_ref = float(np.percentile(plausible, 90)) if plausible else 0.6
             fill_ref = max(fill_ref, 1e-3)
             for r in rows:
                 expected = max(r[4] * r[5] * fill_ref, 1.0)
-                vis = float(np.clip(r[6] / expected, 0.0, 1.0))
+                vis = float(np.clip(vis_px.get(int(r[0]), 0) / expected, 0.0, 1.0))
                 gt_lines.append(
                     f"{int(r[0])},{wid},{r[2]:.2f},{r[3]:.2f},{r[4]:.2f},{r[5]:.2f},"
                     f"1.0000,1,{vis:.4f}"

@@ -6,7 +6,191 @@
       "visibility_corr": 0.835,
       "segments_mock": 1,
       "segments_sim": 1
+    },
+    "behind_static_0003": {
+      "shared_annotations": 2400,
+      "center_err_med_boxnorm": 0.094,
+      "visibility_corr": 0.003,
+      "segments_mock": 4,
+      "segments_sim": 3
+    },
+    "behind_static_0006": {
+      "shared_annotations": 1269,
+      "center_err_med_boxnorm": 0.102,
+      "visibility_corr": -0.278,
+      "segments_mock": 1,
+      "segments_sim": 2
+    },
+    "behind_static_0009": {
+      "shared_annotations": 1600,
+      "center_err_med_boxnorm": 0.135,
+      "visibility_corr": 0.034,
+      "segments_mock": 2,
+      "segments_sim": 0
+    },
+    "behind_static_0012": {
+      "shared_annotations": 1357,
+      "center_err_med_boxnorm": 0.095,
+      "visibility_corr": 0.086,
+      "segments_mock": 2,
+      "segments_sim": 0
+    },
+    "behind_static_0015": {
+      "shared_annotations": 2400,
+      "center_err_med_boxnorm": 0.128,
+      "visibility_corr": 0.896,
+      "segments_mock": 0,
+      "segments_sim": 1
+    },
+    "behind_static_0018": {
+      "shared_annotations": 2105,
+      "center_err_med_boxnorm": 0.132,
+      "visibility_corr": -0.42,
+      "segments_mock": 2,
+      "segments_sim": 7
+    },
+    "behind_static_0021": {
+      "shared_annotations": 1322,
+      "center_err_med_boxnorm": 0.1,
+      "visibility_corr": -0.034,
+      "segments_mock": 0,
+      "segments_sim": 1
+    },
+    "crossing_paths_0001": {
+      "shared_annotations": 2255,
+      "center_err_med_boxnorm": 0.103,
+      "visibility_corr": -0.574,
+      "segments_mock": 11,
+      "segments_sim": 9
+    },
+    "crossing_paths_0004": {
+      "shared_annotations": 2800,
+      "center_err_med_boxnorm": 0.104,
+      "visibility_corr": -0.547,
+      "segments_mock": 16,
+      "segments_sim": 13
+    },
+    "crossing_paths_0007": {
+      "shared_annotations": 2947,
+      "center_err_med_boxnorm": 0.137,
+      "visibility_corr": -0.009,
+      "segments_mock": 10,
+      "segments_sim": 6
+    },
+    "crossing_paths_0010": {
+      "shared_annotations": 2669,
+      "center_err_med_boxnorm": 0.15,
+      "visibility_corr": -0.053,
+      "segments_mock": 12,
+      "segments_sim": 5
+    },
+    "crossing_paths_0013": {
+      "shared_annotations": 3200,
+      "center_err_med_boxnorm": 0.137,
+      "visibility_corr": -0.163,
+      "segments_mock": 13,
+      "segments_sim": 19
+    },
+    "crossing_paths_0016": {
+      "shared_annotations": 2208,
+      "center_err_med_boxnorm": 0.137,
+      "visibility_corr": -0.174,
+      "segments_mock": 10,
+      "segments_sim": 10
+    },
+    "crossing_paths_0019": {
+      "shared_annotations": 2400,
+      "center_err_med_boxnorm": 0.161,
+      "visibility_corr": 0.188,
+      "segments_mock": 9,
+      "segments_sim": 0
+    },
+    "crossing_paths_0022": {
+      "shared_annotations": 2657,
+      "center_err_med_boxnorm": 0.108,
+      "visibility_corr": -0.038,
+      "segments_mock": 8,
+      "segments_sim": 0
+    },
+    "crowd_merge_0002": {
+      "shared_annotations": 4000,
+      "center_err_med_boxnorm": 0.124,
+      "visibility_corr": -0.075,
+      "segments_mock": 26,
+      "segments_sim": 11
+    },
+    "crowd_merge_0005": {
+      "shared_annotations": 3600,
+      "center_err_med_boxnorm": 0.109,
+      "visibility_corr": 0.372,
+      "segments_mock": 21,
+      "segments_sim": 9
+    },
+    "crowd_merge_0008": {
+      "shared_annotations": 3600,
+      "center_err_med_boxnorm": 0.109,
+      "visibility_corr": 0.145,
+      "segments_mock": 26,
+      "segments_sim": 17
+    },
+    "crowd_merge_0011": {
+      "shared_annotations": 2304,
+      "center_err_med_boxnorm": 0.126,
+      "visibility_corr": 0.069,
+      "segments_mock": 7,
+      "segments_sim": 0
+    },
+    "crowd_merge_0014": {
+      "shared_annotations": 2400,
+      "center_err_med_boxnorm": 0.108,
+      "visibility_corr": 0.166,
+      "segments_mock": 5,
+      "segments_sim": 3
+    },
+    "crowd_merge_0017": {
+      "shared_annotations": 3435,
+      "center_err_med_boxnorm": 0.139,
+      "visibility_corr": 0.022,
+      "segments_mock": 18,
+      "segments_sim": 19
+    },
+    "crowd_merge_0020": {
+      "shared_annotations": 4000,
+      "center_err_med_boxnorm": 0.13,
+      "visibility_corr": 0.195,
+      "segments_mock": 28,
+      "segments_sim": 16
+    },
+    "crowd_merge_0023": {
+      "shared_annotations": 2400,
+      "center_err_med_boxnorm": 0.116,
+      "visibility_corr": 0.059,
+      "segments_mock": 5,
+      "segments_sim": 9
     }
   },
-  "failures": []
+  "failures": [
+    "behind_static_0003: visibility corr 0.00 < 0.5",
+    "behind_static_0006: visibility corr -0.28 < 0.5",
+    "behind_static_0009: visibility corr 0.03 < 0.5",
+    "behind_static_0012: visibility corr 0.09 < 0.5",
+    "behind_static_0018: visibility corr -0.42 < 0.5",
+    "behind_static_0021: visibility corr -0.03 < 0.5",
+    "crossing_paths_0001: visibility corr -0.57 < 0.5",
+    "crossing_paths_0004: visibility corr -0.55 < 0.5",
+    "crossing_paths_0007: visibility corr -0.01 < 0.5",
+    "crossing_paths_0010: visibility corr -0.05 < 0.5",
+    "crossing_paths_0013: visibility corr -0.16 < 0.5",
+    "crossing_paths_0016: visibility corr -0.17 < 0.5",
+    "crossing_paths_0019: visibility corr 0.19 < 0.5",
+    "crossing_paths_0022: visibility corr -0.04 < 0.5",
+    "crowd_merge_0002: visibility corr -0.07 < 0.5",
+    "crowd_merge_0005: visibility corr 0.37 < 0.5",
+    "crowd_merge_0008: visibility corr 0.15 < 0.5",
+    "crowd_merge_0011: visibility corr 0.07 < 0.5",
+    "crowd_merge_0014: visibility corr 0.17 < 0.5",
+    "crowd_merge_0017: visibility corr 0.02 < 0.5",
+    "crowd_merge_0020: visibility corr 0.20 < 0.5",
+    "crowd_merge_0023: visibility corr 0.06 < 0.5"
+  ]
 }
