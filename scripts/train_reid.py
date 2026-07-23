@@ -235,7 +235,7 @@ def main() -> int:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--sources", nargs="+", default=["mot17_dev"],
-                    choices=["mot17_dev", "sim"])
+                    choices=["mot17_dev", "sim", "mot20", "market1501"])
     ap.add_argument("--epochs", type=int, default=25)
     ap.add_argument("--batches-per-epoch", type=int, default=200)
     ap.add_argument("--batch-p", type=int, default=16)
