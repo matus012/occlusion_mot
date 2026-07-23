@@ -203,7 +203,7 @@ def main() -> int:
         # semantic tags proved fragile. Ground truth instead: hide each walker for one
         # tick and diff the instance images — changed pixels inside its projected bbox
         # are its silhouette, their modal id its renderer id. Deterministic, per-run.
-        def read_inst() -> "np.ndarray":
+        def read_inst() -> np.ndarray:
             world.tick()
             _ = queues["rgb"].get(timeout=10.0)
             im = queues["iseg"].get(timeout=10.0)

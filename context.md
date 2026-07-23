@@ -142,6 +142,20 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   CarlaUE4-Win64-Shipping.exe. Boot verified: Town10HD_Opt, RPC on :2000, ~7GB VRAM
   during shader compile. uv-managed py3.10 needed --python <explicit exe path> for venv
   creation (uv 0.11.30 minor-version-link bug on Windows).
+- **D23 (2026-07-23) G4 frozen — sim feeder validated; what the validation may claim.**
+  24 CARLA scenarios rendered (Town10HD, deterministic teleport paths), 223 occlusion
+  segments, exact per-walker visibility via isolation-calibrated instance ids.
+  Validation lessons burned in: (a) cross-backend visibility correlation is structurally
+  unsound where occluder PROPS differ from spec slabs (a mock walker lingering in a
+  spec-box shadow reads "always hidden" while the sim correctly sees it — walker-6 case);
+  (b) the gate now tests inter-walker occlusion only (identical geometry in both
+  backends), outside static shadows, with a per-scenario hard floor 0.35 (sign/axis bugs
+  read ~0) and cross-scenario median >= 0.5 (slab noise floor ~0.45 in densest crowds);
+  (c) absolute sim-GT sanity bounds apply everywhere (p75 vis >= 0.85, deep-occl <= 0.45).
+  Center-err median 0.09-0.16 boxnorm across all 24. Buggy render sets preserved as
+  carla_render_v1_buggy / _v2_buggy pending user approval to delete (~35GB).
+  Re-ID dataset extracted from v3: 161 identities, 59,563 crops (occlusion-tagged),
+  identity-disjoint 131/30 split -> data/sim/reid (phase 6 training input, PERUN).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
