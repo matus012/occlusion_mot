@@ -3,22 +3,22 @@
     "behind_static_0000": {
       "shared_annotations": 2400,
       "center_err_med_boxnorm": 0.111,
-      "walker_vis_corr": null,
-      "n_shadowfree_dips": 6,
+      "walker_vis_corr": 0.536,
+      "n_shadowfree_dips": 18,
       "segments_mock": 1,
       "segments_sim": 1,
-      "sim_p75_vis": 0.995,
-      "sim_frac_deep_occl": 0.001
+      "sim_p75_vis": 0.998,
+      "sim_frac_deep_occl": 0.016
     },
     "behind_static_0003": {
       "shared_annotations": 2400,
-      "center_err_med_boxnorm": 0.093,
-      "walker_vis_corr": 0.682,
-      "n_shadowfree_dips": 120,
+      "center_err_med_boxnorm": 0.094,
+      "walker_vis_corr": 0.823,
+      "n_shadowfree_dips": 125,
       "segments_mock": 4,
       "segments_sim": 4,
       "sim_p75_vis": 0.993,
-      "sim_frac_deep_occl": 0.032
+      "sim_frac_deep_occl": 0.036
     },
     "behind_static_0006": {
       "shared_annotations": 1269,
@@ -27,24 +27,24 @@
       "n_shadowfree_dips": 0,
       "segments_mock": 1,
       "segments_sim": 1,
-      "sim_p75_vis": 0.99,
-      "sim_frac_deep_occl": 0.005
+      "sim_p75_vis": 0.984,
+      "sim_frac_deep_occl": 0.002
     },
     "behind_static_0009": {
       "shared_annotations": 1600,
-      "center_err_med_boxnorm": 0.132,
+      "center_err_med_boxnorm": 0.133,
       "walker_vis_corr": null,
-      "n_shadowfree_dips": 5,
+      "n_shadowfree_dips": 3,
       "segments_mock": 2,
-      "segments_sim": 0,
-      "sim_p75_vis": 0.992,
+      "segments_sim": 1,
+      "sim_p75_vis": 0.994,
       "sim_frac_deep_occl": 0.015
     },
     "behind_static_0012": {
       "shared_annotations": 1357,
       "center_err_med_boxnorm": 0.095,
-      "walker_vis_corr": 0.625,
-      "n_shadowfree_dips": 30,
+      "walker_vis_corr": 0.606,
+      "n_shadowfree_dips": 34,
       "segments_mock": 2,
       "segments_sim": 2,
       "sim_p75_vis": 0.995,
@@ -56,19 +56,19 @@
       "walker_vis_corr": null,
       "n_shadowfree_dips": 6,
       "segments_mock": 0,
-      "segments_sim": 1,
-      "sim_p75_vis": 0.996,
-      "sim_frac_deep_occl": 0.017
+      "segments_sim": 0,
+      "sim_p75_vis": 0.997,
+      "sim_frac_deep_occl": 0.016
     },
     "behind_static_0018": {
       "shared_annotations": 2105,
       "center_err_med_boxnorm": 0.132,
-      "walker_vis_corr": 0.57,
-      "n_shadowfree_dips": 8,
+      "walker_vis_corr": 0.64,
+      "n_shadowfree_dips": 13,
       "segments_mock": 2,
       "segments_sim": 3,
-      "sim_p75_vis": 0.985,
-      "sim_frac_deep_occl": 0.202
+      "sim_p75_vis": 0.98,
+      "sim_frac_deep_occl": 0.188
     },
     "behind_static_0021": {
       "shared_annotations": 1322,
@@ -77,168 +77,168 @@
       "n_shadowfree_dips": 0,
       "segments_mock": 0,
       "segments_sim": 0,
-      "sim_p75_vis": 0.991,
-      "sim_frac_deep_occl": 0.002
+      "sim_p75_vis": 0.99,
+      "sim_frac_deep_occl": 0.001
     },
     "crossing_paths_0001": {
       "shared_annotations": 2255,
       "center_err_med_boxnorm": 0.103,
-      "walker_vis_corr": 0.922,
-      "n_shadowfree_dips": 344,
+      "walker_vis_corr": 0.921,
+      "n_shadowfree_dips": 356,
       "segments_mock": 11,
-      "segments_sim": 8,
-      "sim_p75_vis": 0.962,
-      "sim_frac_deep_occl": 0.13
+      "segments_sim": 10,
+      "sim_p75_vis": 0.939,
+      "sim_frac_deep_occl": 0.133
     },
     "crossing_paths_0004": {
       "shared_annotations": 2800,
       "center_err_med_boxnorm": 0.104,
-      "walker_vis_corr": 0.61,
+      "walker_vis_corr": 0.446,
       "n_shadowfree_dips": 143,
       "segments_mock": 16,
-      "segments_sim": 12,
-      "sim_p75_vis": 0.982,
-      "sim_frac_deep_occl": 0.025
+      "segments_sim": 10,
+      "sim_p75_vis": 0.97,
+      "sim_frac_deep_occl": 0.169
     },
     "crossing_paths_0007": {
       "shared_annotations": 2947,
-      "center_err_med_boxnorm": 0.137,
-      "walker_vis_corr": 0.756,
-      "n_shadowfree_dips": 313,
+      "center_err_med_boxnorm": 0.14,
+      "walker_vis_corr": 0.652,
+      "n_shadowfree_dips": 294,
       "segments_mock": 10,
-      "segments_sim": 12,
-      "sim_p75_vis": 0.975,
-      "sim_frac_deep_occl": 0.048
+      "segments_sim": 11,
+      "sim_p75_vis": 0.977,
+      "sim_frac_deep_occl": 0.049
     },
     "crossing_paths_0010": {
       "shared_annotations": 2669,
       "center_err_med_boxnorm": 0.15,
-      "walker_vis_corr": 0.56,
-      "n_shadowfree_dips": 282,
+      "walker_vis_corr": 0.751,
+      "n_shadowfree_dips": 483,
       "segments_mock": 12,
       "segments_sim": 10,
-      "sim_p75_vis": 0.988,
-      "sim_frac_deep_occl": 0.042
+      "sim_p75_vis": 0.982,
+      "sim_frac_deep_occl": 0.031
     },
     "crossing_paths_0013": {
       "shared_annotations": 3200,
-      "center_err_med_boxnorm": 0.136,
-      "walker_vis_corr": 0.78,
-      "n_shadowfree_dips": 222,
+      "center_err_med_boxnorm": 0.137,
+      "walker_vis_corr": 0.803,
+      "n_shadowfree_dips": 242,
       "segments_mock": 13,
-      "segments_sim": 15,
-      "sim_p75_vis": 0.981,
+      "segments_sim": 17,
+      "sim_p75_vis": 0.983,
       "sim_frac_deep_occl": 0.057
     },
     "crossing_paths_0016": {
       "shared_annotations": 2208,
       "center_err_med_boxnorm": 0.137,
-      "walker_vis_corr": 0.68,
-      "n_shadowfree_dips": 81,
+      "walker_vis_corr": 0.647,
+      "n_shadowfree_dips": 85,
       "segments_mock": 10,
-      "segments_sim": 10,
-      "sim_p75_vis": 0.979,
+      "segments_sim": 9,
+      "sim_p75_vis": 0.978,
       "sim_frac_deep_occl": 0.039
     },
     "crossing_paths_0019": {
       "shared_annotations": 2400,
       "center_err_med_boxnorm": 0.161,
-      "walker_vis_corr": 0.746,
-      "n_shadowfree_dips": 246,
+      "walker_vis_corr": 0.783,
+      "n_shadowfree_dips": 253,
       "segments_mock": 9,
-      "segments_sim": 7,
-      "sim_p75_vis": 0.99,
-      "sim_frac_deep_occl": 0.01
+      "segments_sim": 9,
+      "sim_p75_vis": 0.985,
+      "sim_frac_deep_occl": 0.014
     },
     "crossing_paths_0022": {
       "shared_annotations": 2657,
       "center_err_med_boxnorm": 0.108,
-      "walker_vis_corr": 0.657,
-      "n_shadowfree_dips": 224,
+      "walker_vis_corr": 0.765,
+      "n_shadowfree_dips": 233,
       "segments_mock": 8,
-      "segments_sim": 7,
-      "sim_p75_vis": 0.986,
-      "sim_frac_deep_occl": 0.01
+      "segments_sim": 8,
+      "sim_p75_vis": 0.981,
+      "sim_frac_deep_occl": 0.011
     },
     "crowd_merge_0002": {
       "shared_annotations": 4000,
       "center_err_med_boxnorm": 0.124,
-      "walker_vis_corr": 0.689,
-      "n_shadowfree_dips": 780,
+      "walker_vis_corr": 0.467,
+      "n_shadowfree_dips": 741,
       "segments_mock": 26,
-      "segments_sim": 28,
-      "sim_p75_vis": 0.975,
-      "sim_frac_deep_occl": 0.037
+      "segments_sim": 25,
+      "sim_p75_vis": 0.967,
+      "sim_frac_deep_occl": 0.133
     },
     "crowd_merge_0005": {
       "shared_annotations": 3600,
       "center_err_med_boxnorm": 0.107,
-      "walker_vis_corr": 0.845,
-      "n_shadowfree_dips": 265,
+      "walker_vis_corr": 0.878,
+      "n_shadowfree_dips": 280,
       "segments_mock": 21,
-      "segments_sim": 9,
-      "sim_p75_vis": 0.981,
-      "sim_frac_deep_occl": 0.047
+      "segments_sim": 15,
+      "sim_p75_vis": 0.974,
+      "sim_frac_deep_occl": 0.086
     },
     "crowd_merge_0008": {
       "shared_annotations": 3600,
       "center_err_med_boxnorm": 0.109,
-      "walker_vis_corr": 0.728,
-      "n_shadowfree_dips": 425,
+      "walker_vis_corr": 0.717,
+      "n_shadowfree_dips": 428,
       "segments_mock": 26,
       "segments_sim": 16,
-      "sim_p75_vis": 0.98,
+      "sim_p75_vis": 0.983,
       "sim_frac_deep_occl": 0.019
     },
     "crowd_merge_0011": {
       "shared_annotations": 2304,
       "center_err_med_boxnorm": 0.126,
-      "walker_vis_corr": 0.447,
-      "n_shadowfree_dips": 269,
+      "walker_vis_corr": 0.79,
+      "n_shadowfree_dips": 277,
       "segments_mock": 7,
-      "segments_sim": 9,
-      "sim_p75_vis": 0.988,
-      "sim_frac_deep_occl": 0.022
+      "segments_sim": 7,
+      "sim_p75_vis": 0.984,
+      "sim_frac_deep_occl": 0.026
     },
     "crowd_merge_0014": {
       "shared_annotations": 2400,
       "center_err_med_boxnorm": 0.108,
-      "walker_vis_corr": 0.9,
-      "n_shadowfree_dips": 226,
+      "walker_vis_corr": 0.955,
+      "n_shadowfree_dips": 224,
       "segments_mock": 5,
-      "segments_sim": 11,
-      "sim_p75_vis": 0.984,
-      "sim_frac_deep_occl": 0.09
+      "segments_sim": 9,
+      "sim_p75_vis": 0.977,
+      "sim_frac_deep_occl": 0.096
     },
     "crowd_merge_0017": {
       "shared_annotations": 3435,
       "center_err_med_boxnorm": 0.139,
-      "walker_vis_corr": 0.755,
-      "n_shadowfree_dips": 313,
+      "walker_vis_corr": 0.693,
+      "n_shadowfree_dips": 337,
       "segments_mock": 18,
-      "segments_sim": 27,
-      "sim_p75_vis": 0.966,
-      "sim_frac_deep_occl": 0.111
+      "segments_sim": 25,
+      "sim_p75_vis": 0.952,
+      "sim_frac_deep_occl": 0.131
     },
     "crowd_merge_0020": {
       "shared_annotations": 4000,
       "center_err_med_boxnorm": 0.13,
-      "walker_vis_corr": 0.773,
-      "n_shadowfree_dips": 910,
+      "walker_vis_corr": 0.46,
+      "n_shadowfree_dips": 903,
       "segments_mock": 28,
-      "segments_sim": 22,
-      "sim_p75_vis": 0.98,
-      "sim_frac_deep_occl": 0.03
+      "segments_sim": 23,
+      "sim_p75_vis": 0.978,
+      "sim_frac_deep_occl": 0.129
     },
     "crowd_merge_0023": {
       "shared_annotations": 2400,
       "center_err_med_boxnorm": 0.115,
-      "walker_vis_corr": 0.75,
-      "n_shadowfree_dips": 223,
+      "walker_vis_corr": 0.842,
+      "n_shadowfree_dips": 221,
       "segments_mock": 5,
-      "segments_sim": 8,
-      "sim_p75_vis": 0.983,
-      "sim_frac_deep_occl": 0.06
+      "segments_sim": 9,
+      "sim_p75_vis": 0.981,
+      "sim_frac_deep_occl": 0.038
     }
   },
   "failures": []

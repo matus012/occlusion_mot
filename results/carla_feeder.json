@@ -3,5 +3,5 @@
   "backend": "carla",
   "has_visibility_gt": true,
   "demo_runs": true,
-  "n_occlusion_segments": 223
+  "n_occlusion_segments": 225
 }

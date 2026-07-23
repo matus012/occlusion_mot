@@ -105,7 +105,10 @@ def main() -> int:
         scenario = OcclusionScenario.from_json(
             (carla_root / name / "scenario.json").read_text(encoding="utf-8")
         )
-        predicted = walker_only_vis_and_shadow(mock.gt, scenario)
+        # Predict from the SIM's own boxes (blueprint-true heights): this is an internal
+        # consistency check of the sim visibility pipeline — spec-height slabs in the
+        # mock diverge from real silhouettes as blueprint assortments vary (v4 lesson).
+        predicted = walker_only_vis_and_shadow(sim.gt, scenario)
         m_by, s_by = per_walker(mock.gt), per_walker(sim.gt)
         center_errs: list[float] = []
         vis_pairs: list[tuple[float, float]] = []  # (walker-only predicted, sim) shadow-free
