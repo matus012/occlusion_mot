@@ -75,7 +75,11 @@ G2a-paired must come from PERUN-scale identities and/or detector workstream.
 L4 DONE (D30): 3-arm dry-run — ImageNet 0.556 < sim-only 0.577 < sim+real 0.604 (dev,
 per-arm best gates); all paired tests n.s. at n~97; pipeline + effect direction
 validated, significance deferred to PERUN. viz/ablation_3arm_dev.png.
-Next: L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
+L5 DONE (D31): yolo11s ft on dev-half GT — dev pre_match 0.940, oracle 0.845, e2e
+0.458 geom / 0.494 full stack (CAVEAT: detector trained on dev half — optimistic;
+clean read only at val). G2b workstream mechanism validated locally.
+Next: L6 scaling-study runner; then (D26 queue) PERUN training + ablation, detector
+workstream at scale, D18 val request (with val taxonomy report), phase 7 demo.
 Then (D26 queue): PERUN training + ablation, detector workstream, D18 val request
 (with val taxonomy report), phase 7 demo.
 

@@ -258,6 +258,21 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   3-arm ablation is the PERUN run (mission phase 6). Artifacts:
   results/hidden_dev_simonly_app{30..50}.json, paired_g2a_dev_* (2 new),
   viz/ablation_3arm_dev.png.
+- **D31 (2026-07-23) L5: detector-finetune prototype validates the G2b workstream.**
+  yolo11s finetuned on MOT17 DEV-HALF GT only (10 ep, 960px, 2391 train / 266 monitor
+  frames; mAP50 0.940, recall 0.863); detections cached under NEW tag yolo11s_ft
+  (yolo11x cache untouched, D1 intact). Dev-half effect (config-matched geometric
+  baseline = hidden_dev_audit_geom.json): pre_match 0.780 -> 0.940, oracle ceiling
+  0.583 -> 0.845, e2e retention 0.310 -> 0.458, center-err 0.0040. Full stack (ft dets + conv embedder + app0.45): e2e 0.494
+  (yolo11x stack 0.345), assoc 0.589 @ n=141, center-err 0.0033. MANDATORY CAVEAT:
+  the detector TRAINED on dev-half frames, so all dev numbers in this entry are
+  optimistic (train-on-train for the detector); they demonstrate mechanism + headroom,
+  not expected val performance. The val protocol is clean by construction (detector
+  never saw val frames) — G2b at val runs on this arm per D26. Assoc-scope retention
+  moved little (0.531 -> 0.542 geometric), confirming G2a/G2b decomposition: the
+  detector moves the CEILING, the embedder moves retention WITHIN scope. Artifacts:
+  results/hidden_dev_ftdet_{geom,conv_app45}.json, viz/detector_arm_dev.png,
+  checkpoint data/models/det_finetune/y11s_proto (gitignored).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
