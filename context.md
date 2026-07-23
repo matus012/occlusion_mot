@@ -133,6 +133,15 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   Module named omot.sim (not carla) to avoid namespace collision. MockBackend is the
   projection/visibility reference implementation the CarlaBackend must agree with; mock
   runs write results/carla_feeder_mock.json — G4 stays PENDING until real-sim renders.
+  SERVER BRING-UP (2026-07-23): the CARLA zip lacks UE4PrereqSetup; on this machine
+  XINPUT1_3.dll + X3DAudio1_7.dll (DirectX Jun2010 redist) were missing -> exe dies with
+  STATUS_DLL_NOT_FOUND. Launched from the agent harness tree this shows as a SILENT
+  loader freeze (6MB RAM, 0 CPU, threads in LpcReply = hidden hard-error dialog); the
+  real exit code only surfaced via a Task Scheduler launch. Fix WITHOUT admin: extract
+  the two x64 DLLs from Microsoft's directx_Jun2010_redist.exe cabs next to
+  CarlaUE4-Win64-Shipping.exe. Boot verified: Town10HD_Opt, RPC on :2000, ~7GB VRAM
+  during shader compile. uv-managed py3.10 needed --python <explicit exe path> for venv
+  creation (uv 0.11.30 minor-version-link bug on Windows).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
