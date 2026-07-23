@@ -33,15 +33,20 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--backend", choices=["mock", "carla"], default="mock")
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "sim" / "scenarios")
+    ap.add_argument("--aggregate-only", action="store_true",
+                    help="skip rendering; aggregate already-rendered dirs under --out")
     args = ap.parse_args()
 
     scenarios = generate_scenarios(args.n, seed=args.seed)
-    save_scenarios(scenarios, args.out / "specs")
+    if not args.aggregate_only:
+        save_scenarios(scenarios, args.out / "specs")
     backend = MockBackend() if args.backend == "mock" else CarlaBackend()
 
     n_segments_total = 0
     for s in scenarios:
-        seq_dir = render_scenario(s, args.out, backend)
+        seq_dir = args.out / s.scenario_id
+        if not args.aggregate_only:
+            seq_dir = render_scenario(s, args.out, backend)
         seq = load_sequence(seq_dir)
         assert seq.gt is not None
         n_segments_total += len(extract_segments(seq.gt, min_len=3))

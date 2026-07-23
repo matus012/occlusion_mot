@@ -1,0 +1,12 @@
+{
+  "scenarios": {
+    "behind_static_0000": {
+      "shared_annotations": 2400,
+      "center_err_med_boxnorm": 0.11,
+      "visibility_corr": 0.835,
+      "segments_mock": 1,
+      "segments_sim": 1
+    }
+  },
+  "failures": []
+}

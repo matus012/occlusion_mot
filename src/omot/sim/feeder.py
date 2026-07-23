@@ -186,13 +186,41 @@ class MockBackend:
 
 
 class CarlaBackend:
-    """Real-sim rendering via a dedicated py3.10 client venv (D22). Not yet provisioned."""
+    """Real-sim rendering via the dedicated py3.10 client venv (D22).
+
+    Requires a running CARLA server (see context.md D22 bring-up notes). The driver
+    (scripts/sim_driver.py) runs as a subprocess under .venv-sim and writes the same
+    MOT-style layout as MockBackend; agreement is validated by
+    scripts/validate_sim_agreement.py (center err + visibility correlation).
+    """
+
+    def __init__(self, host: str = "localhost", port: int = 2000) -> None:
+        self.host = host
+        self.port = port
+        root = Path(__file__).resolve().parents[3]
+        self.sim_python = root / ".venv-sim" / "Scripts" / "python.exe"
+        self.driver = root / "scripts" / "sim_driver.py"
 
     def render(self, scenario: OcclusionScenario, out_dir: Path) -> Path:
-        raise NotImplementedError(
-            "CARLA backend requires the sim venv (scripts/setup_carla.ps1, D22); "
-            "the MockBackend is the reference implementation until then."
-        )
+        import subprocess
+        import tempfile
+
+        if not self.sim_python.exists():
+            raise FileNotFoundError(f"sim venv missing: {self.sim_python} (D22)")
+        with tempfile.TemporaryDirectory() as td:
+            spec = Path(td) / f"{scenario.scenario_id}.json"
+            spec.write_text(scenario.to_json(), encoding="utf-8")
+            r = subprocess.run(
+                [str(self.sim_python), str(self.driver), str(spec), str(out_dir),
+                 "--host", self.host, "--port", str(self.port)],
+                capture_output=True, text=True, timeout=1800,
+            )
+        if r.returncode != 0 or "SIM_RENDER_OK" not in r.stdout:
+            raise RuntimeError(
+                f"sim_driver failed for {scenario.scenario_id}:\n"
+                f"{r.stdout[-1500:]}\n{r.stderr[-1500:]}"
+            )
+        return out_dir / scenario.scenario_id
 
 
 def render_scenario(
