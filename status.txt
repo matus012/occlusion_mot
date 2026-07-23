@@ -40,15 +40,18 @@ phase 5 state:
   agreement validation 24/24 (results/sim_agreement.json). Re-ID dataset extracted:
   161 identities / 59,563 crops, identity-disjoint split (data/sim/reid).
 
-phase 6 (next): train occlusion-robust re-ID embedding on data/sim/reid
-1. training script (torch, triplet/arcface on identity labels, occlusion-tagged sampling);
-   prototype locally on 4060 (small epochs), full run on PERUN (SLURM launcher per D8)
-2. swap trained embedder into embed cache (embed.py is swappable by design, D20),
-   re-run cache_embeddings, re-grid appearance gates on dev half
-3. sim2real ablation: trained-on-sim vs ImageNet baseline on MOT17 dev (thesis centerpiece)
-4. if dev retention still < 0.55 -> amendment proposal WITH ceiling analysis (D19)
-5. then: D18 val-run request; phase 7 demo video + README
+phase 6 state (HALTED at D19/D25 amendment decision):
+- two-source re-ID dataset (D24): sim 45 blueprints / 58.2k crops (v4 renders, all
+  blueprints), mot17_dev 335 ids / 46.9k crops. Trainer + embedder-swap plumbing done.
+- proto embedding (5 local epochs): occ-rank1 0.888 retrieval; tracker-level dev grid 4:
+  best retention 0.345 @ app40 (progression 0.292/0.310/0.327/0.345), center-err 0.0055.
+- D25 ceiling analysis: oracle-association ceiling 0.584 (detector-capped); frozen 0.55
+  = 94% of oracle; frozen coverage 0.90 arithmetically unattainable (pre-match cap 0.768;
+  conditional coverage already 0.914).
 
-cleanup pending user approval: delete carla_render_v1_buggy + _v2_buggy (~35GB)
+USER DECISION NEEDED (D25): amend retention to >= 0.45 association-only, or keep 0.55 +
+add detector-upgrade workstream (MOT-finetune on PERUN); coverage -> conditional >= 0.90.
+Then: full PERUN training (access in flight, user side), sim2real 3-arm ablation,
+D18 val-run request, phase 7 demo.
 
-blockers: none
+blockers: D25 amendment decision (user)

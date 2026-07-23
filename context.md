@@ -166,6 +166,23 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   (3) MOT17 DEV-HALF tracklet identities added as a real-domain source (D18-compliant):
   335 identities / 46,859 crops with GT visibility tags. Sim2real ablation now 3-armed:
   ImageNet vs sim-only vs sim+dev-real.
+- **D25 (2026-07-23) Trained-embedder dev results + G2 ceiling analysis (amendment
+  proposal per D19 standing note — decision is the user's).**
+  Grid 4 (proto embedder, 5 local epochs, sim+dev-real): best retention 0.345 @ app-gate
+  0.40 (baseline 0.292 -> geometric 0.310 -> ImageNet 0.327 -> proto 0.345); center-err
+  0.0055 (best measured; frozen threshold 0.015 passes with 2.7x margin).
+  CEILING ANALYSIS: oracle-association retention ceiling on dev = 0.584 (taxonomy: 22%
+  never tracked pre-gap + 20% no detection at re-emergence are DETECTOR-capped, untouchable
+  by any association/re-ID improvement). Frozen retention target 0.55 = 94% of oracle.
+  Frozen coverage target 0.90 is ARITHMETICALLY UNATTAINABLE: coverage counts all segments
+  but is hard-capped by pre-match rate (0.768 dev); conditional coverage (pre-matched
+  segments only) is already 0.914.
+  PROPOSED AMENDMENT (user decides): (a) retention >= 0.45 for the association-only
+  scope (77% of oracle; current best 0.345, full PERUN training pending), or keep 0.55
+  contingent on adding a detector-upgrade workstream (MOT-finetuned detector on PERUN
+  raises the ceiling itself; anticipated in D2); (b) redefine coverage as conditional on
+  pre-matched segments, threshold 0.90 (definitional fix of an impossible criterion, not
+  a weakening — unconditional 0.90 > pre-match ceiling 0.768).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

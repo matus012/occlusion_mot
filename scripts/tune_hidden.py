@@ -23,10 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PY = ROOT / ".venv" / "Scripts" / "python.exe"
 
 BUFFER = 90  # grid 1 showed buffer size is not the binding constraint (taxonomy: 0 expiries)
-# grid 3 (phase 5a): appearance gates around the phase-4 pick (kf/noise1, d100, g15)
-APP_GATES = [-1.0, 0.25, 0.35, 0.45]  # -1 = off; applied to both lost + recover vetoes
+# grid 4 (phase 6): appearance gates with the TRAINED embedder (distance scale differs
+# from ImageNet features -> wider sweep); -1 = off reference
+APP_GATES = [-1.0, 0.2, 0.3, 0.4, 0.5]
 RECOVER_GATES = [1.5, 3.0]
 OVERLAP = 0.25
+EMBEDDER_TAG = "proto"
 
 
 def run_combo(
@@ -41,6 +43,8 @@ def run_combo(
         "--noise-scale", str(noise), "--lowconf-mode", mode,
         "--app-gate-lost", str(app_gate), "--app-gate-recover", str(app_gate),
     ]
+    if app_gate > 0:
+        cmd += ["--embedder-tag", EMBEDDER_TAG]
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT, timeout=900)
     if r.returncode != 0:
         raise RuntimeError(f"{tag} failed:\n{r.stdout[-1500:]}\n{r.stderr[-1500:]}")
