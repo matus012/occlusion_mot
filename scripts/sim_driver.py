@@ -108,6 +108,8 @@ def main() -> int:
     ap.add_argument("--host", default="localhost")
     ap.add_argument("--port", type=int, default=2000)
     ap.add_argument("--anchor-spawn", type=int, default=0)
+    ap.add_argument("--debug-votes", action="store_true",
+                    help="dump the walker<->instance-id vote matrix to votes_debug.json")
     args = ap.parse_args()
 
     spec = json.loads(args.scenario.read_text(encoding="utf-8"))
@@ -135,7 +137,13 @@ def main() -> int:
         bp_lib = world.get_blueprint_library()
 
         # --- walkers (deterministic blueprint choice per id) --------------------------
-        walker_bps = sorted(bp_lib.filter("walker.pedestrian.*"), key=lambda b: b.id)
+        # Child pedestrian models (0009-0014) fail to render via teleport spawning on
+        # this setup (calibration reads only scenery where they stand) — excluded.
+        child_models = {f"walker.pedestrian.{i:04d}" for i in range(9, 15)}
+        walker_bps = sorted(
+            (b for b in bp_lib.filter("walker.pedestrian.*") if b.id not in child_models),
+            key=lambda b: b.id,
+        )
         walkers: dict[int, carla.Actor] = {}
         for slot, wspec in enumerate(spec["walkers"]):
             bp = walker_bps[wspec["walker_id"] % len(walker_bps)]
@@ -154,6 +162,7 @@ def main() -> int:
             actor.set_transform(carla.Transform(frame_conv.to_world(lx, ly, 1.1)))
             walkers[wspec["walker_id"]] = actor
             actors.append(actor)
+            print(f"WALKER {wspec['walker_id']} actor_id={actor.id}")
 
         # --- occluders: best-fit static props ----------------------------------------
         prop_ids = ["static.prop.container", "static.prop.box03", "static.prop.box02"]
@@ -189,15 +198,63 @@ def main() -> int:
             actors.append(cam)
         k = build_intrinsics(img_w, img_h, spec["cam_fov_deg"])
 
+        # --- instance-id calibration -------------------------------------------------
+        # Renderer instance ids are scene-internal (NOT actor ids) and heuristics over
+        # semantic tags proved fragile. Ground truth instead: hide each walker for one
+        # tick and diff the instance images — changed pixels inside its projected bbox
+        # are its silhouette, their modal id its renderer id. Deterministic, per-run.
+        def read_inst() -> "np.ndarray":
+            world.tick()
+            _ = queues["rgb"].get(timeout=10.0)
+            im = queues["iseg"].get(timeout=10.0)
+            s = np.frombuffer(im.raw_data, dtype=np.uint8).reshape(img_h, img_w, 4)
+            return s[:, :, 1].astype(np.int32) + s[:, :, 2].astype(np.int32) * 256
+
+        # Isolation protocol: all walkers underground, then one at a time at a clear
+        # spot in front of the camera — its bbox then contains only itself, so the
+        # modal id is exact regardless of t=0 occlusion or off-screen starts.
+        inst_id_of: dict[int, int] = {}
+        underground = {
+            wid: carla.Transform(
+                carla.Location(
+                    a.get_transform().location.x, a.get_transform().location.y, -60.0
+                )
+            )
+            for wid, a in walkers.items()
+        }
+        for wid, actor in walkers.items():
+            actor.set_transform(underground[wid])
+        read_inst()  # flush one tick with everyone hidden
+        calib_spot = frame_conv.to_world(6.0, 0.0, 1.1)
+        for wid, actor in walkers.items():
+            actor.set_transform(carla.Transform(calib_spot))
+            for _ in range(4):  # settle: transform latency + skeletal mesh streaming
+                read_inst()
+            inst = read_inst()
+            box = project_bbox(actor, cam_tf, k, img_w, img_h)
+            assert box is not None, f"walker {wid} invisible at calibration spot"
+            x1, y1 = max(0, int(box[0])), max(0, int(box[1]))
+            x2 = min(img_w, int(box[0] + box[2]) + 1)
+            y2 = min(img_h, int(box[1] + box[3]) + 1)
+            patch = inst[y1:y2, x1:x2]
+            cand = patch[patch != 0]
+            assert len(cand) > 50, f"walker {wid}: too few silhouette pixels at calibration"
+            ids, counts = np.unique(cand, return_counts=True)
+            inst_id_of[wid] = int(ids[np.argmax(counts)])
+            actor.set_transform(underground[wid])
+        for wspec in spec["walkers"]:  # restore everyone to their t=0 path positions
+            lx, ly = walker_pos(wspec["waypoints"], wspec["speed"], 0.0)
+            walkers[wspec["walker_id"]].set_transform(
+                carla.Transform(frame_conv.to_world(lx, ly, 1.1))
+            )
+        read_inst()  # settle before frame 1
+        print(f"CALIBRATED_IDS {inst_id_of}")
+        assert len(set(inst_id_of.values())) == len(inst_id_of), "duplicate instance ids"
+
         # --- main loop -------------------------------------------------------------------
-        # Visibility is resolved in TWO passes. Pass 1 (here): per (frame, walker) store
-        # the joint (semantic_tag, instance_id) pixel histogram inside a padded bbox.
-        # Pass 2 (below): self-calibrate the pedestrian tag, assign walker<->instance id
-        # one-to-one from global votes, then count only the assigned id per frame.
-        # (A naive per-frame modal vote counts the OCCLUDER's id when the walker is
-        # hidden — the bug that produced systematically deflated visibility.)
+        # Per frame: count each walker's calibrated instance id inside its padded bbox.
         raw_rows: list[list[float]] = []  # frame, wid, tlwh
-        hists: dict[tuple[int, int], dict[tuple[int, int], int]] = {}
+        vis_px: dict[tuple[int, int], int] = {}  # (frame, wid) -> visible pixels
         for fidx in range(1, n_frames + 1):
             t = (fidx - 1) / fps
             for wspec in spec["walkers"]:
@@ -219,13 +276,15 @@ def main() -> int:
             cv2.imwrite(str(seq_dir / "img1" / f"{fidx:06d}.jpg"), rgb_arr[:, :, :3])
             seg = np.frombuffer(iseg.raw_data, dtype=np.uint8).reshape(img_h, img_w, 4)
             inst = seg[:, :, 1].astype(np.int32) + seg[:, :, 2].astype(np.int32) * 256
-            sem = seg[:, :, 0].astype(np.int32)
 
             for wid, actor in walkers.items():
                 box = project_bbox(actor, cam_tf, k, img_w, img_h)
                 if box is None:
                     continue
                 raw_rows.append([fidx, wid, *box.tolist()])
+                iid = inst_id_of.get(wid)
+                if iid is None:
+                    continue
                 pad_x, pad_y = box[2] * 0.15, box[3] * 0.08
                 x1 = max(0, int(box[0] - pad_x))
                 y1 = max(0, int(box[1] - pad_y))
@@ -233,64 +292,23 @@ def main() -> int:
                 y2 = min(img_h, int(box[1] + box[3] + pad_y) + 1)
                 if x2 <= x1 or y2 <= y1:
                     continue
-                joint = sem[y1:y2, x1:x2].ravel() * (1 << 20) + inst[y1:y2, x1:x2].ravel()
-                keys, counts = np.unique(joint, return_counts=True)
-                h: dict[tuple[int, int], int] = {}
-                for kk, c in zip(keys, counts, strict=True):
-                    s_tag, i_id = int(kk) >> 20, int(kk) & ((1 << 20) - 1)
-                    if i_id != 0:
-                        h[(s_tag, i_id)] = int(c)
-                hists[(fidx, wid)] = h
+                vis_px[(fidx, wid)] = int((inst[y1:y2, x1:x2] == iid).sum())
 
-        # --- pass 2: pedestrian tag, id assignment, visibility --------------------------
-        # Pedestrian semantic tag: the modal tag across all walker boxes in the first
-        # 10 frames (walkers start well separated at their path origins).
-        tag_votes: dict[int, int] = {}
-        for (fidx, _wid), h in hists.items():
-            if fidx <= 10:
-                for (s_tag, _iid), c in h.items():
-                    tag_votes[s_tag] = tag_votes.get(s_tag, 0) + c
-        assert tag_votes, "no segmentation pixels found in early frames"
-        ped_tag = max(tag_votes, key=lambda s: tag_votes[s])
-
-        votes: dict[int, dict[int, int]] = {}
-        for (_fidx, wid), h in hists.items():
-            for (s_tag, iid), c in h.items():
-                if s_tag == ped_tag:
-                    votes.setdefault(wid, {}).setdefault(iid, 0)
-                    votes[wid][iid] += c
-        flat = sorted(
-            ((c, wid, iid) for wid, d in votes.items() for iid, c in d.items()),
-            reverse=True,
-        )
-        assigned: dict[int, int] = {}
-        used_ids: set[int] = set()
-        for _c, wid, iid in flat:
-            if wid in assigned or iid in used_ids:
-                continue
-            assigned[wid] = iid
-            used_ids.add(iid)
-
+        # --- visibility post-pass: per-walker fill factor -------------------------------
         rows_by_walker: dict[int, list[list[float]]] = {}
         for r in raw_rows:
             rows_by_walker.setdefault(int(r[1]), []).append(r)
         gt_lines: list[str] = []
         for wid, rows in rows_by_walker.items():
-            iid = assigned.get(wid)
-            vis_px = {
-                int(r[0]): hists.get((int(r[0]), wid), {}).get((ped_tag, iid), 0)
-                for r in rows
-            } if iid is not None else {}
             fills = [
-                vis_px.get(int(r[0]), 0) / max(r[4] * r[5], 1.0)
-                for r in rows
+                vis_px.get((int(r[0]), wid), 0) / max(r[4] * r[5], 1.0) for r in rows
             ]
             plausible = [f for f in fills if 0.15 <= f <= 0.98]
             fill_ref = float(np.percentile(plausible, 90)) if plausible else 0.6
             fill_ref = max(fill_ref, 1e-3)
             for r in rows:
                 expected = max(r[4] * r[5] * fill_ref, 1.0)
-                vis = float(np.clip(vis_px.get(int(r[0]), 0) / expected, 0.0, 1.0))
+                vis = float(np.clip(vis_px.get((int(r[0]), wid), 0) / expected, 0.0, 1.0))
                 gt_lines.append(
                     f"{int(r[0])},{wid},{r[2]:.2f},{r[3]:.2f},{r[4]:.2f},{r[5]:.2f},"
                     f"1.0000,1,{vis:.4f}"
