@@ -59,8 +59,11 @@ Dev status under D26 gates (best config: b90 d1.0 g1.5 app0.40 proto embedder):
   center_err 0.0055 (PASS) | oracle_ceiling 0.577 | end-to-end 0.345 (G2b pending detector)
 
 LOCAL-MAX phase (user directive, see D27): L1 DONE (G2a audit -> D28 proposal >= 0.58
-PENDING user; audit table in context.md). Next: L2 viz/demo pipeline (D27 reference
-implementation), L3 local embedder to convergence, L4 3-arm ablation dry-run,
+PENDING user; audit table in context.md). L2 DONE 2026-07-23: render_dev_viz.py
+parameterized (any two tracker tags via CLI, --pngs-only iteration mode) + re-ID
+pre/post crop grid added; rendered hidden_audit_base vs hidden_d26best -> viz/
+(4 clips, summary grid 29.2%->34.5%, crops_assoc_scope.png 58/97 retained);
+reviewer APPROVE. Next: L3 local embedder to convergence, L4 3-arm ablation dry-run,
 L5 detector-finetune prototype (yolo11s, separate arm), L6 scaling-study runner.
 Then (D26 queue): PERUN training + ablation, detector workstream, D18 val request
 (with val taxonomy report), phase 7 demo.

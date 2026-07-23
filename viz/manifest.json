@@ -1,7 +1,10 @@
 {
-  "a1_pick_retains": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\a1_pick_retains_MOT17-04-FRCNN_t66_gap109_h264.mp4",
-  "a2_pick_retains": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\a2_pick_retains_MOT17-10-FRCNN_t23_gap71_h264.mp4",
-  "b_pick_tracker_failure": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\b_pick_tracker_failure_MOT17-02-FRCNN_t36_gap128_h264.mp4",
-  "c_detector_ceiling": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\c_detector_ceiling_MOT17-02-FRCNN_t68_gap145_h264.mp4",
+  "base_tag": "hidden_audit_base",
+  "pick_tag": "hidden_d26best",
+  "a1_pick_retains": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\a1_pick_retains_MOT17-04-FRCNN_t66_gap109.mp4",
+  "a2_pick_retains": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\a2_pick_retains_MOT17-10-FRCNN_t31_gap47.mp4",
+  "b_pick_tracker_failure": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\b_pick_tracker_failure_MOT17-02-FRCNN_t36_gap128.mp4",
+  "c_detector_ceiling": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\c_detector_ceiling_MOT17-02-FRCNN_t68_gap145.mp4",
+  "crops_png": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\crops_assoc_scope.png",
   "summary_png": "C:\\Users\\matus\\A_MAIN\\ws\\100_occlusion_mot\\viz\\summary_retention_grid.png"
 }

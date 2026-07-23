@@ -1,13 +1,16 @@
-"""Qualitative dev-half read-out: baseline (hidden_devbaseg1) vs pick (hidden_candidate).
+"""Qualitative dev-half read-out: any two tracker tags, side by side (D27 viz pipeline).
 
-Renders side-by-side MP4 clips for selected occlusion segments plus a per-segment
-retention-outcome PNG grid. READ-ONLY over existing artifacts — no tracking re-runs.
+Renders side-by-side MP4 clips for selected occlusion segments, a per-segment
+retention-outcome PNG grid, and a pre/post re-ID crop grid. READ-ONLY over existing
+artifacts — no tracking re-runs.
 
-Outputs to viz/ (mp4 files are gitignored; PNG is committable).
-Usage: .venv/Scripts/python.exe scripts/render_dev_viz.py
+Outputs to viz/ (mp4 files are gitignored; PNGs are committable).
+Usage: .venv/Scripts/python.exe scripts/render_dev_viz.py \
+    --base-tag hidden_audit_base --pick-tag hidden_d26best --pick-label "d26best"
 """
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import sys
@@ -30,11 +33,11 @@ logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
 log = logging.getLogger("render_dev_viz")
 
 ROOT = Path(__file__).resolve().parents[1]
-VIZ = ROOT / "viz"
-BASE_TAG, PICK_TAG = "hidden_devbaseg1", "hidden_candidate"
 PANEL_H = 540
 FPS = 10
 PAD_FRAMES = 15
+CROP_H = 128
+CROP_PAD = 0.15
 
 PALETTE = [(80, 175, 76), (180, 119, 31), (14, 127, 255), (44, 160, 44), (40, 39, 214),
            (189, 103, 148), (75, 86, 140), (194, 119, 227), (127, 127, 127), (34, 189, 188)]
@@ -132,6 +135,7 @@ def draw_panel(
 def render_clip(
     seq_name: str, seg: OcclusionSegment, base: TrackerData, pick: TrackerData,
     dets: dict[int, np.ndarray], gt_rows: np.ndarray, dest: Path, mid: int,
+    base_label: str, pick_label: str,
 ) -> None:
     seq = load_sequence(ROOT / "data" / "MOT17" / "train" / seq_name)
     out_b = outcome_for(seg, base)
@@ -143,8 +147,8 @@ def render_clip(
     for f in range(f0, f1 + 1):
         img = cv2.imread(str(seq.frame_path(f)))
         assert img is not None, f"missing frame {seq.frame_path(f)}"
-        left = draw_panel(img, f, base, dets, gt_rows, seg, out_b, "BASELINE")
-        right = draw_panel(img, f, pick, dets, gt_rows, seg, out_p, "PICK b90_d100_g15")
+        left = draw_panel(img, f, base, dets, gt_rows, seg, out_b, base_label)
+        right = draw_panel(img, f, pick, dets, gt_rows, seg, out_p, pick_label)
         canvas = np.hstack([left, right])
         if writer is None:
             writer = cv2.VideoWriter(
@@ -169,8 +173,80 @@ def render_clip(
     log.info("wrote %s (frames %d-%d, gap %d)", dest, f0, f1, seg.gap_length)
 
 
+def _crop_cell(
+    seq_name: str, seg: OcclusionSegment, out: Outcome,
+) -> np.ndarray:
+    """One grid cell: GT crop at last-visible | GT crop at re-emergence, outcome border."""
+    seq = load_sequence(ROOT / "data" / "MOT17" / "train" / seq_name)
+    halves = []
+    for frame, box in (
+        (seg.last_visible_frame, seg.last_visible_box),
+        (seg.reemergence_frame, seg.reemergence_box),
+    ):
+        img = cv2.imread(str(seq.frame_path(frame)))
+        assert img is not None, f"missing frame {seq.frame_path(frame)}"
+        x, y, w, h = box
+        px, py = w * CROP_PAD, h * CROP_PAD
+        x0, y0 = max(0, int(x - px)), max(0, int(y - py))
+        x1 = min(img.shape[1], int(x + w + px))
+        y1 = min(img.shape[0], int(y + h + py))
+        halves.append(cv2.resize(img[y0:y1, x0:x1], (64, CROP_H)))
+    cell = np.hstack([halves[0], np.full((CROP_H, 2, 3), 255, np.uint8), halves[1]])
+    color = (0, 160, 0) if out.category == "RETAINED" else (0, 0, 200)
+    cell = cv2.copyMakeBorder(cell, 3, 14, 3, 3, cv2.BORDER_CONSTANT, value=color)
+    cv2.putText(cell, f"gap {seg.gap_length}", (6, cell.shape[0] - 3),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
+    return cell
+
+
+def render_crop_grid(
+    per_seq: dict[str, dict], dest: Path, pick_label: str, max_cells: int = 36,
+) -> None:
+    """Pre/post GT crops for assoc-scope segments, bordered by the pick's outcome.
+
+    Green = retained, red = switched — the re-ID qualitative read-out: does the
+    re-emerged appearance visibly match the pre-gap appearance where we fail?
+    """
+    scoped: list[tuple[str, OcclusionSegment, Outcome]] = []
+    for seq_name, ctx in per_seq.items():
+        for s in ctx["segs"]:
+            op = outcome_for(s, ctx["pick"])
+            if op.category in ("RETAINED", "SWITCHED"):
+                scoped.append((seq_name, s, op))
+    n_ret = sum(o.category == "RETAINED" for _, _, o in scoped)
+    assert scoped, "no assoc-scope segments — wrong tag?"
+    scoped.sort(key=lambda t: (t[2].category != "SWITCHED", -t[1].gap_length))
+    cells = [_crop_cell(sq, s, o) for sq, s, o in scoped[:max_cells]]
+    cols = 6
+    rows = []
+    for i in range(0, len(cells), cols):
+        row = cells[i : i + cols]
+        row += [np.zeros_like(cells[0])] * (cols - len(row))
+        rows.append(np.hstack(row))
+    grid = np.vstack(rows)
+    header = np.full((34, grid.shape[1], 3), 25, np.uint8)
+    cv2.putText(
+        header,
+        f"{pick_label}: pre|post crops - retained {n_ret}/{len(scoped)}"
+        f" (top {min(max_cells, len(scoped))}, switched first)",
+        (8, 23), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1,
+    )
+    cv2.imwrite(str(dest), np.vstack([header, grid]))
+    log.info("wrote %s (%d cells)", dest, min(max_cells, len(scoped)))
+
+
 def main() -> int:
-    VIZ.mkdir(exist_ok=True)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base-tag", default="hidden_audit_base")
+    ap.add_argument("--pick-tag", default="hidden_d26best")
+    ap.add_argument("--base-label", default="BASELINE")
+    ap.add_argument("--pick-label", default="PICK")
+    ap.add_argument("--out-dir", type=Path, default=ROOT / "viz")
+    ap.add_argument("--pngs-only", action="store_true",
+                    help="skip MP4 clip rendering (cheap PNG iteration)")
+    args = ap.parse_args()
+    viz_dir: Path = args.out_dir
+    viz_dir.mkdir(exist_ok=True)
     seg_index = json.loads(
         (ROOT / "results" / "occlusion_segments.json").read_text(encoding="utf-8")
     )
@@ -180,8 +256,8 @@ def main() -> int:
     for seq_name, entry in seg_index["sequences"].items():
         if not entry["dev_half"]:
             continue
-        base = load_tracker(seq_name, BASE_TAG)
-        pick = load_tracker(seq_name, PICK_TAG)
+        base = load_tracker(seq_name, args.base_tag)
+        pick = load_tracker(seq_name, args.pick_tag)
         dets = load_cached_detections(
             cache_path(ROOT / "data" / "cache" / "detections", seq_name, "yolo11x")
         )
@@ -239,20 +315,33 @@ def main() -> int:
              len(wins), len(pick_fail), len(det_ceiling))
     assert chosen_wins and pick_fail and det_ceiling, "selection came up empty somewhere"
 
-    manifest: dict[str, str] = {}
+    mpath = viz_dir / "manifest.json"
+    manifest: dict[str, str] = (
+        json.loads(mpath.read_text(encoding="utf-8")) if args.pngs_only and mpath.exists()
+        else {}
+    )
+    manifest.update({"base_tag": args.base_tag, "pick_tag": args.pick_tag})
+    chosen_wins = [] if args.pngs_only else chosen_wins
     for i, (seq_name, s) in enumerate(chosen_wins, 1):
-        dest = VIZ / f"a{i}_pick_retains_{seq_name}_t{s.track_id}_gap{s.gap_length}.mp4"
+        dest = viz_dir / f"a{i}_pick_retains_{seq_name}_t{s.track_id}_gap{s.gap_length}.mp4"
         ctx = per_seq[seq_name]
         render_clip(seq_name, s, ctx["base"], ctx["pick"], ctx["dets"], ctx["gt"],
-                    dest, ctx["mid"])
+                    dest, ctx["mid"], args.base_label, args.pick_label)
         manifest[f"a{i}_pick_retains"] = str(dest)
-    for key, pool in (("b_pick_tracker_failure", pick_fail), ("c_detector_ceiling", det_ceiling)):
+    clip_pools = () if args.pngs_only else (
+        ("b_pick_tracker_failure", pick_fail), ("c_detector_ceiling", det_ceiling),
+    )
+    for key, pool in clip_pools:
         seq_name, s = pool[0]
-        dest = VIZ / f"{key}_{seq_name}_t{s.track_id}_gap{s.gap_length}.mp4"
+        dest = viz_dir / f"{key}_{seq_name}_t{s.track_id}_gap{s.gap_length}.mp4"
         ctx = per_seq[seq_name]
         render_clip(seq_name, s, ctx["base"], ctx["pick"], ctx["dets"], ctx["gt"],
-                    dest, ctx["mid"])
+                    dest, ctx["mid"], args.base_label, args.pick_label)
         manifest[key] = str(dest)
+
+    crop_png = viz_dir / "crops_assoc_scope.png"
+    render_crop_grid(per_seq, crop_png, args.pick_label)
+    manifest["crops_png"] = str(crop_png)
 
     # ---- summary PNG ----------------------------------------------------------------
     import matplotlib
@@ -267,9 +356,9 @@ def main() -> int:
         [[cat_code[b.category], cat_code[p.category]] for _, b, p, _ in rows_for_grid]
     )
     cmap = ListedColormap(["#2e7d32", "#c62828", "#9e9e9e", "#424242"])
-    fig, ax = plt.subplots(figsize=(6, max(8, len(grid) * 0.11)))
+    fig, ax = plt.subplots(figsize=(7.5, max(8, len(grid) * 0.11)))
     ax.imshow(grid, aspect="auto", cmap=cmap, vmin=0, vmax=3, interpolation="nearest")
-    ax.set_xticks([0, 1], ["baseline", "pick\nb90_d100_g15"])
+    ax.set_xticks([0, 1], [args.base_label, args.pick_label])
     boundaries, names, start = [], [], 0
     for seq_name, ctx in per_seq.items():
         n = len(ctx["segs"])
@@ -292,12 +381,12 @@ def main() -> int:
         Patch(color="#424242", label="never tracked pre-gap"),
     ], loc="upper left", bbox_to_anchor=(1.02, 1.0), fontsize=8)
     fig.tight_layout()
-    png = VIZ / "summary_retention_grid.png"
+    png = viz_dir / "summary_retention_grid.png"
     fig.savefig(png, dpi=150)
     manifest["summary_png"] = str(png)
     log.info("wrote %s", png)
 
-    (VIZ / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    mpath.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     for k, v in manifest.items():
         log.info("%s: %s", k, v)
     return 0
