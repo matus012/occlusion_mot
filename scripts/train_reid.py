@@ -64,6 +64,36 @@ def load_items(sources: list[str]) -> tuple[list[dict], list[dict]]:
     return train, val
 
 
+def subsample_identities(
+    train: list[dict], sources: list[str], frac: float, seed: int
+) -> list[dict]:
+    """Subsample TRAIN identities per source to round(frac * n_ids), nested across fracs.
+
+    D29 identity-scaling study: for a fixed seed, the identity set kept at frac f1 < f2
+    is a strict subset of the set kept at f2, because both are prefixes of the SAME
+    seeded shuffle of the sorted identity list (i.e. we shuffle once per source, then
+    slice a prefix -- shrinking frac only ever drops identities off the tail).
+    """
+    assert 0.0 < frac <= 1.0, f"identity-frac must be in (0, 1], got {frac}"
+    if frac >= 1.0:
+        return train
+    by_source: dict[str, set[str]] = defaultdict(set)
+    for rec in train:
+        src = rec["identity"].split("/", 1)[0]
+        by_source[src].add(rec["identity"])
+    keep: set[str] = set()
+    for src in sources:
+        idents = sorted(by_source.get(src, set()))
+        rng = random.Random(seed)
+        rng.shuffle(idents)
+        n_keep = max(1, round(frac * len(idents))) if idents else 0
+        kept = idents[:n_keep]
+        keep.update(kept)
+        logger.info("identity-frac=%.3f source=%s: kept %d/%d identities",
+                    frac, src, len(kept), len(idents))
+    return [rec for rec in train if rec["identity"] in keep]
+
+
 class ReidDataset:
     def __init__(self, items: list[dict], training: bool) -> None:
         import torch  # noqa: F401
@@ -214,11 +244,22 @@ def main() -> int:
     ap.add_argument("--device", default=None)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--tag", default="reid")
+    ap.add_argument("--identity-frac", type=float, default=1.0,
+                    help="D29 scaling study: subsample TRAIN identities to this fraction "
+                         "(nested prefix of a seeded shuffle, per source)")
+    ap.add_argument("--identity-seed", type=int, default=0,
+                    help="seed for --identity-frac subsampling (independent of --seed)")
     args = ap.parse_args()
+    assert 0.0 < args.identity_frac <= 1.0, \
+        f"--identity-frac must be in (0, 1], got {args.identity_frac}"
 
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     set_seeds(args.seed)
     train_items, val_items = load_items(args.sources)
+    if args.identity_frac < 1.0:
+        train_items = subsample_identities(
+            train_items, args.sources, args.identity_frac, args.identity_seed
+        )
     train_ds = ReidDataset(train_items, training=True)
     val_ds = ReidDataset(val_items, training=False)
     logger.info("sources=%s train: %d crops / %d ids; val: %d crops / %d ids; device=%s",
@@ -262,7 +303,9 @@ def main() -> int:
             torch.save(
                 {"state_dict": model.state_dict(), "embed_dim": EMBED_DIM,
                  "arch": "resnet18_bnneck", "sources": args.sources,
-                 "metrics": metrics, "seed": args.seed},
+                 "metrics": metrics, "seed": args.seed,
+                 "identity_frac": args.identity_frac, "identity_seed": args.identity_seed,
+                 "n_train_ids": len(train_ds.by_identity)},
                 ckpt_path,
             )
     logger.info("BEST %s -> %s", best, ckpt_path)
