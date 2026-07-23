@@ -347,6 +347,25 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   tracker-level claims). (5) val_manifest.md untouched (training pools only).
   (6) Final artifact before PERUN submission approval: sweep design doc v2
   (log-scale pools ~300/~1k/~2k/~4k, >= 3 seeds, arms A-D, GPUh per arm).
+- **D38 (2026-07-23) Split-policy correction [user], applied BEFORE extraction.**
+  (1) MOT20 identity budget: per-sequence stratified, seeded, identity-disjoint
+  80/20 train/eval (was 85/15); manifest-pinned via split_manifest_sha256 in
+  index.json (sha256 over sorted identity:split lines — drift-detectable). Train
+  share joins arm C/D pools; eval share extends the OCCLUDED-QUERY protocol only —
+  NOT tracker val (MOT17 val-half remains the only tracker val). (2) Disjointness
+  guard: tests/test_disjointness_guard.py — zero namespaced-identity overlap between
+  any training pool and the occluded-query eval set across all four sources;
+  market1501 must contribute ZERO eval ids (no vis GT); mot20 manifest re-hash check;
+  runs in G3 like the license guard (skips gracefully on data-less clones).
+  (3) Visibility bounds, explicit + logged (train_reid.py constants): queries vis in
+  [0.10, 0.50), gallery vis >= 0.60. Derived from the MOT20 GT vis distribution
+  (MOT20-01/02, 174.6k ped rows): vis=0 5-9%, (0,0.1) 12-14% — pixel-less slivers,
+  unanswerable as queries -> Q_LO=0.10; Q_HI=0.50 matches the D14 occlusion boundary;
+  [0.5,0.6) is 7-8% boundary-ambiguous mass -> G_LO=0.60 gives a clean visible-gallery
+  margin. Extraction min-vis: 0.0 -> 0.10 (the coder's min-vis=0 intent — feeding
+  low-vis crops to the occluded-query protocol — survives: the [0.1,0.5) band is fully
+  retained; only sliver crops are dropped). NOTE: occ_rank1 numbers under the new
+  bounds are NOT comparable to pre-D38 values (protocol refinement).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

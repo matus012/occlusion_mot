@@ -14,18 +14,23 @@ namespaced the same way as the mot17-dev source so train_reid.py's --sources mot
 no special-casing.
 
 GT filtering: class == 1 (pedestrian), conf flag == 1 (per the MOT20 gt.txt spec, conf==1
-marks in-evaluation rows). Visibility tag comes straight from gt col 8, uncapped by a
-min-vis floor by default (min-vis=0.0) — unlike mot17-dev's extractor, the low-visibility
-rows are exactly what the occluded-query protocol needs in val.
+marks in-evaluation rows). Visibility tag comes straight from gt col 8. D38: extraction
+is BOUNDED at min-vis 0.1 — vis < 0.1 rows (14-22% of MOT20 GT) are pixel-less slivers,
+useless as training positives or answerable queries; the occluded-query band [0.1, 0.5)
+is fully retained (the original min-vis=0 intent — keeping low-vis crops for the
+occluded-query protocol — survives the bound).
 
 Per-identity sampling: identities with fewer than --min-crops eligible rows are dropped
 (too little signal for triplet mining); dense identities are capped at
 --max-crops-per-id, sampled evenly across their frame span (np.linspace over the
 frame-sorted row list) rather than truncated, so early/mid/late appearance is preserved.
 
-Split hints: identity-disjoint, seeded 85/15 train/val PER SEQUENCE (--val-fraction,
---seed) — deterministic via random.Random(f"{seed}:{seq_name}") so results/replays are
-reproducible independent of the mot17-dev/sim split_of() hash convention.
+Split hints (D38): identity-disjoint, seeded 80/20 train/eval PER SEQUENCE (stratified
+by sequence; --val-fraction, --seed) — deterministic via random.Random(f"{seed}:{seq_name}")
+and MANIFEST-PINNED: index.json records split_manifest_sha256 over the sorted
+identity:split mapping, so any silent split drift is detectable. The "val" share is the
+OCCLUDED-QUERY EVAL set only (retrieval protocol) — NOT tracker-level val (MOT17
+val-half remains the only tracker val, D18).
 
 Usage:
   .venv/Scripts/python.exe scripts/extract_reid_mot20.py [--mot-root data/MOT20]
@@ -154,11 +159,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mot-root", type=Path, default=ROOT / "data" / "MOT20")
     ap.add_argument("--out", type=Path, default=None)
-    ap.add_argument("--min-vis", type=float, default=0.0)
+    ap.add_argument("--min-vis", type=float, default=0.1,
+                    help="D38 bound: drop pixel-less vis<0.1 slivers")
     ap.add_argument("--min-box-h", type=float, default=25.0)
     ap.add_argument("--max-crops-per-id", type=int, default=200)
     ap.add_argument("--min-crops", type=int, default=10)
-    ap.add_argument("--val-fraction", type=float, default=0.15)
+    ap.add_argument("--val-fraction", type=float, default=0.20,
+                    help="D38: identity-disjoint 80/20 train/eval per sequence")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
 
@@ -178,6 +185,11 @@ def main() -> int:
         logger.info("%s: %d crops extracted", seq.name, n)
 
     splits = {s: sum(1 for e in index.values() if e["split"] == s) for s in ("train", "val")}
+    import hashlib
+
+    split_lines = "\n".join(
+        f"{ident}:{entry['split']}" for ident, entry in sorted(index.items())
+    )
     meta = {
         "source": "mot20",
         "n_identities": len(index),
@@ -186,6 +198,9 @@ def main() -> int:
         "min_vis": args.min_vis,
         "seed": args.seed,
         "val_fraction": args.val_fraction,
+        "split_policy": "D38: per-sequence identity-disjoint 80/20 train/eval; "
+                        "eval side = occluded-query protocol only, never tracker val",
+        "split_manifest_sha256": hashlib.sha256(split_lines.encode("utf-8")).hexdigest(),
         "identities": index,
     }
     out.mkdir(parents=True, exist_ok=True)

@@ -3,8 +3,8 @@
 Recipe: ResNet18 trunk -> 256-d embedding (BN-neck), cross-entropy + batch-hard triplet,
 P x K identity sampling with low-visibility upweighting, random-erasing augmentation
 (synthetic occlusion). Eval: identity-disjoint val — standard rank-1/mAP plus the
-OCCLUDED-QUERY protocol (query vis < 0.5, gallery vis >= 0.5) — the metric aligned with
-the tracker's re-emergence gating job.
+OCCLUDED-QUERY protocol (D38 bounds: query vis in [0.10, 0.50), gallery vis >= 0.60) —
+the metric aligned with the tracker's re-emergence gating job.
 
 Ablation arms via --sources: mot17_dev | sim | mot17_dev sim.
 Local prototype: --epochs 5 on the 4060. Full run: PERUN (single-GPU per node is fine
@@ -36,6 +36,14 @@ logger = logging.getLogger("train_reid")
 ROOT = Path(__file__).resolve().parents[1]
 CROP_HW = (128, 64)
 EMBED_DIM = 256
+# D38 occluded-query visibility bounds (derived from the MOT20 GT vis distribution):
+# queries vis in [Q_LO, Q_HI) — Q_LO > 0 excludes pixel-less slivers (vis<0.1 is
+# 14-22% of MOT20 GT rows) that are unanswerable as queries; Q_HI = 0.5 matches the
+# D14 occlusion boundary. Gallery vis >= G_LO — the [0.5, 0.6) band (7-8% of rows)
+# is boundary-ambiguous; 0.6 gives a clean visible-gallery margin.
+QUERY_VIS_LO = 0.10
+QUERY_VIS_HI = 0.50
+GALLERY_VIS_LO = 0.60
 
 
 def set_seeds(seed: int) -> None:
@@ -225,7 +233,9 @@ def evaluate(model, ds: ReidDataset, device: str, max_queries: int = 800):  # no
 
     all_mask = np.ones(len(ds.items), bool)
     r1_all, map_all = retrieval(all_mask, all_mask)
-    r1_occ, map_occ = retrieval(vis < 0.5, vis >= 0.5)
+    r1_occ, map_occ = retrieval(
+        (vis >= QUERY_VIS_LO) & (vis < QUERY_VIS_HI), vis >= GALLERY_VIS_LO
+    )
     model.train()
     return {"rank1": r1_all, "mAP": map_all, "occ_rank1": r1_occ, "occ_mAP": map_occ}
 
@@ -265,6 +275,8 @@ def main() -> int:
     logger.info("sources=%s train: %d crops / %d ids; val: %d crops / %d ids; device=%s",
                 args.sources, len(train_items), len(train_ds.by_identity),
                 len(val_items), len(val_ds.by_identity), device)
+    logger.info("D38 occluded-query bounds: query vis [%.2f, %.2f), gallery vis >= %.2f",
+                QUERY_VIS_LO, QUERY_VIS_HI, GALLERY_VIS_LO)
 
     model = build_model(device)(n_classes=len(train_ds.by_identity)).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=5e-4)
