@@ -314,6 +314,21 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   to its JSON key; pre-registered expectations (G2a-paired underpowered pre-PERUN;
   floor margin ~0.4 sigma) prevent outcome re-narration. Val stays blocked on user
   approval; misses -> report + HALT (D18.3).
+- **D36 (2026-07-23) L6 local curve (3 fractions x 2 seeds + anchor, 25 ep) — D32's
+  smoke conclusion DOWNGRADED.** Assoc by (n_ids, seed): 76 -> 0.536/0.594;
+  152 -> 0.573/0.542; 229 -> 0.588/0.577; 305 -> 0.579 (seed 0). Seed-to-seed spread
+  (up to 5.8pt at fixed n_ids) is the same order as the whole 76->305 identity
+  effect: tracker-level G2a CANNOT resolve the identity slope at n~97 dev segments
+  over the current pool range — the smoke's clean +4.1pt (D32) was seed-0 luck.
+  What DOES resolve: occ_rank1 is monotone in identities for BOTH seeds
+  (76: 0.874-0.888 -> 152: 0.901-0.923 -> 229: 0.915-0.926 -> 305: 0.928), still
+  rising at 305 (decelerating). REVISED claim: identities scale re-ID quality
+  (retrieval-level, robust); the tracker-level payoff needs either order-of-magnitude
+  pool growth (2c data adds) or seed/segment aggregation to measure. PERUN sweep
+  design consequence: sweep pool sizes on a LOG scale incl. 2c-enlarged pools
+  (~300 -> ~2k -> ~4k+), score retrieval + multi-seed tracker means (>= 3 seeds),
+  and treat single-seed tracker deltas < ~6pt as noise. Artifacts:
+  results/scaling_curve_local.json, viz/scaling_curve_local.png (P2-writeup figure).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

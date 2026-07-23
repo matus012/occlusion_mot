@@ -91,8 +91,10 @@ POST-LOCAL-MAX CONSOLIDATION (user directive 2026-07-23, D33-D35):
   verified). Real-data option sheet delivered; recommendation MOT20-tracklets +
   Market-1501; AWAITING user data-source decision.
 - D35 val_manifest.md FROZEN (R1-R6, checksums pinned); val blocked on D18 approval.
-- L6 local curve RUNNING: 3 fractions x 2 seeds + full-pool anchor, 25 ep
-  (results/scaling_curve_local.json).
+- L6 local curve DONE (D36): seed noise (<= 5.8pt) swamps the tracker-level identity
+  slope at n~97; occ_rank1 monotone in identities for both seeds (0.874 -> 0.928,
+  still rising at 305). D32 smoke claim downgraded. PERUN sweep must use log-scale
+  pools (needs 2c data adds) + >= 3 seeds; single-seed tracker deltas < ~6pt = noise.
 
 Next (D26 queue): PERUN embedder training + 3-arm ablation (blocked: PERUN access),
 detector workstream at scale, D18 val request per val_manifest.md, phase 7 demo.

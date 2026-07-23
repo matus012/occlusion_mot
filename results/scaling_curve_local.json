@@ -1,0 +1,99 @@
+{
+  "config": {
+    "sources": [
+      "mot17_dev",
+      "sim"
+    ],
+    "epochs": 25,
+    "gate": {
+      "half": "dev",
+      "occl-buffer": "90",
+      "damping": "1.0",
+      "recover-gate": "1.5",
+      "overlap-thresh": "0.25",
+      "noise-scale": "1.0",
+      "lowconf-mode": "kf",
+      "app-gate-lost": "0.45",
+      "app-gate-recover": "0.45"
+    }
+  },
+  "results": [
+    {
+      "fraction": 0.25,
+      "identity_seed": 0,
+      "epochs": 25,
+      "n_train_ids": 76,
+      "occ_rank1": 0.8881889763779528,
+      "id_retention_assoc": 0.5360824742268041,
+      "n_assoc_scope": 97,
+      "id_retention": 0.30952380952380953,
+      "center_err": 0.007109365740364488
+    },
+    {
+      "fraction": 0.5,
+      "identity_seed": 0,
+      "epochs": 25,
+      "n_train_ids": 152,
+      "occ_rank1": 0.9228346456692913,
+      "id_retention_assoc": 0.5729166666666666,
+      "n_assoc_scope": 96,
+      "id_retention": 0.3273809523809524,
+      "center_err": 0.006462610801514137
+    },
+    {
+      "fraction": 0.75,
+      "identity_seed": 0,
+      "epochs": 25,
+      "n_train_ids": 229,
+      "occ_rank1": 0.925984251968504,
+      "id_retention_assoc": 0.5876288659793815,
+      "n_assoc_scope": 97,
+      "id_retention": 0.3392857142857143,
+      "center_err": 0.006391809968746441
+    },
+    {
+      "fraction": 1.0,
+      "identity_seed": 0,
+      "epochs": 25,
+      "n_train_ids": 305,
+      "occ_rank1": 0.9275590551181102,
+      "id_retention_assoc": 0.5789473684210527,
+      "n_assoc_scope": 95,
+      "id_retention": 0.3273809523809524,
+      "center_err": 0.006619501815275828
+    },
+    {
+      "fraction": 0.25,
+      "identity_seed": 1,
+      "epochs": 25,
+      "n_train_ids": 76,
+      "occ_rank1": 0.8740157480314961,
+      "id_retention_assoc": 0.59375,
+      "n_assoc_scope": 96,
+      "id_retention": 0.3392857142857143,
+      "center_err": 0.007019770323549061
+    },
+    {
+      "fraction": 0.5,
+      "identity_seed": 1,
+      "epochs": 25,
+      "n_train_ids": 152,
+      "occ_rank1": 0.9007874015748032,
+      "id_retention_assoc": 0.5416666666666666,
+      "n_assoc_scope": 96,
+      "id_retention": 0.30952380952380953,
+      "center_err": 0.007183722765002425
+    },
+    {
+      "fraction": 0.75,
+      "identity_seed": 1,
+      "epochs": 25,
+      "n_train_ids": 229,
+      "occ_rank1": 0.9149606299212598,
+      "id_retention_assoc": 0.5773195876288659,
+      "n_assoc_scope": 97,
+      "id_retention": 0.3333333333333333,
+      "center_err": 0.006428325425741921
+    }
+  ]
+}
