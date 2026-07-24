@@ -47,11 +47,41 @@ def test_no_tracked_binary_blobs_outside_fixtures() -> None:
     assert not offenders, f"serialized weights/embeddings tracked: {offenders}"
 
 
-def test_tracked_pngs_are_plots_only() -> None:
-    """PNGs are committable only as plots under viz/ or demo/ (D39 demo package —
-    CARLA-derived teaser/blueprint-grid PNGs), never as MOT/dataset crop grids."""
-    pngs = [f for f in tracked_files() if f.lower().endswith(".png")]
-    outside_viz = [f for f in pngs if not (f.startswith("viz/") or f.startswith("demo/"))]
-    assert not outside_viz, f"tracked PNGs outside viz/ or demo/: {outside_viz}"
-    crop_named = [f for f in pngs if Path(f).name.startswith("crops_")]
-    assert not crop_named, f"dataset-derived crop grids tracked: {crop_named}"
+# D41 (closes the D39 loophole): path prefixes cannot distinguish content classes —
+# a MOT crop grid under demo/ would have passed the old rule. Every tracked visual
+# must be EXPLICITLY classified here as "plot" (pure matplotlib, no dataset pixels)
+# or "carla-render" (synthetic sim content). Images containing ANY MOT17/MOT20
+# pixels (crop grids, annotated frames, clips) are the same class as demo clips:
+# local-only, gitignored, never allowlisted. Adding a new visual to the repo
+# requires adding it here — a deliberate human classification step.
+VISUAL_EXTS = (".png", ".gif", ".mp4", ".avi", ".webm", ".svg")
+ALLOWED_TRACKED_VISUALS: dict[str, str] = {
+    "viz/summary_retention_grid.png": "plot",
+    "viz/ablation_3arm_dev.png": "plot",
+    "viz/detector_arm_dev.png": "plot",
+    "viz/scaling_study.png": "plot",
+    "viz/scaling_curve_local.png": "plot",
+    "demo/s0_teaser.png": "carla-render",
+    "demo/s5_blueprint_grid.png": "carla-render",
+    "demo/s5_carla.mp4": "carla-render",
+}
+
+
+def test_tracked_visuals_are_allowlisted() -> None:
+    """Every tracked image/video must be explicitly classified (D41)."""
+    visuals = [f for f in tracked_files() if f.lower().endswith(VISUAL_EXTS)]
+    unclassified = [f for f in visuals if f not in ALLOWED_TRACKED_VISUALS]
+    assert not unclassified, (
+        f"tracked visuals not in the D41 allowlist (classify as 'plot' or "
+        f"'carla-render' in tests/test_license_guard.py, or keep them local): "
+        f"{unclassified}"
+    )
+
+
+def test_allowlist_itself_is_clean() -> None:
+    """The allowlist may never contain dataset-pixel content by construction."""
+    for path, cls in ALLOWED_TRACKED_VISUALS.items():
+        assert cls in ("plot", "carla-render"), f"{path}: unknown class {cls!r}"
+        assert not Path(path).name.startswith("crops_"), (
+            f"{path}: crop grids are dataset-derived, never allowlistable"
+        )

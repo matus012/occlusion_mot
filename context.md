@@ -402,6 +402,29 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   pre-registered decision rules incl. D>C verdict criteria and the D35 val-manifest
   interaction (PERUN winner at val requires user-approved manifest amendment).
   AWAITING user review of the doc before any PERUN submission.
+- **D41 (2026-07-24) History purge [user-approved] + guard-loophole fix.**
+  (1) PURGE: audited every image/video ever added across all refs (9 files);
+  exactly ONE contained dataset pixels: viz/crops_assoc_scope.png (MOT17 GT crops,
+  present in history 1a5a0ed..0d962da). Tool: git-filter-repo 2.47.0
+  (--invert-paths --path viz/crops_assoc_scope.png --force). Repo size-pack
+  17.55 -> 16.46 MiB; post-purge scan: zero occurrences in any ref. All commit
+  hashes from 1a5a0ed onward rewritten (new HEAD lineage); pre-purge backup bundle
+  at ..\occlusion_mot_prepurge_20260724.bundle (local only — contains the purged
+  content; delete after confidence window). Force-push to the private remote:
+  user-approved in the same directive, EXECUTED immediately after this commit lands
+  (this entry is written pre-push; remote verification logged in the response).
+  Local working-tree copy of the crop grid survives untracked
+  (regen: render_dev_viz --pngs-only). (2) GUARD FIX (D39
+  loophole, user-flagged): path-prefix allowlisting could not distinguish content
+  classes — a MOT crop grid under demo/ would have passed. Replaced with an
+  explicit per-file allowlist in tests/test_license_guard.py: every tracked visual
+  must be classified "plot" (pure matplotlib) or "carla-render" (synthetic);
+  8 files currently allowlisted; crop-grid names are unallowlistable by
+  construction; any new tracked visual fails CI until a human classifies it.
+  demo/ committed set re-verified under the fixed guard (teaser + blueprint grid +
+  s5 clip = carla-render; no README path changes needed — the crop grid already
+  lived untracked in viz/ with its regen command documented). Post-purge guard run:
+  130 tests green, ruff clean.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

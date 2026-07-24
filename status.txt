@@ -114,8 +114,13 @@ D39 demo package DONE (interleaved per directive): demo/README.md tour S0-S8 +
 Next (D26 queue): PERUN 4-arm ablation per doc v2 (blocked: PERUN access + doc
 approval), detector workstream at scale, D18 val request per val_manifest.md,
 phase 7 demo.
-blockers: perun_sweep_v2.md review (user); PERUN access (user); D18 val approval
-(user); crops-PNG history-purge approval (user, optional)
+D41 (2026-07-24): history purge executed locally (git-filter-repo,
+crops_assoc_scope.png gone from all refs, 17.55->16.46 MiB) + license guard rewritten
+to an explicit per-file visual allowlist (plot | carla-render; loophole closed).
+Force-push user-approved; executes immediately after this commit — until then
+origin/main sits on pre-purge hash 2a75843.
+
+blockers: perun_sweep_v2.md review (user); PERUN access (user); D18 val approval (user)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 
