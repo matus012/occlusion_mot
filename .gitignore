@@ -62,3 +62,9 @@ data/Market-1501/
 *.bmp
 *.webp
 viz/crops_*.png
+
+# D42 wild-clip showcase: downloaded stock sources and rendered (source-derived)
+# outputs are local-only by default; showcase/sources.md (the download manifest)
+# stays trackable, so we ignore the specific subdirs, never the whole showcase/ dir.
+showcase/sources/
+showcase/renders/

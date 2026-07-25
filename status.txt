@@ -120,6 +120,10 @@ to an explicit per-file visual allowlist (plot | carla-render; loophole closed).
 Force-push user-approved; executes immediately after this commit — until then
 origin/main sits on pre-purge hash 2a75843.
 
+D42 DONE (2026-07-24): wild-clip showcase pipeline (scripts/showcase.py) — 10
+Pexels-License clips rendered with placeholder ckpt (~12 fps processed); renders
+local-only/gitignored; sources.md committed; re-render post-PERUN queued.
+
 blockers: perun_sweep_v2.md review (user); PERUN access (user); D18 val approval (user)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.

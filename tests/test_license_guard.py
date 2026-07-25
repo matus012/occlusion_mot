@@ -100,7 +100,12 @@ def test_no_large_tracked_files_outside_visual_allowlist() -> None:
 def test_allowlist_itself_is_clean() -> None:
     """The allowlist may never contain dataset-pixel content by construction."""
     for path, cls in ALLOWED_TRACKED_VISUALS.items():
-        assert cls in ("plot", "carla-render"), f"{path}: unknown class {cls!r}"
+        # D42: "licensed-stock-render" reserved for future license-verified showcase
+        # renders (showcase/renders/ stays gitignored/local-only until then) --
+        # nothing is classified under it yet.
+        assert cls in ("plot", "carla-render", "licensed-stock-render"), (
+            f"{path}: unknown class {cls!r}"
+        )
         assert not Path(path).name.startswith("crops_"), (
             f"{path}: crop grids are dataset-derived, never allowlistable"
         )

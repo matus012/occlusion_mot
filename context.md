@@ -425,6 +425,21 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   s5 clip = carla-render; no README path changes needed — the crop grid already
   lived untracked in viz/ with its regen command documented). Post-purge guard run:
   130 tests green, ruff clean.
+- **D42 (2026-07-24) Wild-clip showcase pipeline [user directive].**
+  scripts/showcase.py: folder of mp4s -> annotated mp4s + contact sheet, one command,
+  live yolo11x + conv-embedder + OcclusionAwareTracker at the val-manifest R1
+  operating point; overlays = track ids, occlusion-state coloring, dashed-orange
+  hidden-agent prediction, legend + "placeholder-ckpt | qualitative only" watermark;
+  ZERO metrics/GT anywhere (D36). FIXED-DETECTIONS explicitly N/A (no comparison —
+  documented in the script). Sources: 10 Pexels-License clips (116MB; 4 night,
+  2 rain, 2 high-angle, 2 dashcam; provenance table in showcase/sources.md —
+  committed; no YouTube). Renders are source-pixel-derived -> gitignored
+  (showcase/sources/, showcase/renders/); guard gains reserved class
+  "licensed-stock-render" with NOTHING classified under it yet — committing any
+  render requires license verification + explicit allowlist entry. Renders are
+  DISPOSABLE placeholder-ckpt output; final re-render post-PERUN with the canonical
+  checkpoint. Batch runtime: ~12 fps processed, 18-60s wall/clip (3,824 frames
+  total). 27 new synthetic tests (154 green).
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
