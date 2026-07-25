@@ -18,7 +18,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 RAW_IMAGE_EXTS = (".jpg", ".jpeg", ".bmp", ".webp", ".ppm", ".tif", ".tiff")
-BLOB_EXTS = (".pt", ".pth", ".npz", ".npy", ".onnx", ".engine", ".tar")
+# D41 residual-surface fix: any serialized container that could hold dataset
+# crops/pixels/embeddings — not just torch/numpy formats.
+BLOB_EXTS = (".pt", ".pth", ".npz", ".npy", ".onnx", ".engine", ".tar",
+             ".pkl", ".pickle", ".h5", ".hdf5", ".lmdb", ".mdb", ".arrow",
+             ".parquet", ".feather", ".msgpack")
+# Default-deny size ceiling: big binaries cannot slip in under an unlisted
+# extension; anything over the ceiling must be an allowlisted visual.
+SIZE_CEILING_BYTES = 2 * 1024 * 1024
 
 
 def tracked_files() -> list[str]:
@@ -76,6 +83,18 @@ def test_tracked_visuals_are_allowlisted() -> None:
         f"'carla-render' in tests/test_license_guard.py, or keep them local): "
         f"{unclassified}"
     )
+
+
+def test_no_large_tracked_files_outside_visual_allowlist() -> None:
+    """Default-deny for big binaries: a crop cache renamed to an unlisted extension
+    still fails here (D41 residual surface)."""
+    offenders = []
+    for f in tracked_files():
+        p = ROOT / f
+        if p.exists() and p.stat().st_size > SIZE_CEILING_BYTES:
+            if f not in ALLOWED_TRACKED_VISUALS:
+                offenders.append(f"{f} ({p.stat().st_size / 1e6:.1f} MB)")
+    assert not offenders, f"large tracked files outside the visual allowlist: {offenders}"
 
 
 def test_allowlist_itself_is_clean() -> None:
