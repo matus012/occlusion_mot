@@ -7,8 +7,20 @@ half, the last ~10% of each sequence's frames are held out as a monitoring val s
 train. Detector output feeds a NEW cache tag via cache_detections.py --weights/--model
 (FIXED DETECTIONS invariant, context.md D1) — never overwrites the yolo11x cache.
 
+D43-delta(b): --mix selects the TRAIN-split data source. mot17dev (default) is the
+original dev-half-only behavior. mot17dev_carla additionally folds every rendered
+CARLA scenario under --carla-root (data/sim/carla_render/<scenario>/{seqinfo.ini,
+gt/gt.txt,img1/}) into the TRAIN split ONLY -- the monitoring val split stays
+MOT17-only so the two mixes remain comparable on identical validation frames. The
+CARLA scenario layout mirrors MOTSequence exactly (verified against
+crowd_merge_0017: gt row = frame,id,x,y,w,h,conf,cls=1,vis), so `_yolo_label_lines`
+is reused verbatim (conf flag==1, class==1, vis>=min_vis -- no extra filtering).
+Dataset dir encodes the mix (data/cache/det_finetune_<mix>/) so the two mixes never
+collide on disk and idempotency stays correct per mix.
+
 Usage:
   .venv/Scripts/python.exe scripts/finetune_detector.py --prep-only
+  .venv/Scripts/python.exe scripts/finetune_detector.py --prep-only --mix mot17dev_carla
   .venv/Scripts/python.exe scripts/finetune_detector.py --epochs 10 --tag y11s_proto
 """
 from __future__ import annotations
@@ -27,7 +39,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from omot.data.mot import MOTSequence, half_split_frames, load_split  # noqa: E402
+from omot.data.mot import MOTSequence, half_split_frames, load_sequence, load_split  # noqa: E402
 from omot.detect.cache import select_device  # noqa: E402
 from omot.io.mot_format import COL  # noqa: E402
 
@@ -36,6 +48,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefm
 logger = logging.getLogger("finetune_detector")
 
 ROOT = Path(__file__).resolve().parents[1]
+VALID_MIXES = ("mot17dev", "mot17dev_carla")
 
 
 def set_seeds(seed: int) -> None:
@@ -95,23 +108,67 @@ def _link_or_copy(src: Path, dst: Path) -> None:
         shutil.copy2(src, dst)
 
 
-def _expected_counts(seqs: list[MOTSequence], val_frac: float) -> tuple[int, int]:
+def _expected_counts(
+    seqs: list[MOTSequence], val_frac: float,
+    mix: str = "mot17dev", carla_seqs: list[MOTSequence] | None = None,
+) -> tuple[int, int]:
     n_train = n_val = 0
     for seq in seqs:
         train_frames, monitor_frames = _split_dev_frames(seq, val_frac)
         n_train += len(train_frames)
         n_val += len(monitor_frames)
+    if mix == "mot17dev_carla":
+        assert carla_seqs is not None, "mix=mot17dev_carla requires carla_seqs"
+        n_train += sum(cseq.seq_length for cseq in carla_seqs)  # ALL frames -> TRAIN only
     return n_train, n_val
 
 
+def _carla_scenario_dirs(carla_root: Path) -> list[Path]:
+    """CARLA scenario dirs with a valid MOT-style layout (seqinfo.ini + gt/gt.txt).
+    Empty list (not an error) if `carla_root` doesn't exist -- mix=mot17dev never
+    needs it."""
+    if not carla_root.is_dir():
+        return []
+    return sorted(
+        p for p in carla_root.iterdir()
+        if p.is_dir() and (p / "seqinfo.ini").exists() and (p / "gt" / "gt.txt").exists()
+    )
+
+
+def _carla_train_sequences(carla_root: Path) -> list[MOTSequence]:
+    """Every rendered CARLA scenario, loaded via the MOTSequence reader (D22/D23: a
+    scenario dir mirrors the MOT gt/gt.txt + img1/ layout by construction -- verified
+    against crowd_merge_0017: 9-col gt rows, class==1, conf==1.0)."""
+    seqs = [load_sequence(p) for p in _carla_scenario_dirs(carla_root)]
+    for seq in seqs:
+        assert seq.gt is not None, f"{seq.name}: CARLA scenario missing GT"
+    return seqs
+
+
+def _default_out_dir(mix: str) -> Path:
+    """D43-delta(b): dataset dir name encodes the mix so mot17dev / mot17dev_carla
+    never collide on disk (and each stays independently idempotent)."""
+    return ROOT / "data" / "cache" / f"det_finetune_{mix}"
+
+
 def prepare_dataset(
-    data_root: Path, out_dir: Path, min_vis: float, val_frac: float = 0.1
+    data_root: Path, out_dir: Path, min_vis: float, val_frac: float = 0.1,
+    mix: str = "mot17dev", carla_root: Path | None = None,
 ) -> tuple[Path, dict[str, int]]:
-    """Build the YOLO-format dataset from MOT17 dev-half GT. Idempotent: if `out_dir`
-    already holds the expected image counts, skip rebuilding and reuse it."""
+    """Build the YOLO-format dataset from MOT17 dev-half GT (+ CARLA scenario frames
+    in TRAIN only when mix=mot17dev_carla). Idempotent: if `out_dir` already holds
+    the expected image counts, skip rebuilding and reuse it."""
+    assert mix in VALID_MIXES, f"unknown --mix {mix!r} (valid: {VALID_MIXES})"
     seqs = load_split(data_root, "train", detector="FRCNN")
     assert seqs, f"no FRCNN train sequences found under {data_root}"
-    n_train_expected, n_val_expected = _expected_counts(seqs, val_frac)
+
+    carla_seqs: list[MOTSequence] = []
+    if mix == "mot17dev_carla":
+        assert carla_root is not None, "mix=mot17dev_carla requires --carla-root"
+        carla_seqs = _carla_train_sequences(carla_root)
+        assert carla_seqs, f"mix=mot17dev_carla but no CARLA scenarios found under {carla_root}"
+
+    n_train_expected, n_val_expected = _expected_counts(seqs, val_frac, mix, carla_seqs)
 
     dataset_yaml = out_dir / "dataset.yaml"
     img_train, img_val = out_dir / "images" / "train", out_dir / "images" / "val"
@@ -156,6 +213,25 @@ def prepare_dataset(
         n_train += len(train_frames)
         n_val += len(monitor_frames)
 
+    if mix == "mot17dev_carla":
+        for cseq in carla_seqs:
+            assert cseq.gt is not None, f"{cseq.name}: CARLA scenario missing GT"
+            for frame in range(1, cseq.seq_length + 1):  # ALL frames -> TRAIN only, never val
+                stem = f"carla_{cseq.name}_{frame:06d}"
+                _link_or_copy(cseq.frame_path(frame), img_train / f"{stem}.jpg")
+                lines = _yolo_label_lines(
+                    cseq.gt, frame, min_vis, cseq.img_width, cseq.img_height
+                )
+                (lbl_train / f"{stem}.txt").write_text(
+                    "\n".join(lines) + ("\n" if lines else ""), encoding="utf-8"
+                )
+            n_train += cseq.seq_length
+        logger.info(
+            "mix=%s: added %d CARLA scenario(s) / %d frames to TRAIN only (monitoring val "
+            "split stays MOT17-only so the two mixes remain comparable)",
+            mix, len(carla_seqs), sum(cseq.seq_length for cseq in carla_seqs),
+        )
+
     dataset_yaml.write_text(
         yaml.safe_dump(
             {
@@ -168,7 +244,7 @@ def prepare_dataset(
         ),
         encoding="utf-8",
     )
-    logger.info("built dataset: train=%d val=%d -> %s", n_train, n_val, out_dir)
+    logger.info("built dataset (mix=%s): train=%d val=%d -> %s", mix, n_train, n_val, out_dir)
     return dataset_yaml, {"train": n_train, "val": n_val}
 
 
@@ -210,7 +286,16 @@ def train(
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", type=Path, default=ROOT / "data" / "MOT17")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "data" / "cache" / "det_finetune")
+    ap.add_argument("--out-dir", type=Path, default=None,
+                    help="default: data/cache/det_finetune_<mix> (D43-delta(b): mix-encoded "
+                         "so mot17dev / mot17dev_carla never collide on disk)")
+    ap.add_argument("--carla-root", type=Path, default=ROOT / "data" / "sim" / "carla_render",
+                    help="CARLA scenario dirs (seqinfo.ini + gt/gt.txt + img1/), used only "
+                         "when --mix mot17dev_carla")
+    ap.add_argument("--mix", choices=VALID_MIXES, default="mot17dev",
+                    help="mot17dev (default): MOT17 dev-half GT only, unchanged behavior. "
+                         "mot17dev_carla: additionally folds CARLA scenario frames into the "
+                         "TRAIN split only (monitoring val stays MOT17-only)")
     ap.add_argument("--min-vis", type=float, default=0.1)
     ap.add_argument("--val-frac", type=float, default=0.1,
                     help="fraction of each sequence's dev-half frames held out for monitoring")
@@ -228,12 +313,13 @@ def main() -> int:
 
     set_seeds(args.seed)
     device = select_device(args.device)
+    out_dir = args.out_dir or _default_out_dir(args.mix)
 
     dataset_yaml, counts = prepare_dataset(
-        args.data_root, args.out_dir, args.min_vis, args.val_frac
+        args.data_root, out_dir, args.min_vis, args.val_frac, args.mix, args.carla_root
     )
-    logger.info("dataset ready (train=%d val=%d): %s", counts["train"], counts["val"],
-                dataset_yaml)
+    logger.info("dataset ready (mix=%s, train=%d val=%d): %s", args.mix, counts["train"],
+                counts["val"], dataset_yaml)
 
     if args.prep_only:
         logger.info("prep-only: stopping before training")

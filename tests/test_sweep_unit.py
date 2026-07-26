@@ -63,6 +63,17 @@ def test_train_reid_cmd_shape() -> None:
     assert "--tag" in cmd
     assert "sweep_dryrun_test_B_pfull_s0" in cmd
     assert "--device" in cmd and "cuda" in cmd
+    assert "--eval-every" in cmd
+    idx = cmd.index("--eval-every")
+    assert cmd[idx + 1] == "1"  # cfg has no eval_every key -> default 1
+
+
+def test_train_reid_cmd_threads_eval_every_from_config() -> None:
+    cfg = _base_cfg()
+    cfg["eval_every"] = 5
+    cmd = su.train_reid_cmd(cfg, "B", None, 0, device=None)
+    idx = cmd.index("--eval-every")
+    assert cmd[idx + 1] == "5"
 
 
 def test_train_reid_cmd_omits_device_when_none() -> None:
@@ -102,21 +113,24 @@ def test_run_hidden_cmd_includes_gate_and_embedder_tag() -> None:
 
 def test_finetune_detector_cmd_uses_model_pt_default() -> None:
     cfg = _base_cfg()
-    cmd = su.finetune_detector_cmd(cfg, "yolo11s", "sweep_tag", "cuda", 0)
+    cmd = su.finetune_detector_cmd(cfg, "yolo11s", "mot17dev", "sweep_tag", "cuda", 0)
     assert "--base-weights" in cmd
     idx = cmd.index("--base-weights")
     assert cmd[idx + 1] == "yolo11s.pt"
     assert "--epochs" in cmd and "1" in cmd
     assert "--imgsz" in cmd and "640" in cmd
     assert "--batch" in cmd and "4" in cmd
+    assert "--mix" in cmd
+    assert cmd[cmd.index("--mix") + 1] == "mot17dev"
 
 
 def test_finetune_detector_cmd_respects_explicit_base_weights() -> None:
     cfg = _base_cfg()
     cfg["detector"]["base_weights"] = "custom.pt"
-    cmd = su.finetune_detector_cmd(cfg, "yolo11s", "sweep_tag", None, 0)
+    cmd = su.finetune_detector_cmd(cfg, "yolo11s", "mot17dev_carla", "sweep_tag", None, 0)
     idx = cmd.index("--base-weights")
     assert cmd[idx + 1] == "custom.pt"
+    assert cmd[cmd.index("--mix") + 1] == "mot17dev_carla"
 
 
 # ---------------------------------------------------------------------------

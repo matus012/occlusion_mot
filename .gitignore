@@ -70,3 +70,4 @@ showcase/sources/
 showcase/renders/
 results/sweep/**/*.log
 results/sweep/*.log
+results/sweep/**/submit.sbatch

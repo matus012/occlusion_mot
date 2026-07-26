@@ -1,5 +1,6 @@
 """Synthetic tests for scripts/finetune_detector.py's pure dataset-prep logic (D18
-dev-half-only invariant + GT-to-YOLO conversion), no MOT17 data or ultralytics needed."""
+dev-half-only invariant + GT-to-YOLO conversion) and the D43-delta(b) CARLA-mix
+dataset path, no MOT17 data or ultralytics needed."""
 from __future__ import annotations
 
 import importlib.util
@@ -14,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from omot.data.mot import MOTSequence  # noqa: E402
-from omot.io.mot_format import COL  # noqa: E402
+from omot.io.mot_format import COL, write_mot  # noqa: E402
 
 
 def _load_module() -> ModuleType:
@@ -113,3 +114,173 @@ def test_col_frame_matches_mot_format() -> None:
     # sanity: the module under test indexes GT via the same COL contract as the rest
     # of the codebase (guards against a silent column-index drift).
     assert COL.FRAME == 0 and COL.CLS == 7 and COL.VIS == 8
+
+
+# ---------------------------------------------------------------------------
+# D43-delta(b): CARLA-mix dataset prep (synthetic mini MOT17 + CARLA-layout tree)
+# ---------------------------------------------------------------------------
+
+_SEQINFO = (
+    "[Sequence]\nname={name}\nimDir=img1\nframeRate=20\nseqLength={length}\n"
+    "imWidth={width}\nimHeight={height}\nimExt=.jpg\n"
+)
+
+
+def _make_mot_seq(root: Path, name: str, length: int = 20) -> Path:
+    """MOT17-FRCNN-style sequence dir with real (dummy-content) jpg files, since
+    prepare_dataset hardlinks/copies actual frame files."""
+    d = root / name
+    (d / "img1").mkdir(parents=True)
+    (d / "seqinfo.ini").write_text(
+        _SEQINFO.format(name=name, length=length, width=640, height=480), encoding="utf-8"
+    )
+    rows = []
+    for f in range(1, length + 1):
+        (d / "img1" / f"{f:06d}.jpg").write_bytes(b"fake-jpg")
+        rows.append([f, 1, 10.0, 10.0, 20.0, 40.0, 1, 1, 1.0])
+    write_mot(d / "gt" / "gt.txt", np.array(rows))
+    return d
+
+
+def _make_carla_scenario(root: Path, name: str, length: int = 6) -> Path:
+    """CARLA scenario dir mirroring the crowd_merge_0017 layout on disk."""
+    d = root / name
+    (d / "img1").mkdir(parents=True)
+    (d / "seqinfo.ini").write_text(
+        _SEQINFO.format(name=name, length=length, width=1280, height=720), encoding="utf-8"
+    )
+    rows = []
+    for f in range(1, length + 1):
+        (d / "img1" / f"{f:06d}.jpg").write_bytes(b"fake-jpg")
+        rows.append([f, 1, 100.0, 100.0, 30.0, 60.0, 1.0, 1, 0.9])
+    write_mot(d / "gt" / "gt.txt", np.array(rows))
+    return d
+
+
+def test_default_out_dir_encodes_mix() -> None:
+    assert ft._default_out_dir("mot17dev").name == "det_finetune_mot17dev"
+    assert ft._default_out_dir("mot17dev_carla").name == "det_finetune_mot17dev_carla"
+    assert ft._default_out_dir("mot17dev") != ft._default_out_dir("mot17dev_carla")
+
+
+def test_carla_scenario_dirs_empty_when_root_missing(tmp_path: Path) -> None:
+    assert ft._carla_scenario_dirs(tmp_path / "does_not_exist") == []
+
+
+def test_carla_scenario_dirs_finds_valid_layout_only(tmp_path: Path) -> None:
+    carla_root = tmp_path / "carla_render"
+    _make_carla_scenario(carla_root, "crowd_merge_0000", length=3)
+    (carla_root / "not_a_scenario").mkdir(parents=True)  # missing seqinfo/gt -> excluded
+    dirs = ft._carla_scenario_dirs(carla_root)
+    assert [d.name for d in dirs] == ["crowd_merge_0000"]
+
+
+def test_prepare_dataset_default_mix_unchanged(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    out_dir = tmp_path / "cache" / "det_finetune_mot17dev"
+
+    dataset_yaml, counts = ft.prepare_dataset(data_root, out_dir, min_vis=0.1, val_frac=0.1)
+
+    n_dev = 10  # mid = seq_length // 2 = 10
+    n_val = max(1, round(n_dev * 0.1))
+    assert counts == {"train": n_dev - n_val, "val": n_val}
+    assert dataset_yaml.exists()
+    assert not list((out_dir / "images" / "train").glob("carla_*"))
+    assert not list((out_dir / "images" / "val").glob("carla_*"))
+
+
+def test_prepare_dataset_rejects_unknown_mix(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    with pytest.raises(AssertionError, match="unknown --mix"):
+        ft.prepare_dataset(data_root, tmp_path / "out", min_vis=0.1, mix="bogus")
+
+
+def test_prepare_dataset_carla_mix_adds_rows_to_train_only(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    carla_root = tmp_path / "carla_render"
+    _make_carla_scenario(carla_root, "crowd_merge_0000", length=6)
+    out_dir = tmp_path / "cache" / "det_finetune_mot17dev_carla"
+
+    dataset_yaml, counts = ft.prepare_dataset(
+        data_root, out_dir, min_vis=0.1, val_frac=0.1,
+        mix="mot17dev_carla", carla_root=carla_root,
+    )
+
+    n_dev = 10
+    n_val = max(1, round(n_dev * 0.1))
+    n_mot_train = n_dev - n_val
+    assert counts == {"train": n_mot_train + 6, "val": n_val}  # +6 CARLA frames, TRAIN only
+    assert dataset_yaml.exists()
+
+    carla_train_imgs = sorted((out_dir / "images" / "train").glob("carla_*.jpg"))
+    assert len(carla_train_imgs) == 6
+    carla_train_lbls = sorted((out_dir / "labels" / "train").glob("carla_*.txt"))
+    assert len(carla_train_lbls) == 6
+    for lbl in carla_train_lbls:
+        assert lbl.read_text(encoding="utf-8").strip().startswith("0 ")  # one ped, class 0
+
+    # never leaks into the monitoring val split
+    assert list((out_dir / "images" / "val").glob("carla_*")) == []
+    assert list((out_dir / "labels" / "val").glob("carla_*")) == []
+
+
+def test_prepare_dataset_carla_mix_requires_carla_root(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    with pytest.raises(AssertionError, match="carla-root"):
+        ft.prepare_dataset(data_root, tmp_path / "out", min_vis=0.1, mix="mot17dev_carla")
+
+
+def test_prepare_dataset_carla_mix_fails_fast_when_no_scenarios_found(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    empty_carla_root = tmp_path / "carla_render_empty"
+    empty_carla_root.mkdir()
+    with pytest.raises(AssertionError, match="no CARLA scenarios found"):
+        ft.prepare_dataset(
+            data_root, tmp_path / "out", min_vis=0.1,
+            mix="mot17dev_carla", carla_root=empty_carla_root,
+        )
+
+
+def test_prepare_dataset_mix_encoded_paths_never_collide(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    carla_root = tmp_path / "carla_render"
+    _make_carla_scenario(carla_root, "crowd_merge_0000", length=4)
+
+    out_a = tmp_path / "cache" / "det_finetune_mot17dev"
+    out_b = tmp_path / "cache" / "det_finetune_mot17dev_carla"
+    _, counts_a = ft.prepare_dataset(data_root, out_a, min_vis=0.1, val_frac=0.1)
+    _, counts_b = ft.prepare_dataset(
+        data_root, out_b, min_vis=0.1, val_frac=0.1,
+        mix="mot17dev_carla", carla_root=carla_root,
+    )
+
+    assert out_a != out_b
+    assert counts_b["train"] == counts_a["train"] + 4
+    assert counts_b["val"] == counts_a["val"]
+    # both datasets independently on disk, neither touched the other
+    assert len(list((out_a / "images" / "train").glob("*.jpg"))) == counts_a["train"]
+    assert len(list((out_b / "images" / "train").glob("*.jpg"))) == counts_b["train"]
+
+
+def test_prepare_dataset_carla_mix_is_idempotent(tmp_path: Path) -> None:
+    data_root = tmp_path / "MOT17"
+    _make_mot_seq(data_root / "train", "MOT17-02-FRCNN", length=20)
+    carla_root = tmp_path / "carla_render"
+    _make_carla_scenario(carla_root, "crowd_merge_0000", length=4)
+    out_dir = tmp_path / "cache" / "det_finetune_mot17dev_carla"
+
+    _, counts_1 = ft.prepare_dataset(
+        data_root, out_dir, min_vis=0.1, val_frac=0.1,
+        mix="mot17dev_carla", carla_root=carla_root,
+    )
+    _, counts_2 = ft.prepare_dataset(
+        data_root, out_dir, min_vis=0.1, val_frac=0.1,
+        mix="mot17dev_carla", carla_root=carla_root,
+    )
+    assert counts_1 == counts_2

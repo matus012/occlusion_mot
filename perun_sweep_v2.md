@@ -57,18 +57,27 @@ Total: 18 embedder runs + 4 detector runs + cache passes.
 
 ## Budget (H200, single-GPU jobs; model is ResNet18 @ 64x128 — small)
 
-| block | runs | est. per run | subtotal |
+CORRECTED at D43 close-out (dry-run-measured throughput; the original <= 0.5 h/run
+embedder estimate did not survive measurement, and the first corrected draft
+silently dropped the cache/detector blocks from the total — both errors fixed here):
+
+| block | runs | est. per run (measured basis) | subtotal |
 |---|---|---|---|
-| embedder training (60 ep x 400 batches) | 18 | <= 0.5 h | <= 9 h |
+| embedder training (60 ep x 400 batches, eval every 5 ep) | 18 | ~1.2 h | ~21.6 h |
 | embedding-cache passes (7 MOT17 seqs) | ~13 | ~0.2 h | ~2.6 h |
-| detector finetunes (~100 ep) | 4 | 1.5-3 h | <= 12 h |
+| detector finetunes (~100 ep, yolo11s + yolo11m) | 4 | 1.5-3 h | 6-12 h |
 | eval/tracker runs | — | CPU | — |
-| **total** | | | **<= 25 H200h** (ceiling 40) |
+| **honest total** | | | **~30-36 H200h** — the 25h estimate does NOT hold; the 40h ceiling holds |
 
 SLURM shape: job array over (arm, pool, seed); device/seed/batch injected (D8);
-data staged as jpg trees (~1.5 GB) + caches; checkpoints + result JSONs synced back;
-no code changes needed beyond a launcher script (to be written after this doc is
-approved).
+data staged as the re-ID crop trees (~1.4 GB) + caches; checkpoints + result JSONs
+synced back. STAGING NOTE (D43 close-out, pre-registered): the requirement to stage
+PRE-RESIZED 64x128 crops is ALREADY SATISFIED BY CONSTRUCTION — all four extractors
+write 64x128 at extraction time (Market-1501 is natively 64x128); verified on disk
+2026-07-24 (all sources 64x128, 1.38 GB total). Residual loader cost is
+single-threaded tiny-jpg decode, untouched by resizing; if more margin is needed the
+levers are a parallel DataLoader or decode-free uint8 .npy shards — optional, not
+required for the 40h ceiling.
 
 ## Pre-registration amendments (D43 — user verdict 2026-07-24: APPROVED as written
 ## plus these four; appended verbatim in substance, no design changes)

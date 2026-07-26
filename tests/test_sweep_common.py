@@ -153,6 +153,107 @@ def test_shipped_perun_full_config_is_valid() -> None:
     assert cfg["name"] == "perun_full"
     assert cfg["arms"]["D"]["pools"] == [300, 1000, 2000, 3520]
     assert cfg["pools"] == [None]
+    assert cfg["eval_every"] == 5  # D43-delta(a): budget-load-bearing
+
+
+def test_shipped_dryrun_config_eval_every_stays_one() -> None:
+    cfg = sc.load_config(ROOT / "configs" / "sweep" / "dryrun_local.yaml")
+    assert cfg.get("eval_every", 1) == 1
+
+
+# ---------------------------------------------------------------------------
+# eval_every schema (D43-delta a)
+# ---------------------------------------------------------------------------
+
+
+def test_load_config_eval_every_defaults_to_one_when_absent(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    assert "eval_every" not in cfg
+    path = _write_config(tmp_path, cfg)
+    loaded = sc.load_config(path)
+    assert loaded.get("eval_every", 1) == 1
+
+
+def test_load_config_accepts_positive_eval_every(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    cfg["eval_every"] = 5
+    path = _write_config(tmp_path, cfg)
+    loaded = sc.load_config(path)
+    assert loaded["eval_every"] == 5
+
+
+def test_load_config_rejects_non_positive_eval_every(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    cfg["eval_every"] = 0
+    path = _write_config(tmp_path, cfg)
+    with pytest.raises(AssertionError, match="eval_every"):
+        sc.load_config(path)
+
+
+def test_load_config_rejects_non_int_eval_every(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    cfg["eval_every"] = 2.5
+    path = _write_config(tmp_path, cfg)
+    with pytest.raises(AssertionError, match="eval_every"):
+        sc.load_config(path)
+
+
+# ---------------------------------------------------------------------------
+# slurm placeholder warning (D43-delta d)
+# ---------------------------------------------------------------------------
+
+
+def test_load_config_warns_not_fails_on_slurm_fill_placeholders(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture,
+) -> None:
+    cfg = _base_cfg()
+    cfg["slurm"] = {"partition": "<FILL-PERUN-PARTITION>", "account": "<FILL-PERUN-ACCOUNT>",
+                     "time": "04:00:00", "gres": "gpu:1", "cpus_per_task": 8, "mem": "32G"}
+    path = _write_config(tmp_path, cfg)
+    with caplog.at_level("WARNING"):
+        loaded = sc.load_config(path)  # must NOT raise
+    assert loaded["slurm"]["partition"] == "<FILL-PERUN-PARTITION>"
+    assert any("<FILL-" in rec.message for rec in caplog.records)
+
+
+def test_load_config_no_warning_when_slurm_filled_in(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture,
+) -> None:
+    cfg = _base_cfg()
+    cfg["slurm"] = {"partition": "gpu-a", "account": "proj1", "time": "04:00:00",
+                     "gres": "gpu:1", "cpus_per_task": 8, "mem": "32G"}
+    path = _write_config(tmp_path, cfg)
+    with caplog.at_level("WARNING"):
+        sc.load_config(path)
+    assert not any("<FILL-" in rec.message for rec in caplog.records)
+
+
+def test_shipped_perun_full_config_has_slurm_placeholders() -> None:
+    cfg = sc.load_config(ROOT / "configs" / "sweep" / "perun_full.yaml")
+    assert cfg["slurm"]["partition"] == "<FILL-PERUN-PARTITION>"
+    assert cfg["slurm"]["account"] == "<FILL-PERUN-ACCOUNT>"
+    assert cfg["slurm"]["gres"] == "gpu:1"
+    assert cfg["slurm"]["cpus_per_task"] == 8
+    assert cfg["slurm"]["mem"] == "32G"
+
+
+# ---------------------------------------------------------------------------
+# posix_relpath (D43-delta c)
+# ---------------------------------------------------------------------------
+
+
+def test_posix_relpath_relative_to_repo_root_uses_forward_slashes() -> None:
+    p = sc.posix_relpath(ROOT / "configs" / "sweep" / "dryrun_local.yaml")
+    assert p == "configs/sweep/dryrun_local.yaml"
+    assert "\\" not in p
+
+
+def test_posix_relpath_falls_back_to_as_posix_outside_root(tmp_path: Path) -> None:
+    outside = tmp_path / "cfg.yaml"
+    outside.write_text("x: 1", encoding="utf-8")
+    p = sc.posix_relpath(outside)
+    assert "\\" not in p
+    assert str(ROOT) not in p
 
 
 # ---------------------------------------------------------------------------

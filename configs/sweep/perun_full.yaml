@@ -7,14 +7,14 @@
 # shared with the ablation core) = 18 embedder runs; arm A adds 1 cache pass (run
 # once per seed here for schema uniformity -- negligible extra cost, ImageNet
 # weights are seed-independent). Detector: yolo11s + yolo11m x 2 data mixes,
-# ~100 epochs each = 4 runs (mixes are DATA-MIX LABELS; see sweep_unit.py's
-# run_detector_unit warning -- finetune_detector.py does not yet support CARLA-mix
-# training, a documented gap to close before this config is actually submitted).
+# ~100 epochs each = 4 runs (mixes = mot17dev vs mot17dev_carla, D43-delta(b):
+# finetune_detector.py's --mix now really folds CARLA scenario frames into TRAIN).
 name: perun_full
 half: dev
 gate_probe: [0.40, 0.45, 0.50]
 epochs: 60
 batches_per_epoch: 400
+eval_every: 5  # D43-delta(a): budget-load-bearing (5x eval-cost cut, see context.md D43)
 seeds: [0, 1, 2]
 pools: [null]  # default: full pool for every arm except D's override below
 
@@ -43,9 +43,17 @@ detector:
   imgsz: 960
   batch: 8
 
+# D43-delta(d): partition/account are unfilled placeholders on purpose -- load_config
+# WARNS (never fails) on them so local use is never blocked, but submission-side stays
+# visibly incomplete until a human fills in the real PERUN values. time=04:00:00 derived
+# from the measured ~1.2-3h/unit budget (context.md D43 extrapolation) with margin.
+slurm:
+  partition: "<FILL-PERUN-PARTITION>"
+  account: "<FILL-PERUN-ACCOUNT>"
+  time: "04:00:00"
+  gres: "gpu:1"
+  cpus_per_task: 8
+  mem: "32G"
+
 env:
-  partition: <PARTITION>
-  account: <ACCOUNT>
-  time: "06:00:00"
-  python: python
   device: cuda

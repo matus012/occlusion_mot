@@ -49,8 +49,9 @@ def _base_cfg() -> dict[str, Any]:
             "enabled": True, "models": ["yolo11s"], "mixes": ["mot17dev"],
             "base_weights": None, "epochs": 1, "imgsz": 640, "batch": 4,
         },
-        "env": {"partition": "gpu", "account": "acct1", "time": "00:30:00",
-                "python": "python", "device": "cuda"},
+        "env": {"device": "cuda"},
+        "slurm": {"partition": "gpu", "account": "acct1", "time": "00:30:00",
+                  "gres": "gpu:1", "cpus_per_task": 8, "mem": "32G"},
     }
 
 
@@ -103,33 +104,94 @@ def test_units_to_run_all_pending_on_empty_results_dir(tmp_path: Path) -> None:
 
 # ---------------------------------------------------------------------------
 # local <-> SLURM entrypoint parity (the hard design constraint, as a TEST)
+#
+# D43-delta(c): the interpreter now DIFFERS by design between the two modes --
+# sys.executable locally vs a $PYTHON env var (defaulting to python3) in the
+# emitted sbatch script, because a Windows dev-box .venv interpreter path must
+# never leak into a script meant to run on the PERUN Linux cluster. Parity is
+# therefore asserted on the ARGUMENT LIST that follows the interpreter (same
+# script, same flag order), masking out unit/device VALUES and the config-path
+# REPRESENTATION (native path locally vs POSIX-relative-to-repo-root for the
+# Linux target -- these necessarily differ in separator/absoluteness when
+# rendered on a Windows machine for a path outside the repo, e.g. a pytest
+# tmp_path fixture).
 # ---------------------------------------------------------------------------
 
 
-def test_sbatch_uses_identical_entrypoint_shape_as_local_mode(tmp_path: Path) -> None:
+def test_sbatch_argument_list_matches_local_mode_after_interpreter(tmp_path: Path) -> None:
     cfg = _base_cfg()
     config_path = _write_config(tmp_path, cfg)
     results_dir = tmp_path / "results"
-
-    # the exact command local mode would subprocess for one concrete unit
     concrete_unit = "D:300:0"
-    local_cmd = sc.entrypoint_cmd(config_path, concrete_unit, device="cuda")
+
+    # the exact argument list local mode would subprocess (interpreter prepended
+    # separately by run_subprocess -- sys.executable -- not part of entrypoint_cmd)
+    local_args = sc.entrypoint_cmd(config_path, concrete_unit, device="cuda")
 
     sbatch_text = sl.render_sbatch(cfg, config_path, results_dir)
 
-    # structural parity: same script + same flag shape (only --unit/--device VALUES
-    # differ between the local call and the templated sbatch command)
-    template_cmd = sc.entrypoint_cmd(config_path, "${UNIT}", device="${DEVICE}")
-    fixed_local = [tok for tok in local_cmd if tok not in (concrete_unit, "cuda")]
-    fixed_template = [tok for tok in template_cmd if tok not in ("${UNIT}", "${DEVICE}")]
-    assert fixed_local == fixed_template
+    config_posix = sc.posix_relpath(config_path)
+    template_args = sc.entrypoint_cmd(config_posix, "${UNIT}", device="${DEVICE}")
 
-    # the exact templated command line is present verbatim in the emitted script
-    cmd_line = " ".join(["python", *template_cmd])
+    def _mask(args: list[str], cfg_tok: str, unit_tok: str, dev_tok: str) -> list[str]:
+        return [
+            "<CFG>" if t == cfg_tok else "<UNIT>" if t == unit_tok
+            else "<DEV>" if t == dev_tok else t
+            for t in args
+        ]
+
+    assert _mask(local_args, str(config_path), concrete_unit, "cuda") == _mask(
+        template_args, config_posix, "${UNIT}", "${DEVICE}"
+    )
+
+    # the exact templated command line ($PYTHON interpreter + argument list) is
+    # present verbatim in the emitted script
+    cmd_line = " ".join(["$PYTHON", *template_args])
     assert cmd_line in sbatch_text
     assert "scripts/sweep_unit.py" in sbatch_text
-    assert f"--config {config_path}" in sbatch_text
+    assert config_posix in sbatch_text
     assert concrete_unit in _units_array(sbatch_text)
+
+
+def test_sbatch_python_interpreter_is_env_var_defaulting_to_python3(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    config_path = _write_config(tmp_path, cfg)
+    sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
+    assert 'PYTHON="${PYTHON:-python3}"' in sbatch_text
+    assert ".venv" not in sbatch_text  # the Windows dev interpreter must never leak in
+
+
+def test_sbatch_never_leaks_windows_paths(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    config_path = _write_config(tmp_path, cfg)
+    sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
+    assert "\\" not in sbatch_text
+    assert str(sc.ROOT) not in sbatch_text
+    assert "cd " not in sbatch_text  # no cd/chdir to an absolute dev-box path
+
+
+def test_sbatch_config_path_is_posix_relative_to_repo_root(tmp_path: Path) -> None:
+    """Using a config that actually lives inside the repo (the real submission
+    case) demonstrates the POSIX-relative behavior end to end, even when this
+    test runs on Windows."""
+    cfg = _base_cfg()
+    real_config = sc.ROOT / "configs" / "sweep" / "dryrun_local.yaml"
+    sbatch_text = sl.render_sbatch(cfg, real_config, tmp_path / "results")
+    assert "configs/sweep/dryrun_local.yaml" in sbatch_text
+    assert "\\" not in sbatch_text
+    assert str(sc.ROOT) not in sbatch_text
+
+
+def test_sbatch_emits_slurm_resource_lines(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    config_path = _write_config(tmp_path, cfg)
+    sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
+    assert "#SBATCH --partition=gpu" in sbatch_text
+    assert "#SBATCH --account=acct1" in sbatch_text
+    assert "#SBATCH --time=00:30:00" in sbatch_text
+    assert "#SBATCH --gres=gpu:1" in sbatch_text
+    assert "#SBATCH --cpus-per-task=8" in sbatch_text
+    assert "#SBATCH --mem=32G" in sbatch_text
 
 
 def _units_array(sbatch_text: str) -> list[str]:
@@ -163,13 +225,21 @@ def test_sbatch_never_submits(tmp_path: Path) -> None:
     assert out.read_text(encoding="utf-8").startswith("#!/bin/bash")
 
 
-def test_sbatch_env_placeholders_used_when_missing(tmp_path: Path) -> None:
+def test_sbatch_placeholders_used_when_slurm_block_missing(tmp_path: Path) -> None:
     cfg = _base_cfg()
-    del cfg["env"]
+    del cfg["slurm"]
     config_path = _write_config(tmp_path, cfg)
     sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
     assert "<PARTITION>" in sbatch_text
     assert "<ACCOUNT>" in sbatch_text
+
+
+def test_sbatch_device_defaults_to_cuda_when_env_block_missing(tmp_path: Path) -> None:
+    cfg = _base_cfg()
+    del cfg["env"]
+    config_path = _write_config(tmp_path, cfg)
+    sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
+    assert 'DEVICE="cuda"' in sbatch_text
 
 
 # ---------------------------------------------------------------------------

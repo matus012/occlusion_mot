@@ -92,7 +92,29 @@ def load_config(path: Path) -> dict[str, Any]:
         assert detector["models"], f"{path}: detector.models must be non-empty"
         assert detector["mixes"], f"{path}: detector.mixes must be non-empty"
 
+    eval_every = cfg.get("eval_every", 1)
+    assert isinstance(eval_every, int) and eval_every > 0, (
+        f"{path}: eval_every must be a positive int, got {eval_every!r}"
+    )
+
+    _warn_on_slurm_placeholders(cfg, path)
     return cfg
+
+
+def _warn_on_slurm_placeholders(cfg: dict[str, Any], path: Path) -> None:
+    """D43-delta(d): a `slurm:` block with unfilled `<FILL-...>` placeholders never
+    blocks local use (--mode local doesn't read it); warn so a real submission
+    doesn't silently go out with a placeholder partition/account."""
+    slurm = cfg.get("slurm")
+    if not slurm:
+        return
+    for key, val in slurm.items():
+        if isinstance(val, str) and val.startswith("<FILL-"):
+            logger.warning(
+                "%s: slurm.%s is an unfilled placeholder (%s) -- fine for local runs, "
+                "but SLURM submission is INCOMPLETE until this is filled in",
+                path, key, val,
+            )
 
 
 def config_digest(path: Path) -> str:
@@ -221,6 +243,20 @@ def enumerate_units(cfg: dict[str, Any]) -> list[str]:
             for mix in detector["mixes"]:
                 units.append(detector_unit_id(model, mix))
     return units
+
+
+def posix_relpath(path: Path | str, root: Path = ROOT) -> str:
+    """D43-delta(c): POSIX-style path, relative to `root` when possible. The SLURM
+    (Linux) target must never see a Windows-separator path or a Windows absolute
+    path emitted from a Windows dev machine -- render_sbatch uses this for every
+    path it writes into the emitted script. Falls back to an as-posix() absolute
+    path when `path` isn't inside `root` (e.g. a pytest tmp_path fixture)."""
+    p = Path(path)
+    try:
+        rel = p.resolve().relative_to(root.resolve())
+        return rel.as_posix()
+    except ValueError:
+        return p.as_posix()
 
 
 def entrypoint_cmd(config_path: Path | str, unit: str, device: str | None = None) -> list[str]:

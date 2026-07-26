@@ -77,6 +77,7 @@ def train_reid_cmd(
            "--identity-frac", f"{frac:.6f}",
            "--identity-seed", str(seed),
            "--seed", str(seed),
+           "--eval-every", str(cfg.get("eval_every", 1)),
            "--tag", run_tag(cfg["name"], arm, pool, seed)]
     if device:
         cmd += ["--device", device]
@@ -106,7 +107,7 @@ def run_hidden_cmd(
 
 
 def finetune_detector_cmd(
-    cfg: dict[str, Any], model: str, tag: str, device: str | None, seed: int
+    cfg: dict[str, Any], model: str, mix: str, tag: str, device: str | None, seed: int
 ) -> list[str]:
     det = cfg["detector"]
     base_weights = det.get("base_weights") or f"{model}.pt"
@@ -116,6 +117,7 @@ def finetune_detector_cmd(
            "--batch", str(det["batch"]),
            "--seed", str(seed),
            "--tag", tag,
+           "--mix", mix,
            "--base-weights", base_weights]
     if device:
         cmd += ["--device", device]
@@ -247,19 +249,13 @@ def run_detector_unit(
     assert det is not None and det.get("enabled"), "detector block missing/disabled in config"
     if mix not in det["mixes"]:
         raise ValueError(f"mix '{mix}' not declared in config.detector.mixes={det['mixes']}")
-    if len(det["mixes"]) > 1:
-        logger.warning(
-            "mix=%s is a LABEL ONLY -- finetune_detector.py currently trains on MOT17 "
-            "dev-half GT regardless of mix (CARLA-mix training is not yet wired into "
-            "finetune_detector.py; flagged as a dry-run deviation)", mix,
-        )
     name = cfg["name"]
     tag = f"sweep_{name}_detector_{model}_{mix}"
     log_path = RESULTS_ROOT / name / "sweep.log"
 
     t0 = time.time()
     run_subprocess(
-        sys.executable, finetune_detector_cmd(cfg, model, tag, device, seed), log_path
+        sys.executable, finetune_detector_cmd(cfg, model, mix, tag, device, seed), log_path
     )
     train_s = time.time() - t0
 

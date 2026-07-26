@@ -128,11 +128,12 @@ D43 (2026-07-24): perun_sweep_v2.md APPROVED + 4 pre-registration amendments
 appended (R6 selection rule, per-arm gate semantics, dev-optimistic labeling,
 MSMT17 mirror struck). Sweep dry-run PASSED: parity launcher + entrypoint (identical
 command local/sbatch, test-pinned), arms A-D + detector smoke end-to-end, schema +
-taxonomy fields + McNemar emission verified. CORRECTED extrapolation: naive ~32
-H200h (over the 25h estimate — per-epoch eval dominates); with eval-every-5 (free
-implementation param) ~25 H200h, inside the 40h ceiling. Pre-submission deltas:
---eval-every in train_reid + configs (budget-load-bearing), detector CARLA-mix
-path, Linux-side sbatch emission, partition/account placeholders.
+taxonomy fields + McNemar emission verified. Budget (D43 close-out, user-corrected):
+honest total ~30-36 H200h (embedders 21.6 w/ eval-every-5 + caches 2.6 + detector
+6-12); 25h estimate does NOT hold, 40h ceiling holds. Staging: pre-resized 64x128
+already satisfied by construction (verified 4/4 sources, 1.38 GB). Pre-submission
+deltas IN PROGRESS: (a) --eval-every, (b) detector CARLA-mix, (c) POSIX sbatch
+emission, (d) partition placeholders.
 
 blockers: PERUN access (user); D18 val approval (user)
 

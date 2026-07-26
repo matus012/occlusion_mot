@@ -473,9 +473,15 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   NOT survive measured throughput AS-IS (the 40h ceiling barely holds). Eval
   cadence is a free implementation parameter (unspecified in the approved design;
   runs/arms/seeds/epochs unchanged): evaluating every 5 epochs cuts eval cost 5x
-  -> ~1.2 H200h/unit -> ~21h embedders + ~1h embed caches + <= 4h detector =
-  ~25 H200h total, at the estimate and inside the ceiling; a parallel DataLoader
-  adds further margin. PERUN config deltas owed BEFORE submission: (a) --eval-every
+  -> ~1.2 H200h/unit. BUDGET CORRECTED AT D43 CLOSE-OUT [user]: my ~25h total had
+  silently dropped blocks — honest total = embedders 21.6 + caches ~2.6 + detector
+  6-12 = ~30-36 H200h; the 25h estimate does NOT hold, the 40h ceiling holds.
+  Standing rule: no block ever drops out of a total silently again. STAGING
+  [user pre-registration, verified]: the pre-resized-64x128 staging requirement is
+  ALREADY SATISFIED BY CONSTRUCTION — all four extractors write 64x128 at
+  extraction (Market natively so); verified on disk (4/4 sources 64x128, 1.38 GB).
+  Pre-resizing is therefore a no-op; residual decode cost is single-threaded
+  tiny-jpg decode — optional extra levers: parallel DataLoader / uint8 npy shards. PERUN config deltas owed BEFORE submission: (a) --eval-every
   in train_reid + sweep configs (budget-load-bearing); (b) detector `mix` dimension
   is label-only (finetune_detector lacks the CARLA-mix path); (c) emit
   submit.sbatch from the Linux side (path separators); (d) fill

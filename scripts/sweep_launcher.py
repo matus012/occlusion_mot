@@ -37,6 +37,7 @@ from sweep_common import (  # noqa: E402
     enumerate_units,
     load_config,
     parse_unit,
+    posix_relpath,
     reference_pool,
     result_path_for_unit,
     run_subprocess,
@@ -188,18 +189,28 @@ def run_local(
 
 def render_sbatch(cfg: dict, config_path: Path, results_dir: Path = RESULTS_ROOT) -> str:
     """Emit (never submit) a SLURM job-array script that runs the SAME entrypoint
-    command as `run_local` -- parity is structural: both build the command via
-    sweep_common.entrypoint_cmd, only the --unit/--device VALUES differ per index."""
+    ARGUMENT LIST as `run_local` -- only the interpreter differs by design ($PYTHON
+    env var, defaulting to python3, vs sys.executable locally). D43-delta(c): every
+    path written into the script (script path, --config) is POSIX-style and relative
+    to the repo root, regardless of the OS this is rendered on -- a Windows dev-box
+    .venv interpreter path or backslash path must never leak into a Linux sbatch
+    script. No `cd`/`--chdir` is emitted; submit this script FROM the repo root."""
     units = enumerate_units(cfg)
     env = cfg.get("env", {})
-    partition = env.get("partition", "<PARTITION>")
-    account = env.get("account", "<ACCOUNT>")
-    time_limit = env.get("time", "<TIME>")
-    python_bin = env.get("python", "python")
+    slurm = cfg.get("slurm", {})
+    partition = slurm.get("partition", "<PARTITION>")
+    account = slurm.get("account", "<ACCOUNT>")
+    time_limit = slurm.get("time", "<TIME>")
+    gres = slurm.get("gres", "gpu:1")
+    cpus_per_task = slurm.get("cpus_per_task", 8)
+    mem = slurm.get("mem", "32G")
     device = env.get("device", "cuda")
     array_range = f"0-{len(units) - 1}"
     unit_lines = "\n".join(f'  "{u}"' for u in units)
-    cmd_line = " ".join([python_bin, *entrypoint_cmd(config_path, "${UNIT}", "${DEVICE}")])
+
+    config_posix = posix_relpath(config_path)
+    template_args = entrypoint_cmd(config_posix, "${UNIT}", "${DEVICE}")
+    cmd_line = " ".join(["$PYTHON", *template_args])
 
     return f"""#!/bin/bash
 #SBATCH --job-name=sweep_{cfg['name']}
@@ -207,14 +218,19 @@ def render_sbatch(cfg: dict, config_path: Path, results_dir: Path = RESULTS_ROOT
 #SBATCH --account={account}
 #SBATCH --time={time_limit}
 #SBATCH --array={array_range}
-#SBATCH --gpus-per-task=1
+#SBATCH --gres={gres}
+#SBATCH --cpus-per-task={cpus_per_task}
+#SBATCH --mem={mem}
 #SBATCH --output=results/sweep/{cfg['name']}/slurm_%A_%a.out
 
-# D43 dry-run parity: this array calls the IDENTICAL entrypoint as --mode local
-# (scripts/sweep_unit.py --config <cfg> --unit <unit> --device <device>). SLURM
-# specifics (partition/account/time/array shape) live ONLY in this file / the
-# config's env block -- never in the entrypoint script (no code fork).
+# D43-delta(c): this array calls the SAME entrypoint ARGUMENT LIST as --mode local
+# (scripts/sweep_unit.py --config <cfg> --unit <unit> --device <device>); only the
+# interpreter differs by design. SLURM specifics (partition/account/time/gres/mem)
+# live ONLY in this file / the config's slurm block -- never in the entrypoint
+# script (no code fork). All paths above are POSIX, relative to the repo root.
 set -euo pipefail
+
+PYTHON="${{PYTHON:-python3}}"
 
 UNITS=(
 {unit_lines}
@@ -222,7 +238,6 @@ UNITS=(
 UNIT="${{UNITS[$SLURM_ARRAY_TASK_ID]}}"
 DEVICE="{device}"
 
-cd "{ROOT}"
 {cmd_line}
 """
 

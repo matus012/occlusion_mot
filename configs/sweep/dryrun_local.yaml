@@ -7,6 +7,7 @@ half: dev
 gate_probe: [0.45]
 epochs: 3
 batches_per_epoch: 20
+eval_every: 1  # stays 1 (evaluate every epoch) -- D43-delta(a) is a PERUN-budget lever only
 seeds: [0]
 pools: [300]
 
@@ -34,9 +35,8 @@ detector:
   imgsz: 640
   batch: 4
 
+# local-only config: no `slurm:` block needed (never submitted via --mode slurm);
+# render_sbatch falls back to generic <PARTITION>/<ACCOUNT>/<TIME> placeholders if it
+# ever is.
 env:
-  partition: <PARTITION>
-  account: <ACCOUNT>
-  time: "00:30:00"
-  python: python
   device: cuda

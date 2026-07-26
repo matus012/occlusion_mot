@@ -12,7 +12,7 @@ at this model size; device/seed/batch are injected — D8).
 
 Usage:
   .venv/Scripts/python.exe scripts/train_reid.py --sources mot17_dev sim --epochs 25 \
-      --tag simreal [--device cuda] [--batch-p 16] [--batch-k 4]
+      --tag simreal [--device cuda] [--batch-p 16] [--batch-k 4] [--eval-every 5]
 """
 from __future__ import annotations
 
@@ -44,6 +44,16 @@ EMBED_DIM = 256
 QUERY_VIS_LO = 0.10
 QUERY_VIS_HI = 0.50
 GALLERY_VIS_LO = 0.60
+
+
+def eval_epochs(epochs: int, eval_every: int) -> set[int]:
+    """D43-delta(a) cadence: the set of 1-based epochs that get evaluated -- every
+    `eval_every`th epoch, PLUS always the final epoch (so a checkpoint always exists
+    even when `epochs % eval_every != 0`). eval_every=1 evaluates every epoch
+    (byte-identical to the pre-delta unconditional behavior)."""
+    assert epochs > 0, f"epochs must be positive, got {epochs}"
+    assert eval_every > 0, f"eval_every must be a positive int, got {eval_every}"
+    return {e for e in range(1, epochs + 1) if e % eval_every == 0} | {epochs}
 
 
 def set_seeds(seed: int) -> None:
@@ -259,9 +269,15 @@ def main() -> int:
                          "(nested prefix of a seeded shuffle, per source)")
     ap.add_argument("--identity-seed", type=int, default=0,
                     help="seed for --identity-frac subsampling (independent of --seed)")
+    ap.add_argument("--eval-every", type=int, default=1,
+                    help="D43-delta(a): evaluate every N epochs PLUS always the final epoch "
+                         "(default 1 = byte-identical to eval-every-epoch behavior); cuts "
+                         "PERUN budget by ~5x at eval_every=5 without changing which epoch "
+                         "wins best-checkpoint selection among evaluated epochs")
     args = ap.parse_args()
     assert 0.0 < args.identity_frac <= 1.0, \
         f"--identity-frac must be in (0, 1], got {args.identity_frac}"
+    assert args.eval_every > 0, f"--eval-every must be a positive int, got {args.eval_every}"
 
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     set_seeds(args.seed)
@@ -277,6 +293,8 @@ def main() -> int:
                 len(val_items), len(val_ds.by_identity), device)
     logger.info("D38 occluded-query bounds: query vis [%.2f, %.2f), gallery vis >= %.2f",
                 QUERY_VIS_LO, QUERY_VIS_HI, GALLERY_VIS_LO)
+    logger.info("eval-every=%d (evaluated epochs: every %dth + always the final epoch %d)",
+                args.eval_every, args.eval_every, args.epochs)
 
     model = build_model(device)(n_classes=len(train_ds.by_identity)).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=5e-4)
@@ -289,6 +307,7 @@ def main() -> int:
     out_dir = ROOT / "data" / "models"
     out_dir.mkdir(parents=True, exist_ok=True)
     ckpt_path = out_dir / f"reid_{args.tag}.pt"
+    eval_set = eval_epochs(args.epochs, args.eval_every)
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
         losses = []
@@ -307,6 +326,11 @@ def main() -> int:
             scaler.update()
             losses.append(float(loss.detach()))
         sched.step()
+        if epoch not in eval_set:
+            logger.info("epoch %d/%d loss=%.3f (%.0fs) [eval skipped, eval-every=%d]",
+                        epoch, args.epochs, float(np.mean(losses)), time.time() - t0,
+                        args.eval_every)
+            continue
         metrics = evaluate(model, val_ds, device)
         logger.info("epoch %d/%d loss=%.3f %s (%.0fs)", epoch, args.epochs,
                     float(np.mean(losses)), metrics, time.time() - t0)
