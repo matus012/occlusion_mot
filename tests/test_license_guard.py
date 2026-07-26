@@ -71,6 +71,8 @@ ALLOWED_TRACKED_VISUALS: dict[str, str] = {
     "demo/s0_teaser.png": "carla-render",
     "demo/s5_blueprint_grid.png": "carla-render",
     "demo/s5_carla.mp4": "carla-render",
+    # D44: README hero GIF — 6s excerpt of demo/s5_carla.mp4, pure CARLA pixels
+    "demo/s5_carla_excerpt.gif": "carla-render",
 }
 
 

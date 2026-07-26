@@ -497,6 +497,20 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   amendment NOT invented — if the base D44 directive contained more, it needs
   re-sending. NOTE: the resent D43 items (budget correction, staging, deltas a-d)
   were already complete at commit d1ceb57; not redone.
+  BASE DIRECTIVE RECEIVED + FOLDED IN (2026-07-26): full README rewrite for the
+  ML-professor / internship audience — problem, architecture (own ByteTrack,
+  frozen-det protocol, embedder, occlusion taxonomy), methodology table (gates
+  G0-G4 status, val freeze, D36 multi-seed discipline, license guards), honest
+  results table (dev-half; progression claimed only where it exceeds the 6pt seed
+  band; embedder-variant deltas explicitly NOT claimed, p=0.26 stated;
+  dev-optimistic label on the detector arm), data-engine table (3,520/506/509k),
+  PERUN section retained (budget/two-command/status line), quickstart, repo map,
+  cross-link to demo/README.md without duplication. MEDIA (guard-compliant):
+  new demo/s5_carla_excerpt.gif (6s, 6.8MB, pure-CARLA excerpt of the committed
+  s5 clip) classified carla-render in ALLOWED_TRACKED_VISUALS BEFORE commit;
+  embedded plots viz/scaling_curve_local.png + viz/summary_retention_grid.png
+  (class plot, already allowlisted). MOT/Pexels renders: regeneration reference
+  only, one line "available locally / on request" — nothing committed.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
