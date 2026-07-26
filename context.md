@@ -424,7 +424,12 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   demo/ committed set re-verified under the fixed guard (teaser + blueprint grid +
   s5 clip = carla-render; no README path changes needed — the crop grid already
   lived untracked in viz/ with its regen command documented). Post-purge guard run:
-  130 tests green, ruff clean.
+  130 tests green, ruff clean. DESIGN NOTE (logged 2026-07-26, user-prompted):
+  ALLOWED_TRACKED_VISUALS entries are EXEMPT from the 2MB size ceiling BY DESIGN —
+  the ceiling is the default-deny for unclassified binaries; explicit human
+  classification IS the gate for large visuals (hence the 13.4MB s5_carla.mp4 and
+  6.8MB s5_carla_excerpt.gif coexist with the ceiling; verified: the >2MB check
+  fails only files NOT in the allowlist).
 - **D42 (2026-07-24) Wild-clip showcase pipeline [user directive].**
   scripts/showcase.py: folder of mp4s -> annotated mp4s + contact sheet, one command,
   live yolo11x + conv-embedder + OcclusionAwareTracker at the val-manifest R1
