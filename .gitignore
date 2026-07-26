@@ -68,3 +68,5 @@ viz/crops_*.png
 # stays trackable, so we ignore the specific subdirs, never the whole showcase/ dir.
 showcase/sources/
 showcase/renders/
+results/sweep/**/*.log
+results/sweep/*.log

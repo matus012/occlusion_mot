@@ -124,7 +124,17 @@ D42 DONE (2026-07-24): wild-clip showcase pipeline (scripts/showcase.py) — 10
 Pexels-License clips rendered with placeholder ckpt (~12 fps processed); renders
 local-only/gitignored; sources.md committed; re-render post-PERUN queued.
 
-blockers: perun_sweep_v2.md review (user); PERUN access (user); D18 val approval (user)
+D43 (2026-07-24): perun_sweep_v2.md APPROVED + 4 pre-registration amendments
+appended (R6 selection rule, per-arm gate semantics, dev-optimistic labeling,
+MSMT17 mirror struck). Sweep dry-run PASSED: parity launcher + entrypoint (identical
+command local/sbatch, test-pinned), arms A-D + detector smoke end-to-end, schema +
+taxonomy fields + McNemar emission verified. CORRECTED extrapolation: naive ~32
+H200h (over the 25h estimate — per-epoch eval dominates); with eval-every-5 (free
+implementation param) ~25 H200h, inside the 40h ceiling. Pre-submission deltas:
+--eval-every in train_reid + configs (budget-load-bearing), detector CARLA-mix
+path, Linux-side sbatch emission, partition/account placeholders.
+
+blockers: PERUN access (user); D18 val approval (user)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 

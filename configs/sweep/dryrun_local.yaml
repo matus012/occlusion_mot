@@ -1,0 +1,42 @@
+# PERUN parity dry-run (D43): arms A-D @ pool 300 / 1 seed / 3 epochs end-to-end
+# incl. McNemar emission + detector smoke, run through the IDENTICAL entrypoint
+# (scripts/sweep_unit.py) that PERUN's SLURM array will call. See perun_sweep_v2.md
+# and context.md D43 for the design this config is a fast local stand-in for.
+name: dryrun_local
+half: dev
+gate_probe: [0.45]
+epochs: 3
+batches_per_epoch: 20
+seeds: [0]
+pools: [300]
+
+arms:
+  A:
+    sources: null  # ImageNet null -- no training, cache pass only
+  B:
+    sources: [sim]
+  C:
+    sources: [mot17_dev, mot20, market1501]
+  D:
+    sources: [mot17_dev, sim, mot20, market1501]
+
+mcnemar_pairs:
+  - [D, A]
+  - [D, C]
+  - [C, A]
+
+detector:
+  enabled: true
+  models: [yolo11s]
+  mixes: [mot17dev]
+  base_weights: null  # null -> "<model>.pt" pretrained checkpoint
+  epochs: 1
+  imgsz: 640
+  batch: 4
+
+env:
+  partition: <PARTITION>
+  account: <ACCOUNT>
+  time: "00:30:00"
+  python: python
+  device: cuda

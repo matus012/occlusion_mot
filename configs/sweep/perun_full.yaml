@@ -1,0 +1,51 @@
+# PERUN full sweep (perun_sweep_v2.md + D43 amendments). NOT executed locally --
+# submit via: scripts/sweep_launcher.py --config configs/sweep/perun_full.yaml --mode slurm
+# (emits results/sweep/perun_full/submit.sbatch; sbatch it manually after review).
+#
+# Grid (doc v2): ablation core B/C/D @ FULL pool x 3 seeds (9 runs) + arm D
+# identity-scaling curve {300,1000,2000,3520} x 3 seeds (9 runs, full-pool point
+# shared with the ablation core) = 18 embedder runs; arm A adds 1 cache pass (run
+# once per seed here for schema uniformity -- negligible extra cost, ImageNet
+# weights are seed-independent). Detector: yolo11s + yolo11m x 2 data mixes,
+# ~100 epochs each = 4 runs (mixes are DATA-MIX LABELS; see sweep_unit.py's
+# run_detector_unit warning -- finetune_detector.py does not yet support CARLA-mix
+# training, a documented gap to close before this config is actually submitted).
+name: perun_full
+half: dev
+gate_probe: [0.40, 0.45, 0.50]
+epochs: 60
+batches_per_epoch: 400
+seeds: [0, 1, 2]
+pools: [null]  # default: full pool for every arm except D's override below
+
+arms:
+  A:
+    sources: null  # ImageNet null -- no training, cache pass only
+  B:
+    sources: [sim]
+  C:
+    sources: [mot17_dev, mot20, market1501]
+  D:
+    sources: [mot17_dev, sim, mot20, market1501]
+    pools: [300, 1000, 2000, 3520]  # identity-scaling curve (D36 log-scale requirement)
+
+mcnemar_pairs:
+  - [D, A]
+  - [D, C]
+  - [C, A]
+
+detector:
+  enabled: true
+  models: [yolo11s, yolo11m]
+  mixes: [mot17dev, mot17dev_carla]
+  base_weights: null  # null -> "<model>.pt" pretrained checkpoint
+  epochs: 100
+  imgsz: 960
+  batch: 8
+
+env:
+  partition: <PARTITION>
+  account: <ACCOUNT>
+  time: "06:00:00"
+  python: python
+  device: cuda

@@ -16,9 +16,11 @@ finetune at scale (D33).
 | **total** | **3,520** | **506** | **509,118** | train pool 11.5x the D36 curve range |
 
 Occluded-query eval (D38 bounds q [0.10,0.50), g >= 0.60): 422 answerable identities
-(>=1 query AND >=1 gallery crop), vs 58 pre-integration. Optional extension: MSMT17
+(>=1 query AND >=1 gallery crop), vs 58 pre-integration. ~~Optional extension: MSMT17
 (+4,101 ids -> ~7.6k pool) is already mirrored at the pinned aveocr HF repo; requires
-a separate user approval (license form semantics) — NOT in this sweep's baseline plan.
+a separate user approval (license form semantics) — NOT in this sweep's baseline plan.~~
+(STRUCK by amendment 4, D43: MSMT17 via mirror is a license-hygiene violation class;
+official request form only, post-val, user-gated.)
 
 ## Arms (D37 redesign, mission.md phase 6)
 
@@ -67,6 +69,21 @@ SLURM shape: job array over (arm, pool, seed); device/seed/batch injected (D8);
 data staged as jpg trees (~1.5 GB) + caches; checkpoints + result JSONs synced back;
 no code changes needed beyond a launcher script (to be written after this doc is
 approved).
+
+## Pre-registration amendments (D43 — user verdict 2026-07-24: APPROVED as written
+## plus these four; appended verbatim in substance, no design changes)
+
+1. **Detector-arm selection rule (pre-registered):** the R6 candidate among the 4
+   detector finetunes is picked by **dev oracle-ceiling, tie-break e2e at the fixed
+   gate**. Stated here BEFORE any run; no post-hoc selection.
+2. **Gate probe semantics:** per arm, the gate is chosen by MEAN assoc over the 3
+   seeds; ONE gate per arm applied to all its seeds. No per-seed gate picking.
+3. **Dev-optimistic label:** mandatory on every table/figure/log line where a
+   dev-half-GT-trained detector is evaluated on dev-half. Only R6 at val is the
+   honest number.
+4. **MSMT17:** the HF-mirror acquisition path is STRUCK from this doc. If ever
+   approved (post-val, user-gated), acquisition is via the official request form
+   ONLY. Mirror acquisition is a license-hygiene violation class (D39/D41).
 
 ## Val interaction (hard constraint)
 

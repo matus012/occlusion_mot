@@ -440,6 +440,46 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   DISPOSABLE placeholder-ckpt output; final re-render post-PERUN with the canonical
   checkpoint. Batch runtime: ~12 fps processed, 18-60s wall/clip (3,824 frames
   total). 27 new synthetic tests (154 green).
+- **D43 (2026-07-24) perun_sweep_v2.md APPROVED [user] + 4 pre-registration
+  amendments (appended to the doc, no design changes).** (1) Detector-arm R6
+  selection rule pre-registered: dev oracle-ceiling, tie-break e2e at fixed gate —
+  no post-hoc selection. (2) Gate probe: ONE gate per arm chosen by 3-seed mean
+  assoc; never per-seed. (3) "dev-optimistic" label mandatory wherever a dev-trained
+  detector is scored on dev; only R6-at-val is honest. (4) MSMT17 HF-mirror path
+  STRUCK (license-hygiene violation class D39/D41); official request form only,
+  post-val, user-gated. NEXT (same directive): local sweep dry-run as PERUN parity
+  check — SLURM launcher + config-driven entrypoint (identical entrypoint local vs
+  PERUN, no code fork), arms A-D @ pool 300 / 1 seed / 3 ep end-to-end incl.
+  McNemar emission, detector smoke, runtime extrapolation vs the 25 H200h budget.
+  DRY-RUN PASSED (2026-07-24): 4 arms + detector smoke end-to-end through the
+  parity entrypoint (sweep_unit.py; sbatch emits the identical command — pinned by
+  a test); no OOM/NaN; unit JSONs schema-complete incl. taxonomy guard
+  (pre_match_rate/oracle_ceiling verbatim from run_hidden); 3 McNemar JSONs
+  parseable. All dry-run METRICS are meaningless by design (3 ep, pool 300,
+  1 seed — validation only, no claims; e.g. 3-ep arm D scores BELOW the ImageNet
+  null). Two portability bugs caught by the dry-run: cp1250 subprocess-pipe decode
+  crash on ultralytics output (FIXED: utf-8/errors=replace; residual non-fatal
+  console-logging encode warnings remain on Windows only — irrelevant on the Linux
+  target) and the hidden_ tag prefix mismatch between run_hidden outputs and
+  paired_test consumption (FIXED).
+  EXTRAPOLATION (corrected after reviewer catch — the first draft wrongly reused
+  the D40 600-step basis; the dry-run config actually ran 3 ep x 20 batches = 60
+  steps): honest decomposition from the D40 sanity run (200-batch epochs, warm
+  cache, 4060): train ~0.45 s/step @ batch 64; occluded-query eval ~140 s over the
+  98k-crop val set. Full-scale unit (60 ep x 400 batches = 24k steps + 60
+  per-epoch evals) ~ 10,800s + 8,400s ~ 5.3h on 4060. The pipeline is CPU-decode-
+  bound (single-threaded loader), so the H200-node factor is conservatively ~3x,
+  not 8x -> ~1.8 H200h/unit, 18 units ~32 H200h: the doc's <= 25h estimate does
+  NOT survive measured throughput AS-IS (the 40h ceiling barely holds). Eval
+  cadence is a free implementation parameter (unspecified in the approved design;
+  runs/arms/seeds/epochs unchanged): evaluating every 5 epochs cuts eval cost 5x
+  -> ~1.2 H200h/unit -> ~21h embedders + ~1h embed caches + <= 4h detector =
+  ~25 H200h total, at the estimate and inside the ceiling; a parallel DataLoader
+  adds further margin. PERUN config deltas owed BEFORE submission: (a) --eval-every
+  in train_reid + sweep configs (budget-load-bearing); (b) detector `mix` dimension
+  is label-only (finetune_detector lacks the CARLA-mix path); (c) emit
+  submit.sbatch from the Linux side (path separators); (d) fill
+  partition/account/time placeholders.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
