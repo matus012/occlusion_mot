@@ -486,6 +486,17 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   is label-only (finetune_detector lacks the CARLA-mix path); (c) emit
   submit.sbatch from the Linux side (path separators); (d) fill
   partition/account/time placeholders.
+- **D44 (2026-07-24) README update [reconstructed from user AMENDMENT — the base
+  D44 directive itself was never received; only "Amendment to D44 directive"
+  arrived, appended to a resend of the D43 close-out text].** Acted on the
+  amendment's explicit requirements only: README.md now states the corrected sweep
+  budget (~30-36 H200h), includes the two-command PERUN submission path as
+  readiness evidence, and carries the status line "submission-ready, awaiting HPC
+  access"; plus a minimal freshen (dev-half state summary with the dev-optimistic
+  caveat, layout pointers to val_manifest/perun_sweep_v2/demo). Scope beyond the
+  amendment NOT invented — if the base D44 directive contained more, it needs
+  re-sending. NOTE: the resent D43 items (budget correction, staging, deltas a-d)
+  were already complete at commit d1ceb57; not redone.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
