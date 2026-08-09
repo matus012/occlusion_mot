@@ -121,6 +121,19 @@ def config_digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def write_text_lf(path: Path, text: str) -> None:
+    """Write with LF endings on every platform.
+
+    Path.write_text() opens in text mode with newline=None, so on Windows every '\\n'
+    becomes '\\r\\n'. A CRLF sbatch script reaches the cluster with a '#!/bin/bash\\r'
+    shebang and dies with "bad interpreter"; CRLF also corrupts every quoted value in
+    the emitted bash arrays. Anything destined for Linux goes through this function.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
+
+
 def pool_token(pool: int | None) -> str:
     return "full" if pool is None else str(int(pool))
 
@@ -243,6 +256,99 @@ def enumerate_units(cfg: dict[str, Any]) -> list[str]:
             for mix in detector["mixes"]:
                 units.append(detector_unit_id(model, mix))
     return units
+
+
+# ---------------------------------------------------------------- budget / SLURM
+#
+# D47: the 40 H200-hour ceiling (perun_sweep_v2.md "Budget") is enforced at sbatch
+# GENERATION time, not discovered at the end of a run. Two independent mechanisms:
+#
+#   1. per-job wall limits -- each array task is capped at its own unit class's
+#      estimate x SLURM_TIME_MARGIN, so one hung unit can never eat the allocation.
+#   2. a grid-level assertion -- the LOW-end total must fit under the ceiling (hard
+#      fail if not), and a HIGH-end total over the ceiling is reported loudly.
+#
+# Estimates come from perun_sweep_v2.md's own measured-basis table; they are inputs
+# to a guard, never a threshold that moves to make the guard pass.
+
+SLURM_TIME_MARGIN = 1.35  # wall limit = estimate x margin, rounded up to 5 min
+
+# hours per unit, by class. (low, high) brackets the doc's measured range.
+UNIT_EST_H: dict[str, tuple[float, float]] = {
+    # ImageNet null: retrieval eval only, no training, then the shared embed+track tail
+    "embedder_null": (0.45, 0.45),
+    # 60 ep x 400 batches with eval-every-5 (~1.2 h) + embedding cache (~0.2 h)
+    # + a 3-point gate probe on the dev half (~0.15 h)
+    "embedder": (1.55, 1.55),
+    # yolo11s/yolo11m, ~100 ep @ 960 px -- the doc's 1.5-3 h/run spread
+    "detector": (1.5, 3.0),
+}
+
+
+def unit_class(unit: str) -> str:
+    """Which budget/time class an enumerated unit belongs to."""
+    parsed = parse_unit(unit)
+    if parsed[0] == "detector":
+        return "detector"
+    return "embedder_null" if parsed[1] == "A" else "embedder"
+
+
+def _hms(hours: float) -> str:
+    """Round UP to the next 5 minutes -- a wall limit must never round down."""
+    total_min = int(-(-hours * 60 // 5) * 5)
+    return f"{total_min // 60:02d}:{total_min % 60:02d}:00"
+
+
+def budget_table(cfg: dict[str, Any]) -> dict[str, Any]:
+    """Per-class counts, wall limits, and low/high grid totals against the ceiling."""
+    units = enumerate_units(cfg)
+    ceiling_h = float(cfg.get("slurm", {}).get("budget_ceiling_h", 40))
+    classes: dict[str, dict[str, Any]] = {}
+    for cls, (low, high) in UNIT_EST_H.items():
+        n = sum(1 for u in units if unit_class(u) == cls)
+        classes[cls] = {
+            "n_units": n,
+            "est_low_h": low,
+            "est_high_h": high,
+            "time_limit": _hms(high * SLURM_TIME_MARGIN),
+            "subtotal_low_h": round(n * low, 2),
+            "subtotal_high_h": round(n * high, 2),
+        }
+    total_low = round(sum(c["subtotal_low_h"] for c in classes.values()), 2)
+    total_high = round(sum(c["subtotal_high_h"] for c in classes.values()), 2)
+    return {
+        "ceiling_h": ceiling_h,
+        "n_units": len(units),
+        "classes": classes,
+        "total_low_h": total_low,
+        "total_high_h": total_high,
+        "max_time_limit": max(c["time_limit"] for c in classes.values()),
+        "fits_low": total_low <= ceiling_h,
+        "fits_high": total_high <= ceiling_h,
+    }
+
+
+def assert_budget(cfg: dict[str, Any]) -> dict[str, Any]:
+    """Hard-fail a grid whose best case already busts the ceiling; report a bad worst
+    case rather than hiding it. Never rescales the estimates to make the check pass."""
+    table = budget_table(cfg)
+    if not table["fits_low"]:
+        raise AssertionError(
+            f"grid busts the {table['ceiling_h']:.0f} H200-h ceiling even at the LOW "
+            f"estimate: {table['total_low_h']} h over {table['n_units']} units. "
+            f"Cut seeds, pools, or detector runs -- the ceiling does not move "
+            f"(CLAUDE.md: thresholds never move to make a gate pass)."
+        )
+    if not table["fits_high"]:
+        logger.warning(
+            "BUDGET RISK: low estimate %.1f h fits the %.0f h ceiling, but the HIGH "
+            "estimate is %.1f h (over by %.1f h). Driver: detector runs at the top of "
+            "their 1.5-3 h/run spread. Per-job wall limits still cap each unit; the "
+            "grid total is the operator's call.",
+            table["total_low_h"], table["ceiling_h"], table["total_high_h"],
+            table["total_high_h"] - table["ceiling_h"],
+        )
+    return table
 
 
 def posix_relpath(path: Path | str, root: Path = ROOT) -> str:

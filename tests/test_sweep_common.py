@@ -234,7 +234,14 @@ def test_shipped_perun_full_config_has_slurm_placeholders() -> None:
     assert cfg["slurm"]["account"] == "<FILL-PERUN-ACCOUNT>"
     assert cfg["slurm"]["gres"] == "gpu:1"
     assert cfg["slurm"]["cpus_per_task"] == 8
-    assert cfg["slurm"]["mem"] == "32G"
+    # D47: raised from 32G. The crop DataLoader plus a 100-epoch ultralytics run at
+    # 960 px do not fit comfortably in 32G, and 64G x 8 tasks still fits one node.
+    assert cfg["slurm"]["mem"] == "64G"
+    # D47: partition + account are the ONLY hand-filled values; everything else that
+    # SLURM needs is derived, so no `time` key remains to drift out of date.
+    assert "time" not in cfg["slurm"]
+    assert cfg["slurm"]["budget_ceiling_h"] == 40
+    assert cfg["slurm"]["max_concurrent"] == 8
 
 
 # ---------------------------------------------------------------------------

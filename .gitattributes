@@ -1,0 +1,7 @@
+# D47: anything that runs on the cluster must reach it with LF endings. A CRLF
+# shell script arrives with a "#!/bin/bash\r" shebang and dies with "bad
+# interpreter"; git archive stores blobs verbatim, so the fix belongs here.
+*.sh      text eol=lf
+*.sbatch  text eol=lf
+*.yaml    text eol=lf
+*.yml     text eol=lf

@@ -71,3 +71,11 @@ showcase/renders/
 results/sweep/**/*.log
 results/sweep/*.log
 results/sweep/**/submit.sbatch
+results/sweep/**/submit_smoke.sbatch
+results/sweep/**/logs/
+
+# D47 HPC bundle: staged runtime assets and the built bundle are large binary
+# artifacts reproducible from scripts/make_hpc_bundle.py -- never committed.
+# (data/wheelhouse/ is already covered by the data/ rule above.)
+assets/
+dist/

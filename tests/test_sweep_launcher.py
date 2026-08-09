@@ -131,7 +131,9 @@ def test_sbatch_argument_list_matches_local_mode_after_interpreter(tmp_path: Pat
     sbatch_text = sl.render_sbatch(cfg, config_path, results_dir)
 
     config_posix = sc.posix_relpath(config_path)
-    template_args = sc.entrypoint_cmd(config_posix, "${UNIT}", device="${DEVICE}")
+    # D47: the emitted line quotes its expansions ("${UNIT}") because the script runs
+    # under `set -u`; parity is over the ARGUMENT LIST, so compare against the quoted form.
+    template_args = sc.entrypoint_cmd(config_posix, '"${UNIT}"', device='"${DEVICE}"')
 
     def _mask(args: list[str], cfg_tok: str, unit_tok: str, dev_tok: str) -> list[str]:
         return [
@@ -141,7 +143,7 @@ def test_sbatch_argument_list_matches_local_mode_after_interpreter(tmp_path: Pat
         ]
 
     assert _mask(local_args, str(config_path), concrete_unit, "cuda") == _mask(
-        template_args, config_posix, "${UNIT}", "${DEVICE}"
+        template_args, config_posix, '"${UNIT}"', '"${DEVICE}"'
     )
 
     # the exact templated command line ($PYTHON interpreter + argument list) is
@@ -153,12 +155,15 @@ def test_sbatch_argument_list_matches_local_mode_after_interpreter(tmp_path: Pat
     assert concrete_unit in _units_array(sbatch_text)
 
 
-def test_sbatch_python_interpreter_is_env_var_defaulting_to_python3(tmp_path: Path) -> None:
+def test_sbatch_python_interpreter_comes_from_the_shared_offline_env(tmp_path: Path) -> None:
+    """D47: $PYTHON (and TORCH_HOME / YOLO_CONFIG_DIR / MPLCONFIGDIR) are set in one
+    place, scripts/hpc_env.sh, instead of being re-templated into every script."""
     cfg = _base_cfg()
     config_path = _write_config(tmp_path, cfg)
     sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
-    assert 'PYTHON="${PYTHON:-python3}"' in sbatch_text
-    assert ".venv" not in sbatch_text  # the Windows dev interpreter must never leak in
+    assert "source scripts/hpc_env.sh" in sbatch_text
+    assert "$PYTHON scripts/sweep_unit.py" in sbatch_text
+    assert ".venv/Scripts" not in sbatch_text  # no Windows dev interpreter
 
 
 def test_sbatch_never_leaks_windows_paths(tmp_path: Path) -> None:
@@ -188,10 +193,13 @@ def test_sbatch_emits_slurm_resource_lines(tmp_path: Path) -> None:
     sbatch_text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
     assert "#SBATCH --partition=gpu" in sbatch_text
     assert "#SBATCH --account=acct1" in sbatch_text
-    assert "#SBATCH --time=00:30:00" in sbatch_text
     assert "#SBATCH --gres=gpu:1" in sbatch_text
     assert "#SBATCH --cpus-per-task=8" in sbatch_text
     assert "#SBATCH --mem=32G" in sbatch_text
+    # D47: --time is DERIVED (max per-class wall limit), never copied from slurm.time --
+    # a hand-set uniform limit cannot bound a grid whose units differ 6x in cost.
+    assert f"#SBATCH --time={sc.budget_table(cfg)['max_time_limit']}" in sbatch_text
+    assert "#SBATCH --array=0-" in sbatch_text
 
 
 def _units_array(sbatch_text: str) -> list[str]:

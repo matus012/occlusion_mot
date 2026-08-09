@@ -45,15 +45,26 @@ detector:
 
 # D43-delta(d): partition/account are unfilled placeholders on purpose -- load_config
 # WARNS (never fails) on them so local use is never blocked, but submission-side stays
-# visibly incomplete until a human fills in the real PERUN values. time=04:00:00 derived
-# from the measured ~1.2-3h/unit budget (context.md D43 extrapolation) with margin.
+# visibly incomplete until a human fills in the real PERUN values.
+#
+# D47: THESE TWO STRINGS ARE THE ENTIRE HPC-DAY EDIT. Everything else -- wall limits,
+# array size, concurrency, log paths, the offline environment -- is derived by
+# sweep_launcher.py from this file. Per-unit `time` is no longer set by hand: limits
+# come from sweep_common.UNIT_EST_H x SLURM_TIME_MARGIN, per unit class, and the grid
+# total is asserted against budget_ceiling_h before a script is written.
 slurm:
   partition: "<FILL-PERUN-PARTITION>"
   account: "<FILL-PERUN-ACCOUNT>"
-  time: "04:00:00"
   gres: "gpu:1"
+  # Deliberately modest: an 8x H200 node is typically 64-128 cores / 1-2 TB, so
+  # 8 cores + 64 GB per task lets all 8 GPUs of one node run concurrently without
+  # the request itself becoming the reason the array sits in the queue. Raise
+  # cpus_per_task if the crop-decode DataLoader turns out to be the bottleneck.
   cpus_per_task: 8
-  mem: "32G"
+  mem: "64G"
+  max_concurrent: 8      # 8x H200 per node -> one node saturated, no more
+  time_smoke: "00:40:00"
+  budget_ceiling_h: 40   # perun_sweep_v2.md; never moved to make a check pass
 
 env:
   device: cuda
