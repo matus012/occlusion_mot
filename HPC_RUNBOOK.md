@@ -10,6 +10,10 @@ Everything below assumes the bundle is already built on the dev box
 rsync -avP --partial dist/omot_hpc_<sha>.tar.gz dist/omot_hpc_<sha>.tar.gz.sha256 <user>@perun.tuke.sk:~/
 ```
 
+On a flaky link, build with `--no-archive` and send the staged directory instead —
+same contents, resumable per member, and step 2 drops the `sha256sum`/`tar` line:
+`rsync -avP dist/omot_hpc/ <user>@perun.tuke.sk:~/omot_hpc/`
+
 ### 2 — unpack + verify
 
 ```bash

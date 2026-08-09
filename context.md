@@ -76,7 +76,19 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   — the low end fits, the high end does not, driven entirely by the detector arm's 1.5-3 h/run
   spread. Reported, not tuned away (thresholds never move to make a gate pass); the operator's
   documented lever is dropping to one detector model after reading the smoke job's throughput.
-  (e) **Two real defects found and fixed, both fatal on HPC day.** (1) Emitted `submit.sbatch`
+  (e0) **THE find: `src/omot/data/` was never committed.** `.gitignore`'s `data/` pattern is
+  unanchored, so it matched `src/omot/data/` as well as the root data dir — the package
+  holding `MOTSequence` / `load_split` / `half_split_frames` has been untracked since the
+  repo was created. Every local run worked because the files exist in the worktree; the
+  checked-in tree (and therefore the public repo, and `git archive HEAD`) could not
+  `import omot.data` at all. Surfaced by the deliverable-5 requirement to run the entrypoint
+  from the UNPACKED BUNDLE rather than the dev tree: `ModuleNotFoundError: No module named
+  'omot.data'`. Nothing else was lost (audited every ignored path). Fixed by anchoring
+  `/data/ /logs/ /runs/ /weights/` and committing the package. Two tests now guard the class:
+  every `src/**/*.py` on disk must be git-tracked, and no unanchored .gitignore directory
+  pattern may name a directory that exists under `src/`. No measurement is affected — all
+  results were produced from the worktree, which always had the file.
+  (e) **Two more defects found and fixed, both fatal on HPC day.** (1) Emitted `submit.sbatch`
   had CRLF endings — `Path.write_text` translates `\n` to `\r\n` on Windows, so the script
   would reach the cluster as `#!/bin/bash\r` and die with "bad interpreter". Fixed with
   `write_text_lf` + `.gitattributes eol=lf`; a test now asserts LF on every emitted script.

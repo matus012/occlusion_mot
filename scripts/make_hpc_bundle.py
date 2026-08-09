@@ -676,16 +676,23 @@ def unpack(bundle_dir: Path, dest: Path) -> int:
 
 
 def _safe_extract(tar: tarfile.TarFile, target: Path) -> None:
-    """Reject absolute paths and ../ escapes before writing anything."""
+    """Extract, rejecting absolute paths and ../ escapes.
+
+    Prefer tarfile's own "data" filter (3.12, backported to 3.11.4+): it applies the
+    same escape checks per member DURING extraction. A hand-rolled pre-scan on top of
+    it would walk all 509,122 members of data_reid.tar twice -- once resolving paths,
+    once extracting -- on the slowest step of the whole cluster-side setup. The manual
+    scan is kept only as the fallback for interpreters without the filter.
+    """
     resolved = target.resolve()
+    if hasattr(tarfile, "data_filter"):
+        tar.extractall(resolved, filter="data")
+        return
     for member in tar.getmembers():
         out = (resolved / member.name).resolve()
         if not str(out).startswith(str(resolved)):
             raise RuntimeError(f"unsafe tar member escapes destination: {member.name}")
-    if hasattr(tarfile, "data_filter"):  # py3.12+; py3.11 has no filter kwarg
-        tar.extractall(resolved, filter="data")
-    else:
-        tar.extractall(resolved)
+    tar.extractall(resolved)
 
 
 # --------------------------------------------------------------------------- cli

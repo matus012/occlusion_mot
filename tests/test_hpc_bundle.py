@@ -75,6 +75,13 @@ def test_detection_cache_required_for_every_mot17_sequence(cfg: dict) -> None:
     assert keys == {f"detcache:{s}" for s in seqs}
 
 
+def test_inlined_unit_enumeration_matches_sweep_common(cfg: dict) -> None:
+    """make_hpc_bundle inlines enumerate_units so `verify`/`unpack` stay stdlib-only
+    on the cluster (no yaml import). That is a deliberate duplication -- this test is
+    what stops the two copies from drifting."""
+    assert mhb._enumerate_units(cfg) == enumerate_units(cfg)
+
+
 def test_plan_entries_have_no_duplicate_coverage(cfg: dict) -> None:
     seen: dict[str, str] = {}
     for entry in mhb.plan_entries(cfg, ROOT):
@@ -90,6 +97,57 @@ def test_gitignored_weights_are_shipped_explicitly(cfg: dict) -> None:
     for model in cfg["detector"]["models"]:
         assert f"weights:{model}.pt" in covered
     assert "weights:yolo26n.pt" in covered, "ultralytics check_amp() loads yolo26n.pt"
+
+
+def test_every_source_module_is_tracked_by_git() -> None:
+    """repo.tar is `git archive HEAD`, so an ignored source file is simply ABSENT from
+    the bundle — and from the published repo.
+
+    This is not hypothetical: `.gitignore`'s unanchored `data/` matched src/omot/data/,
+    so MOTSequence/load_split/half_split_frames were never committed. Everything kept
+    working locally because the files existed in the worktree; the bundled tree failed
+    at `ModuleNotFoundError: No module named 'omot.data'`. Anchored patterns fixed it —
+    this test stops the next unanchored pattern from doing the same thing quietly.
+    """
+    on_disk = {
+        p.relative_to(ROOT).as_posix()
+        for p in (ROOT / "src").rglob("*.py")
+        if "__pycache__" not in p.parts
+    }
+    tracked = set(
+        subprocess.run(["git", "ls-files", "src"], cwd=ROOT, capture_output=True,
+                       text=True, check=True).stdout.split()
+    )
+    assert not (on_disk - tracked), (
+        f"source file(s) present on disk but NOT tracked by git: "
+        f"{sorted(on_disk - tracked)} -- they will be missing from repo.tar"
+    )
+
+
+def test_no_gitignore_pattern_shadows_a_source_directory() -> None:
+    """An unanchored directory pattern matches at ANY depth.
+
+    That is correct and wanted for build noise (`__pycache__/`, `.venv/`, `build/`), so
+    the rule is not "anchor everything" -- it is "no unanchored pattern may name a
+    directory that actually exists under src/". `data/` broke exactly that rule.
+    """
+    src = ROOT / "src"
+    shadowed = []
+    for line in (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines():
+        entry = line.strip()
+        if not entry or entry.startswith(("#", "/", "!", "*")):
+            continue
+        if not (entry.endswith("/") and entry.count("/") == 1):
+            continue  # anchored, or a multi-segment path pattern
+        name = entry.rstrip("/")
+        if name == "__pycache__":
+            continue  # legitimately ignored at every depth
+        if any(d.is_dir() for d in src.rglob(name)):
+            shadowed.append(entry)
+    assert not shadowed, (
+        f"unanchored .gitignore pattern(s) {shadowed} match a real directory under "
+        f"src/ -- those sources would be missing from repo.tar. Prefix with '/'."
+    )
 
 
 # ----------------------------------------------------------------- budget / SLURM

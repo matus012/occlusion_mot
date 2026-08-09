@@ -13,10 +13,17 @@ coverage.xml
 htmlcov/
 
 # ML / data
-data/
-logs/
-runs/
-weights/
+#
+# D47: these MUST stay leading-slash anchored. Unanchored `data/` matches a directory
+# named "data" at ANY depth, which silently excluded the entire src/omot/data package
+# (MOTSequence, load_split, half_split_frames) from every commit since the repo was
+# created — the checked-in tree could not `import omot.data` at all. Caught by running
+# the sweep entrypoint from an unpacked bundle instead of the dev worktree, where the
+# untracked files were present all along. tests/test_hpc_bundle.py guards it now.
+/data/
+/logs/
+/runs/
+/weights/
 *.pth
 *.pt
 *.tar
