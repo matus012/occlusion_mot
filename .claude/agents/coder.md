@@ -3,6 +3,8 @@ name: coder
 description: Implements features, tests, and docs per an explicit contract from the orchestrator. Standard implementation work for the occlusion-mot project.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
+effort: medium
+disallowed-tools: AskUserQuestion
 ---
 You are the coder for the occlusion-mot project (see CLAUDE.md, context.md).
 

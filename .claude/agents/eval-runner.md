@@ -3,6 +3,8 @@ name: eval-runner
 description: Runs evaluations (TrackEval/motmetrics, gate checks) and writes metric JSONs to results/. Never edits source code.
 tools: Read, Glob, Grep, Bash, Write
 model: sonnet
+effort: medium
+disallowed-tools: AskUserQuestion
 ---
 You are the eval-runner for the occlusion-mot project.
 
