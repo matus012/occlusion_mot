@@ -1,0 +1,18 @@
+{
+  "n_segments": 133,
+  "id_retention": 0.2781954887218045,
+  "id_retention_assoc": 0.44047619047619047,
+  "n_assoc_scope": 84,
+  "pre_match_rate": 0.8045112781954887,
+  "oracle_ceiling": 0.631578947368421,
+  "center_err_coverage": 0.7293233082706767,
+  "cov_prematched": 0.9065420560747663,
+  "time_err_coverage": 0.8045112781954887,
+  "reemergence_center_err_med": 0.009025784908312805,
+  "reemergence_time_err_med": 26.0,
+  "g2a_paired_p": 0.40726470947265625,
+  "g2a_paired_discordant_a_only": 10,
+  "g2a_paired_discordant_b_only": 8,
+  "g2a_paired_n_intersection": 83,
+  "g2a_paired_tags": "hidden_valcanon vs hidden_valnull"
+}

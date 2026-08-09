@@ -1,0 +1,3 @@
+paired G2a: n=83, a=37 b=35 retained, discordant 10/8, p=0.4073
+n_intersection=83 retention a=0.446 b=0.422 discordant 10/8 p=0.4073 -> C:\Users\matus\A_MAIN\ws\100_occlusion_mot\results\paired_g2a_val_hidden_valcanon_vs_hidden_valnull.json
+canonical merge -> C:\Users\matus\A_MAIN\ws\100_occlusion_mot\results\hidden_state.json

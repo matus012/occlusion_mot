@@ -1,0 +1,15 @@
+loaded 7 sequences from C:\Users\matus\A_MAIN\ws\100_occlusion_mot\data\MOT17\train
+hidden_eval aggregate: {'n_segments': 133, 'id_retention': 0.2781954887218045, 'id_retention_assoc': 0.44047619047619047, 'n_assoc_scope': 84, 'pre_match_rate': 0.8045112781954887, 'oracle_ceiling': 0.631578947368421, 'center_err_coverage': 0.7293233082706767, 'cov_prematched': 0.9065420560747663, 'time_err_coverage': 0.8045112781954887, 'reemergence_center_err_med': 0.009025784908312805, 'reemergence_time_err_med': 26.0}
+exported val-half GT for 7 sequences -> C:\Users\matus\A_MAIN\ws\100_occlusion_mot\results\raw\val_half\gt
+Error importing BURST due to missing underlying dependency: No module named 'tabulate'
+
+Evaluating 1 tracker(s) on 7 sequence(s) for 1 class(es) on MotChallenge2DBox dataset using the following metrics: HOTA, CLEAR, Identity, Count
+
+
+Evaluating hidden_valcanon
+
+trackeval[hidden_valcanon]: {'hota': 51.072638668692875, 'idf1': 60.09264547242845, 'mota': 45.28329817549314, 'idsw': 298, 'n_seqs': 7}
+g2: {'n_segments': 133, 'id_retention': 0.2781954887218045, 'id_retention_assoc': 0.44047619047619047, 'n_assoc_scope': 84, 'pre_match_rate': 0.8045112781954887, 'oracle_ceiling': 0.631578947368421, 'center_err_coverage': 0.7293233082706767, 'cov_prematched': 0.9065420560747663, 'time_err_coverage': 0.8045112781954887, 'reemergence_center_err_med': 0.009025784908312805, 'reemergence_time_err_med': 26.0}
+g1: {'hota': 51.072638668692875, 'idf1': 60.09264547242845, 'mota': 45.28329817549314, 'idsw': 298, 'n_seqs': 7}
+-> C:\Users\matus\A_MAIN\ws\100_occlusion_mot\results\hidden_val_valcanon.json
+canonical gates artifacts written (tracker_ours.json, hidden_state.json)
