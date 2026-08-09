@@ -178,9 +178,21 @@ HPC day is now: fill 2 values -> transfer -> sbatch. See HPC_RUNBOOK.md (<1 page
   scripts/hpc_env.sh (TORCH_HOME / YOLO_CONFIG_DIR / caches -> bundled assets).
 - SLURM: per-unit-class wall limits via `timeout`, resume-safe array, logs/ dir,
   smoke job (GPU probe + serialised detector prep + 2-epoch detector finetune).
-- TWO REAL DEFECTS FIXED, both fatal on HPC day: emitted sbatch had CRLF endings
-  ("bad interpreter" on Linux); the two detector units per data mix would RACE on
-  building data/cache/det_finetune_<mix>/ under an array.
+- THREE REAL DEFECTS FIXED. (1) BIGGEST: src/omot/data/ (MOTSequence, load_split,
+  half_split_frames) was NEVER COMMITTED — .gitignore's unanchored `data/` matched
+  it as well as the root data dir, so the checked-in tree and the public repo could
+  not `import omot.data`. Local work never noticed: the files are in the worktree.
+  Found by running the entrypoint from the UNPACKED BUNDLE, not the dev tree.
+  Anchored /data/ /logs/ /runs/ /weights/; committed the package; 2 guard tests.
+  NO measurement affected (all results came from the worktree). (2) Emitted sbatch
+  had CRLF endings ("bad interpreter" on Linux). (3) The two detector units per
+  data mix would RACE on building data/cache/det_finetune_<mix>/ under an array.
+- DRY RUN (full path, local): build 10.94 GB tar.gz -> sha256sum -c OK -> extract ->
+  verify OK (9 entries, 12.24 GB, 529,909 members, system python3, no venv) ->
+  unpack 8m55s -> launcher --mode slurm from the bundled tree -> 2-value fill ->
+  smoke unit B:full:0 from the BUNDLED tree exit 0 in 5m13s (train 36 ids/44,846
+  crops -> embed 152,052 dets over 7 seqs -> track -> result JSON). Wheelhouse:
+  72 wheels / 3.84 GB, all 70 lock entries resolve offline for linux-cp311.
 - BUDGET (measured at generation): 25 units, 35.25-41.25 H200-h vs 40 h ceiling.
   Low fits, HIGH DOES NOT (detector arm's 1.5-3 h/run spread). Reported, not tuned
   away; documented lever = drop to one detector model after reading smoke throughput.
