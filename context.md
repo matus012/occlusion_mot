@@ -516,6 +516,27 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   embedded plots viz/scaling_curve_local.png + viz/summary_retention_grid.png
   (class plot, already allowlisted). MOT/Pexels renders: regeneration reference
   only, one line "available locally / on request" — nothing committed.
+- **D45 (2026-08-09) D18 VAL EVENT EXECUTED [user approval received].** val_manifest.md
+  (frozen f2e0102) run EXACTLY: R1-R6, zero edits, zero deviations, no re-runs.
+  Pre-flight: both ckpt sha256 MATCH; MOT17 manifest sha 49c218a3 == D13; 133 segments;
+  pytest 240 green; CUDA probe ok. Execution notes (faithful-interpretation calls, logged,
+  no semantic deviation): (a) manifest's frozen-code hash bc46f72 no longer exists post-D41
+  purge — rewritten equivalent a8e4da0 (D28-final) located; only val-critical diff since is
+  the L5 cache_tag routing in detect/cache.py that the manifest's own R6 requires, paired
+  path byte-identical. (b) The D45 directive's premise "val-half detections not cached" was
+  FALSE — the D1 yolo11x cache covers full sequences (verified frame ranges vs seqinfo all
+  7 seqs), as the manifest itself states for R6; no new detector pass run (FIXED DETECTIONS
+  preserved — running one would have violated "D1 cache, untouched"). (c) R3/R4 given as
+  config shorthand in the manifest — expanded to exact flags via the frozen dev precedents
+  (tune_hidden.py run_combo devbase for R4; grid-4 dev-best app0.40 proto for R3).
+  RESULTS (val half, n=133): G1 PASS (HOTA 51.07/IDF1 60.09/IDsw 298 vs base
+  49.98/58.28/359). G2: center_err 0.0090 PASS, cov_prematched 0.907 PASS, n_segments PASS;
+  G2a-floor 0.440 vs 0.58 FAIL (~2.4 sigma below, NOT within noise); G2a-paired p=0.4073
+  n=83 NOT MET (pre-registered expected outcome, pending PERUN); G2b e2e 0.278 contingent/
+  non-blocking. R6 detector-arm (dev-half-GT caveat label mandatory): e2e direction
+  replicated (0.278->0.338), assoc 0.577, but oracle-ceiling lift did NOT transfer
+  (0.632->0.586). Full report: results/val/val_report.md. Per D18.3 + manifest header:
+  misses reported, work on val-gated claims HALTS pending user decision.
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of
