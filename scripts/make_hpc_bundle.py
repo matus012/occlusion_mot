@@ -485,6 +485,39 @@ def refresh_wheelhouse(root: Path, python_exe: str) -> None:
     subprocess.run(cmd, cwd=root, check=True)
 
 
+def check_wheelhouse(root: Path, python_exe: str) -> int:
+    """Resolve requirements-lock.txt offline against data/wheelhouse, for LINUX.
+
+    This is as far as a Windows dev box can validate the cluster environment. pip
+    runs its real resolver with --no-index (wheelhouse only) and the cluster's target
+    tags, so a missing or wrong-platform wheel fails HERE. What it cannot prove is
+    that the wheels then IMPORT on a real Linux node -- that needs the cluster.
+    """
+    wheelhouse = root / "data" / "wheelhouse"
+    target = root / "dist" / "_resolve_probe"
+    if target.exists():
+        shutil.rmtree(target)
+    cmd = [
+        python_exe, "-m", "pip", "install", "--dry-run", "--ignore-installed",
+        "--no-index", "--find-links", str(wheelhouse), "--only-binary=:all:",
+        "--target", str(target), "--python-version", "3.11",
+        "--implementation", "cp", "--abi", "cp311", "--abi", "abi3", "--abi", "none",
+        "-r", "requirements-lock.txt",
+    ]
+    for tag in linux_platform_tags():
+        cmd += ["--platform", tag]
+    logger.info("resolving the lock offline against %s (linux/cp311 target)", wheelhouse)
+    proc = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
+    if proc.returncode != 0:
+        logger.error("WHEELHOUSE INCOMPLETE:\n%s", (proc.stderr or proc.stdout)[-2000:])
+        return 1
+    n = len(list(wheelhouse.glob("*.whl")))
+    size = sum(p.stat().st_size for p in wheelhouse.glob("*.whl"))
+    logger.info("WHEELHOUSE OK: %d wheels, %.2f GB, every lock entry resolves offline",
+                n, size / 1e9)
+    return 0
+
+
 def build(
     config: str = DEFAULT_CONFIG,
     root: Path = ROOT,
@@ -683,7 +716,14 @@ def main() -> int:
     u.add_argument("--bundle-dir", type=Path, default=Path("."))
     u.add_argument("--dest", type=Path, default=Path("."))
 
+    c = sub.add_parser("check-wheelhouse",
+                       help="resolve the lock offline against the wheelhouse (dev box)")
+    c.add_argument("--pip-python", default=sys.executable)
+
     args = ap.parse_args()
+
+    if args.cmd == "check-wheelhouse":
+        return check_wheelhouse(ROOT, args.pip_python)
 
     if args.cmd == "build":
         if args.refresh_lock:

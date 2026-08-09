@@ -64,6 +64,20 @@ VENV_PY="${REPO_ROOT}/.venv/bin/python"
 echo "=== 5/6 install (offline: --no-index) ==="
 "${VENV_PY}" -m pip install --no-index --find-links "${WHEELHOUSE}" -r requirements-lock.txt
 
+# opencv: exactly one cv2, and it must be the headless build.
+#
+# ultralytics and supervision both depend on `opencv-python`, so pinning
+# `opencv-python-headless` does NOT replace it -- the lock legitimately contains both,
+# they install into the SAME cv2/ directory, and whichever lands last wins. The
+# non-headless build dlopen()s libGL.so.1 at `import cv2`, which compute nodes
+# routinely lack. Resolve it deterministically instead of leaving it to install order.
+if "${VENV_PY}" -m pip show opencv-python >/dev/null 2>&1; then
+  echo "removing opencv-python in favour of the headless build (no libGL on compute nodes)"
+  "${VENV_PY}" -m pip uninstall -y opencv-python
+  "${VENV_PY}" -m pip install --no-index --find-links "${WHEELHOUSE}" --no-deps \
+    --force-reinstall opencv-python-headless
+fi
+
 echo "=== 6/6 self-test ==="
 # shellcheck source=scripts/hpc_env.sh
 source "${REPO_ROOT}/scripts/hpc_env.sh"
@@ -72,12 +86,20 @@ import os
 import sys
 from pathlib import Path
 
+from importlib.metadata import distributions
+
 import cv2
 import numpy
 import torch
 import torchvision
 import ultralytics
 import yaml  # noqa: F401
+
+installed = {d.metadata["Name"].lower() for d in distributions()}
+assert "opencv-python" not in installed, (
+    "non-headless opencv-python is installed; it dlopen()s libGL.so.1 at import "
+    "and will fail on a compute node"
+)
 
 print(f"python      {sys.version.split()[0]}")
 print(f"torch       {torch.__version__}  (cuda build {torch.version.cuda})")
