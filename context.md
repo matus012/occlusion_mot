@@ -48,6 +48,51 @@ recover_gate), objective = G2 retention/center-err/coverage, G1-regression check
 TrackEval on top candidates; val-half touched exactly once for final numbers.
 
 ## Decisions
+- **D47 (2026-08-09) PERUN-readiness: HPC day reduced to "fill 2 values, transfer, sbatch".**
+  Infrastructure only; no training logic touched. Six parts.
+  (a) **Transfer bundle** `scripts/make_hpc_bundle.py` (build/verify/unpack). The input set
+  is DERIVED from the sweep config (`required_inputs(cfg)`), never hardcoded, and a pytest
+  guard asserts the bundle plan covers it — so adding an arm/source/detector model fails on
+  the dev box, not on an offline compute node. Hashing rule: loose files hashed individually;
+  large trees ride in per-tree tars that are hashed individually. A tar's sha256 covers every
+  member byte, so integrity is strictly stronger than a per-file listing while the manifest
+  stays a few KB instead of ~50 MB (data/reid alone is 509,122 files). The nesting also lets
+  the operator place those inodes on scratch — cluster home dirs commonly cap at 100-500k.
+  (b) **Offline env.** `requirements-lock.txt` resolved for x86_64-manylinux_2_28 + cu126.
+  Two deliberate deviations from the dev-box requirements.txt, both HPC-motivated:
+  opencv-python -> opencv-python-headless (compute nodes lack libGL.so.1) and trackeval
+  dropped (git dep; the sweep runs `--skip-trackeval` so it is never imported). polars
+  dropped — nothing imports it and polars-runtime-32 is yanked upstream.
+  (c) **Runtime assets pre-fetched.** `resnet18(weights=IMAGENET1K_V1)` is the trunk
+  initialiser for EVERY train_reid.py run and the entirety of arm A; ultralytics
+  `check_amp()` loads yolo26n.pt before every detector train; yolo11m.pt was never on disk.
+  All staged into `assets/` + repo root, pointed at by `scripts/hpc_env.sh`
+  (TORCH_HOME / YOLO_CONFIG_DIR / MPLCONFIGDIR / HF_HUB_OFFLINE).
+  (d) **Budget enforcement made executable.** SLURM's `--time` is uniform across an array,
+  so a per-unit ceiling cannot come from it: wall limits are per unit CLASS and enforced with
+  `timeout` inside each task. The grid total is asserted at generation time against
+  `budget_ceiling_h` — hard fail if the LOW estimate busts it, loud warning if the HIGH one
+  does. Measured outcome for perun_full: 25 units, **35.25-41.25 H200-h vs the 40 h ceiling**
+  — the low end fits, the high end does not, driven entirely by the detector arm's 1.5-3 h/run
+  spread. Reported, not tuned away (thresholds never move to make a gate pass); the operator's
+  documented lever is dropping to one detector model after reading the smoke job's throughput.
+  (e) **Two real defects found and fixed, both fatal on HPC day.** (1) Emitted `submit.sbatch`
+  had CRLF endings — `Path.write_text` translates `\n` to `\r\n` on Windows, so the script
+  would reach the cluster as `#!/bin/bash\r` and die with "bad interpreter". Fixed with
+  `write_text_lf` + `.gitattributes eol=lf`; a test now asserts LF on every emitted script.
+  (2) The two detector units sharing a data mix would RACE on building
+  `data/cache/det_finetune_<mix>/` (harmless in sequential local mode, corrupting under an
+  array). Fixed by prepping both mixes in the smoke job, which the runbook chains ahead of
+  the array with `--dependency=afterok`.
+  (f) **Grid size correction.** perun_sweep_v2.md says 18 embedder runs; the config
+  enumerates 21 (A/B/C at full pool x3 = 9, plus D's 4-point scaling curve x3 = 12) because
+  arm A is run once per seed for schema uniformity. 21 + 4 detector = 25 units. The doc's
+  "~13 cache passes" line is likewise superseded — every embedder unit carries its own cache
+  pass. Budget above uses the enumerated 25, not the doc's 18.
+  Cannot be verified without cluster access, and stated as such in the report: PERUN's real
+  partition/account names, node CPU/RAM shape (cpus_per_task 8 / mem 64G are conservative
+  guesses), glibc >= 2.28, availability of a Python 3.11 module, actual Linux `pip install`
+  of the wheelhouse, and every wall-clock estimate on H200 (all extrapolated from RTX 4060).
 - **D1 (2026-07-22) Fixed-detections design.** Detector inference runs once, cached to
   `data/cache/detections/`. All tracker comparisons use identical cached detections —
   detector-independent, cheap iteration on 8GB VRAM. Invariant in CLAUDE.md.

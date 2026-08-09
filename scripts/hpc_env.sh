@@ -27,11 +27,18 @@ export MPLCONFIGDIR="${MPLCONFIGDIR:-${REPO_ROOT}/.cache/matplotlib}"
 export HF_HUB_OFFLINE=1
 export HF_HUB_DISABLE_TELEMETRY=1
 
+# Compile caches default under $HOME. Keep them in-tree so a quota'd or read-only
+# home cannot fail a unit for a reason that has nothing to do with the sweep.
+export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-${REPO_ROOT}/.cache/triton}"
+export TORCHINDUCTOR_CACHE_DIR="${TORCHINDUCTOR_CACHE_DIR:-${REPO_ROOT}/.cache/inductor}"
+export TORCH_EXTENSIONS_DIR="${TORCH_EXTENSIONS_DIR:-${REPO_ROOT}/.cache/torch_extensions}"
+export ULTRALYTICS_OFFLINE=1
+
 # One GPU per task: keep BLAS/OMP from oversubscribing the cores SLURM granted us.
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-8}"
 export MKL_NUM_THREADS="${OMP_NUM_THREADS}"
 
-mkdir -p "${MPLCONFIGDIR}"
+mkdir -p "${MPLCONFIGDIR}" "${TRITON_CACHE_DIR}" "${TORCHINDUCTOR_CACHE_DIR}"
 
 # Fail loudly here rather than 20 minutes into a unit that silently re-downloads.
 if [ ! -f "${TORCH_HOME}/hub/checkpoints/resnet18-f37072fd.pth" ]; then

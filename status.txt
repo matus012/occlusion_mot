@@ -169,6 +169,24 @@ for the D41 hash remap (bc46f72 -> a8e4da0).
 STATUS: val executed + adjudicated (D45/D46); PERUN sweep submission-ready, awaiting
 HPC access.
 
+D47 (2026-08-09): PERUN-READINESS COMPLETE (infrastructure only, no training logic).
+HPC day is now: fill 2 values -> transfer -> sbatch. See HPC_RUNBOOK.md (<1 page).
+- scripts/make_hpc_bundle.py (build/verify/unpack). Bundle inputs DERIVED from the
+  sweep config; pytest guard fails on the dev box if the plan misses one.
+- requirements-lock.txt (x86_64-manylinux_2_28 + cu126) + data/wheelhouse (offline);
+  scripts/hpc_bootstrap.sh (venv from wheelhouse, glibc/py311 preflight);
+  scripts/hpc_env.sh (TORCH_HOME / YOLO_CONFIG_DIR / caches -> bundled assets).
+- SLURM: per-unit-class wall limits via `timeout`, resume-safe array, logs/ dir,
+  smoke job (GPU probe + serialised detector prep + 2-epoch detector finetune).
+- TWO REAL DEFECTS FIXED, both fatal on HPC day: emitted sbatch had CRLF endings
+  ("bad interpreter" on Linux); the two detector units per data mix would RACE on
+  building data/cache/det_finetune_<mix>/ under an array.
+- BUDGET (measured at generation): 25 units, 35.25-41.25 H200-h vs 40 h ceiling.
+  Low fits, HIGH DOES NOT (detector arm's 1.5-3 h/run spread). Reported, not tuned
+  away; documented lever = drop to one detector model after reading smoke throughput.
+- Grid-size correction: perun_sweep_v2.md says 18 embedder runs; the config
+  enumerates 21 (+4 detector = 25). Budget uses the enumerated count.
+
 blockers: PERUN access (user)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
