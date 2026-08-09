@@ -537,6 +537,15 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   replicated (0.278->0.338), assoc 0.577, but oracle-ceiling lift did NOT transfer
   (0.632->0.586). Full report: results/val/val_report.md. Per D18.3 + manifest header:
   misses reported, work on val-gated claims HALTS pending user decision.
+- **D46 (2026-08-09) G2a-floor val miss ACCEPTED [user].** Margin deferred to the
+  PERUN-scale embedder per the manifest's pre-registration; NO re-tuning, NO re-scoping
+  — thresholds unchanged, manifest unchanged (annotation-only footnote added for the
+  D41 hash remap bc46f72->a8e4da0, marked post-hoc). D18.3 post-val decision blocker
+  RESOLVED; remaining blocker: PERUN access. README patched with the honest val
+  section (G1 PASS, center/coverage PASS, G2a-floor MISS with the dev->val
+  generalization gap named as the finding, paired p=0.41 pre-registered-expected,
+  R6 with mandatory caveat label); status line updated. Framing per user directive:
+  "pre-registered val executed as frozen; misses reported, not tuned away."
 - **D-INCIDENT (2026-07-22) Visibility check during repo rename [user-filed].** Repo was
   PUBLIC during the rename step despite the instruction to confirm visibility and flag.
   Session record: visibility was queried (gh repo view -> PUBLIC) and flagged at the top of

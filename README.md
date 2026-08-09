@@ -3,9 +3,10 @@
 Occlusion-aware multi-object tracking with **hidden-agent state prediction** (P1) and a
 **CARLA occlusion-scenario data engine** for sim2real ablation (P2).
 
-**Status: submission-ready, awaiting HPC access.** All tracker-level numbers below are
-dev-half, pre-PERUN, placeholder-checkpoint results — honest by construction, final
-claims come from the pre-registered val run and PERUN-scale sweep.
+**Status: pre-registered val executed as frozen (D45) — G1 parity PASS on val;
+G2a margin deferred to the PERUN-scale embedder; sweep submission-ready, awaiting HPC
+access.** Dev-half tables below are tuning-time numbers; the val section is the honest
+held-out read. Misses are reported, not tuned away.
 
 ![CARLA occlusion scenario with per-walker GT visibility](demo/s5_carla_excerpt.gif)
 
@@ -45,8 +46,8 @@ extracted from GT visibility.
 
 | discipline | implementation |
 |---|---|
-| Gates G0–G4 | G0 repro **frozen PASS** · G1 parity pending val · G2 hidden-state: center-err + coverage + G2a-floor PASS on dev, G2a-paired pending scale, G2b contingent on detector arm · G3 quality (pytest+ruff+coverage, live) **PASS** · G4 CARLA feeder **PASS** |
-| Val freeze | single pre-registered val event (`val_manifest.md`): configs, checkpoint SHA256s, pass/fail mapping, expected-power notes frozen BEFORE the run; no retune after |
+| Gates G0–G4 | G0 repro **frozen PASS** · G1 parity **PASS on val** · G2 hidden-state: center-err + coverage **PASS on val**, G2a-floor **MISSED on val** (accepted, not re-tuned — D46), G2a-paired pending scale, G2b contingent on detector arm · G3 quality (pytest+ruff+coverage, live) **PASS** · G4 CARLA feeder **PASS** |
+| Val freeze | single pre-registered val event (`val_manifest.md`): configs, checkpoint SHA256s, pass/fail mapping, expected-power notes frozen BEFORE the run; executed 2026-08-09 exactly as frozen (D45); no retune after — misses reported, not tuned away |
 | Multi-seed discipline | measured seed noise bounds (single-seed tracker deltas <6pt are noise — logged D36); arm comparisons use ≥3-seed means; the discriminating G2a criterion is a paired McNemar test, not a point delta |
 | License guards | CI-enforced: zero dataset-derived pixels tracked (per-file visual allowlist with content classes), dataset/cache extensions blocked, 2MB default-deny, train/eval identity-disjointness verified per source |
 
@@ -67,6 +68,37 @@ Re-emergence position error: 0.0055–0.0064 of the image diagonal (gate ≤0.01
 **Detector arm** *(dev-optimistic: detector finetuned ON dev-half GT and scored on
 dev-half — the honest read is the pre-registered val run)*: oracle ceiling 0.583→0.845,
 full-stack e2e 0.494.
+
+## Val results (pre-registered, executed as frozen — D45, 2026-08-09)
+
+The single val event ran `val_manifest.md` exactly: frozen configs, pinned checkpoint
+SHA256s, identical cached detections, no re-runs. **Misses are reported, not tuned
+away** — that discipline is the result this section exists to demonstrate.
+
+| verdict | criterion | val | bound |
+|---|---|---|---|
+| **PASS** | G1 HOTA / IDF1 | 51.07 / 60.09 | ≥ baseline − 0.5 (49.98 / 58.28) |
+| **PASS** | G1 ID switches | 298 | ≤ 359 (baseline) |
+| **PASS** | re-emergence center err | 0.0090 | ≤ 0.015 |
+| **PASS** | conditional coverage | 0.907 | ≥ 0.90 |
+| **MISS** | G2a-floor assoc retention | 0.440 | ≥ 0.58 (dev: 0.604) |
+| pending | G2a-paired McNemar | p = 0.41 (n = 83) | < 0.05 |
+
+The G2a-floor miss is the finding: a **dev→val generalization gap** — assoc retention
+0.604 → 0.440, and the trained-vs-ImageNet margin shrinks from +4.7pt to +2.6pt. The
+paired test's non-significance was pre-registered as the expected outcome at this
+sample size (underpowered pre-PERUN); both G2a criteria defer to the PERUN-scale
+embedder (D46). The occlusion tracker still clears every ByteTrack-parity gate on val
+while retaining more identities than the baseline (e2e 0.278 vs 0.263, assoc 0.440
+vs 0.412).
+
+**Detector arm on val** *(mandatory label: detector-arm prototype — yolo11s finetuned
+10 epochs on DEV-HALF GT only; never saw val frames; val eval clean by construction;
+local prototype of the D26 G2b detector workstream, not the headline claim)*: e2e
+direction replicated (0.278 → 0.338, assoc 0.577), but the dev oracle-ceiling lift
+did **not** transfer (0.632 → 0.586) — confirming the dev-optimism caveat above.
+
+Full report: `results/val/val_report.md`.
 
 ![identity scaling](viz/scaling_curve_local.png)
 
@@ -122,7 +154,7 @@ failure mode to the gate scoreboard.
 ## Repo map
 
 - `src/omot/` — loaders, MOT IO, detection/embedding caches, tracker, hidden-state module, eval (incl. paired test)
-- `mission.md` / `gates.yaml` / `status.txt` / `context.md` — mission, executable gates, state, full decision log D1–D44
+- `mission.md` / `gates.yaml` / `status.txt` / `context.md` — mission, executable gates, state, full decision log D1–D46
 - `val_manifest.md` / `perun_sweep_v2.md` — frozen val pre-registration; approved sweep design
 - `configs/sweep/` + `scripts/sweep_*.py` — config-driven sweep (identical entrypoint local/SLURM)
 - `demo/` — guided tour + committed CARLA media; `scripts/showcase.py` — wild-clip renderer

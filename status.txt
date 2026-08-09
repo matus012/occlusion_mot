@@ -138,8 +138,6 @@ methodology, honest results, data engine, PERUN section, quickstart, repo map;
 media = pure-CARLA GIF classified carla-render + allowlisted plots; per-source crop
 counts trace to perun_sweep_v2.md data table).
 
-STATUS: submission-ready, awaiting HPC access.
-
 D45 (2026-08-09): D18 VAL EVENT EXECUTED per val_manifest.md (frozen f2e0102), user-
 approved. Pre-flight green (ckpt sha256 x2 match, MOT17 manifest 49c218a3 == D13,
 pytest 240 green, CUDA ok). R1-R6 run exactly, no deviations, no re-runs. RAW SCOREBOARD
@@ -160,10 +158,18 @@ GATES (check_gates.py): G0 PASS G1 PASS G2 FAIL G3 PASS G4 PASS.
   G2a-floor 0.440 vs 0.58 FAIL (~2.4 sigma, not noise) | G2a-paired p=0.4073 NOT MET
   (pre-registered expected pre-PERUN, criterion pending) | G2b 0.278 contingent (R6:
   direction +6.0pt replicated, oracle-ceiling lift did NOT transfer 0.632->0.586).
-Full report: results/val/val_report.md. Per D18.3: NO re-tuning/re-runs; val-gated
-work HALTED pending user decision.
+Full report: results/val/val_report.md.
 
-blockers: PERUN access (user); D18.3 post-val decision (user — G2a-floor missed)
+D46 (2026-08-09): G2a-floor val miss ACCEPTED by user; margin deferred to PERUN-scale
+embedder per pre-registration. No re-tuning, no re-scoping. D18.3 decision RESOLVED.
+README patched: honest val section + "executed as frozen; misses reported, not tuned
+away" framing; status line updated. val_manifest.md: annotation-only post-hoc footnote
+for the D41 hash remap (bc46f72 -> a8e4da0).
+
+STATUS: val executed + adjudicated (D45/D46); PERUN sweep submission-ready, awaiting
+HPC access.
+
+blockers: PERUN access (user)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 

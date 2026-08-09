@@ -88,3 +88,10 @@ reemergence_center_err_med, reemergence_time_err_med. Taxonomy guard
   sigma margin — a miss within noise triggers report + halt, not adjustment.
 - R6 caveat pre-registered: dev-half numbers for the detector arm were optimistic
   (trained on dev); val is the first honest read of that arm.
+
+---
+POST-HOC ANNOTATION (D46, 2026-08-09 — not part of the frozen manifest; no semantic
+edit): the frozen-code hash `bc46f72` above is a pre-purge hash; the D41 history
+rewrite (git-filter-repo, 2026-07-24) remapped it to `a8e4da0` ("D28-final"). Code
+content identical. The val event was executed 2026-08-09 exactly as frozen (D45);
+outcome adjudicated D46.
