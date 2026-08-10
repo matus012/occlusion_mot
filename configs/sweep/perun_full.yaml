@@ -2,13 +2,18 @@
 # submit via: scripts/sweep_launcher.py --config configs/sweep/perun_full.yaml --mode slurm
 # (emits results/sweep/perun_full/submit.sbatch; sbatch it manually after review).
 #
-# Grid (doc v2): ablation core B/C/D @ FULL pool x 3 seeds (9 runs) + arm D
-# identity-scaling curve {300,1000,2000,3520} x 3 seeds (9 runs, full-pool point
-# shared with the ablation core) = 18 embedder runs; arm A adds 1 cache pass (run
-# once per seed here for schema uniformity -- negligible extra cost, ImageNet
-# weights are seed-independent). Detector: yolo11s + yolo11m x 2 data mixes,
-# ~100 epochs each = 4 runs (mixes = mot17dev vs mot17dev_carla, D43-delta(b):
-# finetune_detector.py's --mix now really folds CARLA scenario frames into TRAIN).
+# Grid (doc v2 + D48 amendment 5): 25 array units.
+#   18 embedder trainings = ablation core B/C/D @ FULL pool x 3 seeds (9) + arm D
+#      identity-scaling curve {300,1000,2000,3520} x 3 seeds (9 more; the 3520 point
+#      IS the core's full-pool point, shared, not duplicated).
+#    3 arm-A ImageNet-null units = A:full:{0,1,2}. NOT extra trainings -- arm A does
+#      no training, and ImageNet weights are seed-independent, so all three are
+#      identical. They exist because the pre-registered McNemar is paired PER SEED
+#      (D vs A, C vs A), which needs an arm-A tracker output per seed. D48 amendment 5
+#      records that the doc's grid table undercounted this cell; enumeration stays 25.
+#    4 detector finetunes = yolo11s + yolo11m x 2 data mixes, ~100 epochs each
+#      (mixes = mot17dev vs mot17dev_carla, D43-delta(b): finetune_detector.py's --mix
+#      now really folds CARLA scenario frames into TRAIN).
 name: perun_full
 half: dev
 gate_probe: [0.40, 0.45, 0.50]
@@ -52,6 +57,11 @@ detector:
 # sweep_launcher.py from this file. Per-unit `time` is no longer set by hand: limits
 # come from sweep_common.UNIT_EST_H x SLURM_TIME_MARGIN, per unit class, and the grid
 # total is asserted against budget_ceiling_h before a script is written.
+#
+# D48: the detector class additionally carries a HARD 02:30:00 wall cap
+# (sweep_common.UNIT_TIME_CAP_H), which is what pulls the grid's worst case from
+# 41.25 h to 39.25 h under the ceiling below. See perun_sweep_v2.md amendment 6 --
+# a detector unit over 2.5 h is killed and leaves no result JSON, by design.
 slurm:
   partition: "<FILL-PERUN-PARTITION>"
   account: "<FILL-PERUN-ACCOUNT>"

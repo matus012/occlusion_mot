@@ -69,7 +69,9 @@ tail -f results/sweep/perun_full/logs/*.out
 grep -l . results/sweep/perun_full/*.json | wc -l    # units finished (target: 25)
 ```
 
-**Done** = 25 result JSONs in `results/sweep/perun_full/` (21 embedder + 4 detector), then:
+**Done** = 25 result JSONs in `results/sweep/perun_full/` — 18 embedder trainings +
+3 arm-A ImageNet-null passes + 4 detector finetunes (enumeration pre-registered in
+perun_sweep_v2.md amendment 5) — then:
 
 ```bash
 .venv/bin/python scripts/sweep_launcher.py --config configs/sweep/perun_full.yaml --mode local
@@ -89,8 +91,22 @@ rsync -avP <user>@perun.tuke.sk:~/omot_hpc/repo/results/sweep/perun_full/ result
 **If the array dies partway**, just re-submit it: every task exits immediately when its
 result JSON already exists. No flags, no bookkeeping.
 
-**Budget:** 25 units, 35.25–41.25 H200-h against a 40 h ceiling. Per-task wall limits are
-enforced with `timeout` inside each job (embedder 02:10, ImageNet-null 00:40, detector
-04:05). The high end sits above the ceiling — driven by the detector arm's 1.5–3 h/run
-spread. If the smoke job's 2 epochs extrapolate past ~2 h/run, drop to one detector model
-before submitting the array.
+**Budget:** 25 units, 35.25–39.25 H200-h against a 40 h ceiling — the worst case fits.
+Per-task wall limits are enforced with `timeout` inside each job: embedder 02:10,
+ImageNet-null 00:40, detector **02:30**.
+
+The detector limit is a deliberate hard cap (D48 / perun_sweep_v2.md amendment 6), not
+an estimate-plus-margin: the class's measured spread is 1.5–3 h/run, so capping at 2.5 h
+is what pulls the grid worst case from 41.25 h (over) to 39.25 h (under). **A detector
+unit that overruns 2.5 h is killed and leaves no result JSON.** That is the intended
+trade. What to do if it happens:
+
+- Re-submitting the array retries only the missing units (every finished unit exits
+  immediately). One retry is free if the allocation has headroom.
+- If a unit dies at the cap twice, it is not a fluke — drop to one detector model
+  (`detector.models: [yolo11s]`) and re-run rather than burning the remaining budget.
+- Never raise the cap to make the run finish: the 40 h ceiling and this cap are
+  pre-registered. Report the shortfall in the R6 selection instead (amendment 6).
+
+The smoke job's 2-epoch finetune is the early warning — if it extrapolates past ~2.5 h
+for 100 epochs, fix the grid before submitting the array, not after.

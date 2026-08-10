@@ -25,6 +25,13 @@ Usage (dev box):
   .venv/Scripts/python.exe scripts/make_hpc_bundle.py build
   .venv/Scripts/python.exe scripts/make_hpc_bundle.py build --refresh-lock --refresh-wheelhouse
   .venv/Scripts/python.exe scripts/make_hpc_bundle.py build --no-archive   # stage only, for rsync
+  .venv/Scripts/python.exe scripts/make_hpc_bundle.py build --reuse       # keep unchanged tars
+
+REBUILDING AFTER A CODE-ONLY CHANGE (D48). repo.tar is `git archive HEAD`; the payload
+tars come from data/ trees that a config or script edit never touches. `--reuse` keeps
+any staged tar whose spec fingerprint, manifest hash and source mtimes all still check
+out, and rebuilds the rest -- turning a ~14 min full rebuild into repo.tar plus the
+outer gzip. It fails closed: any doubt about a tar means it is rebuilt, not shipped.
 
 Usage (cluster, system python3, no venv needed -- stdlib only on these paths):
   python3 make_hpc_bundle.py verify
@@ -391,7 +398,68 @@ def build_entry(spec: EntrySpec, stage: Path, root: Path) -> dict[str, Any]:
         "covers": spec.covers,
         "unpack_to": spec.unpack_to,
         "note": spec.note,
+        # D48: the spec fingerprint a --reuse build must match before it dares keep
+        # this tar. A manifest without it (bundle_version < 2 era) is never reusable.
+        "sources": list(spec.sources),
+        "arcnames": list(spec.arcnames),
     }
+
+
+def newest_mtime(sources: list[str], root: Path) -> float:
+    """Newest mtime across a spec's sources, walking trees. -1.0 if nothing exists."""
+    newest = -1.0
+    for src in sources:
+        p = root / src
+        if p.is_file():
+            newest = max(newest, p.stat().st_mtime)
+        elif p.is_dir():
+            for child in p.rglob("*"):
+                if child.is_file():
+                    newest = max(newest, child.stat().st_mtime)
+    return newest
+
+
+def reusable_entry(
+    spec: EntrySpec, stage: Path, root: Path, prev: dict[str, dict[str, Any]]
+) -> dict[str, Any] | None:
+    """The prior manifest entry for `spec` iff keeping its staged tar is PROVABLY safe.
+
+    Re-tarring 8 GB of already-correct payload costs more than every other build step
+    combined, but a stale reuse ships wrong data to a cluster silently -- so this fails
+    closed on every doubt. Four independent conditions, all required:
+
+      1. the spec is not the git archive (repo.tar always rebuilds -- HEAD moved, that
+         is the whole reason a rebuild was requested),
+      2. the prior manifest recorded this spec's sources/arcnames AND they still match
+         (a config change that adds a detector model changes base_weights.tar's
+         sources; the tar on disk would be a subset of what the sweep now needs),
+      3. the staged tar still hashes to what the prior manifest recorded (nothing
+         truncated or half-written it),
+      4. no source file is newer than the staged tar (the data itself did not move
+         under us since it was packed).
+    """
+    if spec.sources == ["@git-archive"]:
+        return None
+    entry = prev.get(spec.dest)
+    dest = stage / spec.dest
+    if entry is None or not dest.exists():
+        return None
+    if "sources" not in entry:
+        logger.info("rebuild %s: prior manifest predates source fingerprinting", spec.dest)
+        return None
+    if entry.get("sources") != list(spec.sources) or entry.get("arcnames") != list(spec.arcnames):
+        logger.info("rebuild %s: spec sources changed since the prior bundle", spec.dest)
+        return None
+    if sha256_file(dest) != entry["sha256"]:
+        logger.info("rebuild %s: staged tar no longer matches its manifest hash", spec.dest)
+        return None
+    src_mtime = newest_mtime(spec.sources, root)
+    if src_mtime > dest.stat().st_mtime:
+        logger.info("rebuild %s: a source file is newer than the staged tar", spec.dest)
+        return None
+    logger.info("REUSE  %s  %.3f GB  sha256=%s... (sources unchanged)",
+                spec.dest, dest.stat().st_size / 1e9, entry["sha256"][:16])
+    return entry
 
 
 def stage_assets(root: Path) -> None:
@@ -524,6 +592,7 @@ def build(
     out_dir: Path | None = None,
     archive: bool = True,
     allow_dirty: bool = False,
+    reuse: bool = False,
 ) -> Path:
     import yaml  # local: verify/unpack must stay stdlib-only for the cluster side
 
@@ -547,12 +616,30 @@ def build(
     stage_assets(root)
 
     stage = out_dir / BUNDLE_DIRNAME
-    if stage.exists():
+    prev: dict[str, dict[str, Any]] = {}
+    if reuse and (stage / MANIFEST_NAME).exists():
+        prev_manifest = json.loads((stage / MANIFEST_NAME).read_text(encoding="utf-8"))
+        prev = {e["path"]: e for e in prev_manifest.get("entries", [])}
+        logger.info("reuse mode: %d prior entr(ies) available in %s", len(prev), stage)
+    elif reuse:
+        logger.info("reuse requested but no prior manifest in %s -- full build", stage)
+    if not reuse and stage.exists():
         shutil.rmtree(stage)
-    stage.mkdir(parents=True)
+    stage.mkdir(parents=True, exist_ok=True)
 
     specs = [s for s in plan_entries(cfg, root) if s.kind == "tar"]
-    entries = [build_entry(s, stage, root) for s in specs]
+    entries = [
+        reusable_entry(s, stage, root, prev) or build_entry(s, stage, root) for s in specs
+    ]
+    # a stale tar from a spec the plan no longer contains would ride along invisibly
+    if reuse:
+        planned = {s.dest for s in specs} | {MANIFEST_NAME, "make_hpc_bundle.py",
+                                             "HPC_RUNBOOK.md"}
+        for path in sorted(stage.rglob("*")):
+            rel = path.relative_to(stage).as_posix()
+            if path.is_file() and rel not in planned:
+                logger.warning("dropping orphan staged file (not in the plan): %s", rel)
+                path.unlink()
 
     units = _enumerate_units(cfg)
     manifest = {
@@ -715,6 +802,10 @@ def main() -> int:
                    help="re-download data/wheelhouse from the lock")
     b.add_argument("--pip-python", default=sys.executable,
                    help="interpreter that owns pip for --refresh-wheelhouse")
+    b.add_argument("--reuse", action="store_true",
+                   help="keep staged payload tars whose sources are provably unchanged "
+                        "(repo.tar always rebuilds); verified by spec fingerprint, "
+                        "manifest hash and source mtime -- fails closed on any doubt")
 
     v = sub.add_parser("verify", help="re-check every manifest sha256 (cluster side)")
     v.add_argument("--bundle-dir", type=Path, default=Path("."))
@@ -738,7 +829,7 @@ def main() -> int:
         if args.refresh_wheelhouse:
             refresh_wheelhouse(ROOT, args.pip_python)
         build(config=args.config, out_dir=args.out_dir, archive=not args.no_archive,
-              allow_dirty=args.allow_dirty)
+              allow_dirty=args.allow_dirty, reuse=args.reuse)
         return 0
     if args.cmd == "verify":
         return verify(args.bundle_dir)

@@ -284,6 +284,31 @@ UNIT_EST_H: dict[str, tuple[float, float]] = {
     "detector": (1.5, 3.0),
 }
 
+# D48: hard wall caps, per class, that OVERRIDE estimate x margin when lower.
+#
+# A cap is a BUDGET instrument, not an estimate -- and it is not free. estimate x margin
+# sizes a limit so a healthy unit always finishes; a cap deliberately sits INSIDE the
+# estimate's own spread, so a unit at the top of that spread is killed by `timeout` and
+# leaves no result JSON (re-submitting the array retries it -- the resume rule already
+# covers this). It buys a bounded worst case for the grid.
+#
+# detector 2.5 h: the class's estimate spread is 1.5-3.0 h/run. Uncapped, the grid's
+# worst case is 41.25 h against a 40 h ceiling -- over. Capped, a detector unit cannot
+# bill more than 2.5 h, so the worst case is 39.25 h and the ceiling holds by
+# construction rather than by hope. The 40 h ceiling itself does not move (CLAUDE.md).
+UNIT_TIME_CAP_H: dict[str, float] = {
+    "detector": 2.5,
+}
+
+
+def unit_wall_h(cls: str) -> float:
+    """Wall-clock limit for one unit of `cls`, in hours: estimate x margin, clamped
+    down by the class's hard cap when one is declared."""
+    _low, high = UNIT_EST_H[cls]
+    wall = high * SLURM_TIME_MARGIN
+    cap = UNIT_TIME_CAP_H.get(cls)
+    return min(wall, cap) if cap is not None else wall
+
 
 def unit_class(unit: str) -> str:
     """Which budget/time class an enumerated unit belongs to."""
@@ -300,19 +325,28 @@ def _hms(hours: float) -> str:
 
 
 def budget_table(cfg: dict[str, Any]) -> dict[str, Any]:
-    """Per-class counts, wall limits, and low/high grid totals against the ceiling."""
+    """Per-class counts, wall limits, and low/high grid totals against the ceiling.
+
+    `billed_high_h` -- not `est_high_h` -- drives the grid's worst case: a unit cannot
+    consume more than its own wall limit, because `timeout` kills it there. For an
+    uncapped class the two are identical; for a capped one the cap IS the worst case.
+    """
     units = enumerate_units(cfg)
     ceiling_h = float(cfg.get("slurm", {}).get("budget_ceiling_h", 40))
     classes: dict[str, dict[str, Any]] = {}
     for cls, (low, high) in UNIT_EST_H.items():
         n = sum(1 for u in units if unit_class(u) == cls)
+        wall_h = unit_wall_h(cls)
+        billed_high = min(high, wall_h)
         classes[cls] = {
             "n_units": n,
             "est_low_h": low,
             "est_high_h": high,
-            "time_limit": _hms(high * SLURM_TIME_MARGIN),
+            "cap_h": UNIT_TIME_CAP_H.get(cls),
+            "billed_high_h": billed_high,
+            "time_limit": _hms(wall_h),
             "subtotal_low_h": round(n * low, 2),
-            "subtotal_high_h": round(n * high, 2),
+            "subtotal_high_h": round(n * billed_high, 2),
         }
     total_low = round(sum(c["subtotal_low_h"] for c in classes.values()), 2)
     total_high = round(sum(c["subtotal_high_h"] for c in classes.values()), 2)

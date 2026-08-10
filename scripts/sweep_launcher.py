@@ -275,6 +275,8 @@ def render_sbatch(cfg: dict, config_path: Path, results_dir: Path = RESULTS_ROOT
     budget_note = "\n".join(
         f"#   {name:<14} {c['n_units']:>2} units x {c['est_low_h']}-{c['est_high_h']} h "
         f"-> wall limit {c['time_limit']}"
+        + (f"  (HARD CAP {c['cap_h']} h: a unit over it is killed, no result JSON, "
+           f"billed worst case {c['billed_high_h']} h/unit)" if c["cap_h"] else "")
         for name, c in cls.items() if c["n_units"]
     )
 

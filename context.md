@@ -48,6 +48,39 @@ recover_gate), objective = G2 retention/center-err/coverage, G1-regression check
 TrackEval on top candidates; val-half touched exactly once for final numbers.
 
 ## Decisions
+- **D48 (2026-08-10) Sweep enumeration reconciled (21 vs 18), detector wall capped at
+  02:30, bundle rebuilds incrementally.** Pre-submission close-out; no arm/pool/seed/metric
+  change. Three parts.
+  (a) **21 vs 18 embedder units — KEPT AT 21, doc amended, config unchanged.** The gap is
+  not 3 extra trainings: `enumerate_units` yields 18 embedder TRAININGS (B/C/D @ full x 3
+  seeds = 9; D @ {300,1000,2000} x 3 = 9; D's 3520 point IS the full-pool point, shared)
+  plus 3 arm-A ImageNet-null units. perun_sweep_v2.md's grid section says "Arm A adds 1
+  cache pass", but its OWN metrics section pre-registers McNemar paired PER SEED for D-vs-A
+  and C-vs-A, which consumes one arm-A tracker output per seed — so the grid table
+  undercounts arm A as a 1-unit cell when the protocol needs 3. Trimming to 1 would mean
+  special-casing the per-seed pairing in `sweep_launcher.aggregate()`; 0.9 h of H200 time
+  (arm A is the 0.45 h `embedder_null` class, and ImageNet weights are seed-independent so
+  all 3 are identical) does not justify a code fork in the frozen D28 McNemar path on HPC
+  day. Recorded as perun_sweep_v2.md **amendment 5** with the full 25-unit enumeration
+  table (18 + 3 + 4 detector); config comment rewritten to state it.
+  (b) **Detector wall cap 02:30:00 (`sweep_common.UNIT_TIME_CAP_H`), amendment 6.** A cap is
+  a budget instrument, distinct from D47's estimate x margin rule, and it is NOT free: the
+  detector class's measured spread is 1.5-3.0 h/run, so 2.5 h sits deliberately INSIDE that
+  spread and a unit above it is killed by `timeout`, leaving no result JSON (retried by
+  re-submitting the array — the existing resume rule). Bought: the grid's worst case drops
+  from 41.25 h (over the 40 h ceiling) to 39.25 h (under it), and the array-wide `--time`
+  from 04:05 to 02:30. The ceiling did not move; the failure mode is pre-registered, and
+  R6 selection over a short detector set is reported, never silent. `budget_table` now bills
+  `billed_high_h = min(est_high, wall)` — a unit cannot cost more than its own kill limit.
+  Test invariant updated accordingly: uncapped classes must have limit >= est_high; a capped
+  class must have limit == cap > est_low, and a new test asserts `fits_high`.
+  (c) **`make_hpc_bundle.py build --reuse`.** A code/doc-only change moves repo.tar and
+  nothing else, but the old build rmtree'd the stage and re-tarred 8 GB of payload. `--reuse`
+  keeps a staged tar only when all four hold: not the git archive; spec sources/arcnames
+  match the prior manifest (new field, so pre-D48 manifests are never reusable); the tar
+  still hashes to its manifest entry; no source file is newer than the tar. Fails closed —
+  any doubt rebuilds. Orphan staged files not in the current plan are dropped with a warning
+  so a removed spec cannot ride along invisibly.
 - **D47 (2026-08-09) PERUN-readiness: HPC day reduced to "fill 2 values, transfer, sbatch".**
   Infrastructure only; no training logic touched. Six parts.
   (a) **Transfer bundle** `scripts/make_hpc_bundle.py` (build/verify/unpack). The input set

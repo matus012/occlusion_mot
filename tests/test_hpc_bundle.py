@@ -170,10 +170,33 @@ def test_grid_fits_the_ceiling_at_the_low_estimate(cfg: dict) -> None:
 
 
 def test_wall_limits_exceed_the_estimates_they_cap(cfg: dict) -> None:
-    """A wall limit below its own estimate would kill healthy units."""
+    """An UNCAPPED wall limit below its own high estimate would kill healthy units.
+
+    D48: a class may instead declare an explicit hard cap (UNIT_TIME_CAP_H) that sits
+    inside its estimate spread -- that is a deliberate budget instrument, so the
+    invariant it must satisfy is different: the limit is exactly the cap, the cap is
+    what the grid bills, and the cap still clears the class's LOW estimate (a cap under
+    that would kill every unit of the class, not just the slow tail).
+    """
     for name, cls in budget_table(cfg)["classes"].items():
         h, m, _ = (int(x) for x in cls["time_limit"].split(":"))
-        assert h + m / 60 >= cls["est_high_h"], f"{name}: limit under its high estimate"
+        limit_h = h + m / 60
+        if cls["cap_h"] is None:
+            assert limit_h >= cls["est_high_h"], f"{name}: limit under its high estimate"
+            assert cls["billed_high_h"] == cls["est_high_h"], f"{name}: uncapped != est"
+        else:
+            assert limit_h == cls["cap_h"], f"{name}: limit is not the declared cap"
+            assert cls["cap_h"] > cls["est_low_h"], f"{name}: cap kills even fast units"
+            assert cls["billed_high_h"] == cls["cap_h"], f"{name}: cap is not what bills"
+
+
+def test_capped_grid_worst_case_clears_the_ceiling(cfg: dict) -> None:
+    """D48: the point of the detector cap -- worst case now fits, by construction."""
+    table = budget_table(cfg)
+    assert table["fits_high"], (
+        f"grid worst case {table['total_high_h']} h still busts the "
+        f"{table['ceiling_h']} h ceiling"
+    )
 
 
 # ----------------------------------------------------------------- round trip

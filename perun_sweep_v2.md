@@ -42,6 +42,7 @@ official request form only, post-val, user-gated.)
    Val-clean by construction (no val frames in training).
 
 Total: 18 embedder runs + 4 detector runs + cache passes.
+(Exact array enumeration: **25 units** — see amendment 5, D48.)
 
 ## Metrics & decision rules (pre-registered)
 
@@ -61,13 +62,20 @@ CORRECTED at D43 close-out (dry-run-measured throughput; the original <= 0.5 h/r
 embedder estimate did not survive measurement, and the first corrected draft
 silently dropped the cache/detector blocks from the total — both errors fixed here):
 
-| block | runs | est. per run (measured basis) | subtotal |
-|---|---|---|---|
-| embedder training (60 ep x 400 batches, eval every 5 ep) | 18 | ~1.2 h | ~21.6 h |
-| embedding-cache passes (7 MOT17 seqs) | ~13 | ~0.2 h | ~2.6 h |
-| detector finetunes (~100 ep, yolo11s + yolo11m) | 4 | 1.5-3 h | 6-12 h |
-| eval/tracker runs | — | CPU | — |
-| **honest total** | | | **~30-36 H200h** — the 25h estimate does NOT hold; the 40h ceiling holds |
+CORRECTED AGAIN at D48 (2026-08-10) to match the executable interpretation in
+`sweep_common.UNIT_EST_H` — which is now what the sbatch generator and its budget
+assertion actually read. Two accounting changes, no design change: the cache pass and
+gate probe are billed INSIDE their embedder unit (they run in the same array task, not
+as separate jobs), and arm A is billed as its own cheap class. Detector runs are billed
+at their **wall cap**, not their estimate high (amendment 6).
+
+| block (= array unit class) | units | est. per unit (measured basis) | wall limit | subtotal |
+|---|---|---|---|---|
+| embedder unit: 60 ep x 400 batches @ eval-every-5 (~1.2 h) + embedding cache (~0.2 h) + 3-point gate probe (~0.15 h) | 18 | ~1.55 h | 02:10 | ~27.9 h |
+| arm-A null unit: retrieval eval + cache + gate probe, no training | 3 | ~0.45 h | 00:40 | ~1.35 h |
+| detector finetunes (~100 ep, yolo11s + yolo11m x 2 mixes) | 4 | 1.5-3 h, **billed at the 2.5 h cap** | 02:30 | 6-10 h |
+| eval/tracker runs | — | CPU, inside the units above | — | — |
+| **honest total** | **25** | | | **35.25-39.25 H200h vs the 40 h ceiling — worst case now fits by construction** |
 
 SLURM shape: job array over (arm, pool, seed); device/seed/batch injected (D8);
 data staged as the re-ID crop trees (~1.4 GB) + caches; checkpoints + result JSONs
@@ -93,6 +101,44 @@ required for the 40h ceiling.
 4. **MSMT17:** the HF-mirror acquisition path is STRUCK from this doc. If ever
    approved (post-val, user-gated), acquisition is via the official request form
    ONLY. Mirror acquisition is a license-hygiene violation class (D39/D41).
+
+## Pre-registration amendments (D48 — 2026-08-10, pre-submission; enumeration and
+## budget mechanics only, no arm/pool/seed/metric changes)
+
+5. **Correct array enumeration: 25 units, not 18.** The "Sweep grid" section counts
+   18 embedder TRAINING runs and then, separately, "Arm A adds 1 cache pass" — but the
+   "Metrics & decision rules" section pre-registers **paired McNemar per seed** for
+   D vs A and C vs A. That protocol consumes one arm-A tracker output *per seed*, so
+   arm A is a 3-unit cell (A:full:{0,1,2}), not a 1-unit one; the grid section
+   undercounts it. The config enumerates the honest requirement:
+
+   | cell | units |
+   |---|---|
+   | ablation core — B, C, D @ full pool x 3 seeds (D's full pool = 3520) | 9 |
+   | identity-scaling curve — D @ {300, 1000, 2000} x 3 seeds (3520 shared with core) | 9 |
+   | **embedder training subtotal (the doc's "18")** | **18** |
+   | arm A ImageNet null x 3 seeds — no training; per-seed McNemar denominator | 3 |
+   | detector finetunes — {yolo11s, yolo11m} x {mot17dev, mot17dev_carla} | 4 |
+   | **total array units** | **25** |
+
+   The 3 arm-A units are *not* 3 extra embedder trainings: ImageNet weights are
+   seed-independent, so all three produce the same embedding and are billed as the
+   cheap `embedder_null` class (0.45 h, +0.9 h over a single pass). Deduplicating them
+   to one run would require special-casing the per-seed pairing in
+   `sweep_launcher.aggregate()` — 0.9 h of H200 time is not worth a code fork in the
+   frozen D28 McNemar path on HPC day. Enumeration is **kept at 25**; this amendment,
+   not the config, is the correction.
+
+6. **Detector wall cap 02:30:00 (pre-registered kill, not an estimate).** Each
+   detector array task is killed by `timeout` at 2.5 h. The class's measured spread is
+   1.5-3.0 h/run, so this cap sits *inside* the spread deliberately: it bounds the
+   grid's worst case at 39.25 h under the 40 h ceiling instead of 41.25 h over it.
+   Consequence, stated before the fact: a detector unit that would have needed >2.5 h
+   dies leaving no result JSON, and is retried by re-submitting the array (the
+   existing resume rule). If both yolo11m units die at the cap, the pre-registered
+   R6 selection rule (amendment 1) is applied over whichever detector units completed,
+   and the shortfall is reported — never silently. The 40 h ceiling itself does not
+   move (CLAUDE.md: thresholds never move to make a gate pass).
 
 ## Val interaction (hard constraint)
 
