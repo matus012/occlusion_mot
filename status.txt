@@ -196,8 +196,30 @@ HPC day is now: fill 2 values -> transfer -> sbatch. See HPC_RUNBOOK.md (<1 page
 - BUDGET (measured at generation): 25 units, 35.25-41.25 H200-h vs 40 h ceiling.
   Low fits, HIGH DOES NOT (detector arm's 1.5-3 h/run spread). Reported, not tuned
   away; documented lever = drop to one detector model after reading smoke throughput.
+  -> superseded by D48(b): worst case now 39.25 h, fits.
 - Grid-size correction: perun_sweep_v2.md says 18 embedder runs; the config
   enumerates 21 (+4 detector = 25). Budget uses the enumerated count.
+  -> RESOLVED by D48(a).
+
+D48 (2026-08-10): PRE-SUBMISSION CLOSE-OUT. No arm/pool/seed/metric change.
+- 21-vs-18 RECONCILED -> KEPT AT 21 (25 units total), doc amended, config unchanged.
+  The 3 "extras" are arm-A ImageNet-null units (A:full:{0,1,2}), NOT trainings.
+  Embedder trainings really are 18 (B/C/D @ full x 3 = 9; D @ {300,1000,2000} x 3 = 9;
+  D's 3520 point IS the shared full-pool point). perun_sweep_v2.md's grid table called
+  arm A "1 cache pass", but its own metrics section pre-registers McNemar paired PER
+  SEED (D-vs-A, C-vs-A) -> needs one arm-A tracker output per seed. The doc undercounted
+  the cell. Trimming to 1 would fork the frozen D28 pairing path in aggregate() to save
+  0.9 H200-h (arm A = 0.45 h embedder_null class). Recorded as perun_sweep_v2.md
+  amendment 5 with the full 25-unit enumeration table.
+- DETECTOR WALL CAP 02:30:00 (amendment 6, pre-registered). Class spread is 1.5-3.0 h/run,
+  so the cap sits INSIDE the spread by design: an overrunning unit is killed by `timeout`,
+  leaves no result JSON, and is retried by re-submitting the array. Bought: grid worst
+  case 41.25 h -> 39.25 h under the 40 h ceiling; array --time 04:05 -> 02:30. Ceiling
+  did NOT move. budget_table now bills min(est_high, wall).
+- make_hpc_bundle.py --reuse: keep staged payload tars only when spec fingerprint +
+  manifest hash + source mtimes all check out; repo.tar always rebuilds. Fails closed.
+- BUDGET NOW: 25 units, 35.25-39.25 H200-h vs 40 h ceiling, low AND high fit.
+- Gates: 260 tests green, ruff clean, bundle re-verified.
 
 blockers: PERUN access (user)
 
