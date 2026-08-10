@@ -81,6 +81,13 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   still hashes to its manifest entry; no source file is newer than the tar. Fails closed —
   any doubt rebuilds. Orphan staged files not in the current plan are dropped with a warning
   so a removed spec cannot ride along invisibly.
+  (d) **Repo-visibility contradiction resolved [user, 2026-08-10].** CLAUDE.md's Autonomy
+  rule said "any GitHub remote must stay private" while `matus012/occlusion_mot` has been
+  PUBLIC by user approval since D12/D17 — so the D48 push (13 commits: D45 val event, D46
+  adjudication, D47 readiness, D48) halted on a rule the state already contradicted. User
+  ruled: public is intentional, the logged approval supersedes the privacy line. CLAUDE.md
+  rewritten to say so explicitly, so a routine `push origin main` no longer stalls; changing
+  visibility in EITHER direction and force-push still require approval.
 - **D47 (2026-08-09) PERUN-readiness: HPC day reduced to "fill 2 values, transfer, sbatch".**
   Infrastructure only; no training logic touched. Six parts.
   (a) **Transfer bundle** `scripts/make_hpc_bundle.py` (build/verify/unpack). The input set

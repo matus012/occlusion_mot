@@ -10,7 +10,11 @@ Read all four before acting. Log every nontrivial decision in context.md under "
 
 ## Autonomy
 - Fully autonomous loop: implement → test → review → document → commit. Never pause to ask "should I continue?".
-- The ONLY actions requiring user approval (one line): force-push; deleting repos/branches/data; making anything public — **any GitHub remote must stay private**; spending money.
+- The ONLY actions requiring user approval (one line): force-push; deleting repos/branches/data; changing repo visibility; spending money.
+- **The GitHub remote (`matus012/occlusion_mot`) is INTENTIONALLY PUBLIC** — user-approved
+  (D12, re-confirmed D17, and again 2026-08-10 at the D48 push). Routine `push origin main`
+  therefore needs no approval and must not be blocked on the old "must stay private" line,
+  which this supersedes. Changing visibility in either direction, and force-push, still do.
 - If an instruction is technically wrong or a bad approach: say so and propose the fix in context.md Decisions; don't silently comply.
 
 ## One-writer rule
