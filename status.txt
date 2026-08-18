@@ -225,3 +225,40 @@ blockers: PERUN access (user)
 
 session rotation 2026-07-23: see session_handoff.md for gotchas/hypotheses/dead ends.
 
+
+PERUN SUBMISSION-READY (2026-08-19, D49): bundle staged on cluster, HOLD before submit
+(user directive: user submits smoke manually and watches it).
+- storage resolved: /mnt/project/mafike202 is NOT ours (owned haabke763, writes denied);
+  PROJECT = group dir /mnt/project/perun26011488. SCRATCH = /mnt/scratch/mafike202 (Lustre).
+  Home quota 500 GB activates 2026-08-19; nothing lands there.
+- SLURM: partition gpu_short, account perun26011488 (sacctmgr/slurmdbd unreachable on
+  login node; resolved via sshare, confirmed by a real 3-min GPU job). Hardware confirmed
+  NVIDIA H200 143771 MiB CC 9.0, 26 nodes x gpu:8.
+- bundle omot_hpc_8421645.tar.gz (10.94 GB, sha256 224f3eff...) built --reuse from clean
+  HEAD 8421645 (8/9 tars reused, only repo.tar rebuilt); VERIFY OK 529,911 members;
+  78 bundle/sweep guard tests green. Transfer 3h08m single stream @ 968 kB/s (uplink-capped
+  ~10 Mbit/s; 4-way parallel gave only +9%, so aggregate uplink is the limit, not shaping).
+- cluster: sha256 OK, VERIFY OK, bootstrap OK (glibc 2.34, py3.11.13, 72 offline wheels,
+  headless opencv enforced), pinned reid_conv/reid_proto sha256 re-verified after the move
+  to Lustre. Both sbatch scripts placeholder-clean and accepted by sbatch --test-only
+  (would start on gpu04). Queue empty.
+- READY.md written at repo root on PERUN: exact smoke command, log path, and the D47/D48
+  detector lever expressed as a threshold (>90 s/epoch at 100 epochs breaches the 02:30 cap
+  -> drop to detector.models: [yolo11s]).
+- budget re-derived on cluster: 25 units, 35.25-39.25 H200-h vs 40 h ceiling.
+
+D49 deviations from HPC_RUNBOOK.md (both deliberate, recorded in READY.md):
+  (a) payload tars extracted with GNU tar, not make_hpc_bundle.py unpack: unpack's
+      tarfile 'data' filter realpath-checks each destination and raises
+      OutsideDestinationError for anything routed through a symlink to another
+      filesystem, so it cannot place data/reid on Lustre (probed and confirmed on
+      both remote interpreters). Integrity is unaffected -- it comes from verify(),
+      which re-hashes all 9 tars first; unpack only picks destinations.
+  (b) results/sweep/perun_full is the symlink, not results/sweep: repo.tar ships a
+      git-tracked results/sweep/dryrun_local/, so results/sweep must stay a real dir.
+      First attempt nested the link as results/sweep/sweep (ln -s into an existing
+      dir succeeds, so set -e did not catch it) and would have put every sweep output
+      on NFS; caught by asserting each path is a symlink and resolving its filesystem.
+
+NEXT: user submits smoke by hand, reads GPU probe + per-epoch detector time, then
+go/no-go on the 25-unit array.
