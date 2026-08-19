@@ -1,0 +1,33 @@
+{
+  "unit": "detector:yolo11s:mot17dev_carla",
+  "model": "yolo11s",
+  "mix": "mot17dev_carla",
+  "config_digest": "2f33148787a87b7288e0bb3e193817c51c827791fcabc87f715160c4a1b4697a",
+  "metrics": {
+    "epoch": 100.0,
+    "time": 8700.49,
+    "train/box_loss": 0.28237,
+    "train/cls_loss": 0.17832,
+    "train/dfl_loss": 0.77709,
+    "metrics/precision(B)": 0.93838,
+    "metrics/recall(B)": 0.88913,
+    "metrics/mAP50(B)": 0.94242,
+    "metrics/mAP50-95(B)": 0.63589,
+    "val/box_loss": 1.19003,
+    "val/cls_loss": 0.5123,
+    "val/dfl_loss": 1.19141,
+    "lr/pg0": 0.000597,
+    "lr/pg1": 0.000199,
+    "lr/pg2": 0.000597,
+    "lr/pg3": 0.000199,
+    "lr/pg4": 0.000597,
+    "lr/pg5": 0.000199,
+    "lr/pg6": 0.000597,
+    "lr/pg7": 0.000199
+  },
+  "runtimes": {
+    "train_s": 8722.948722839355
+  },
+  "label": "dev-optimistic",
+  "note": "dev-optimistic: detector trained on MOT17 dev-half GT and scored on dev-half (D43 amendment 3) -- only the R6-at-val number is honest"
+}

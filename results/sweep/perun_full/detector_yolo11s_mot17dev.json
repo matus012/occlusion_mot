@@ -1,0 +1,28 @@
+{
+  "unit": "detector:yolo11s:mot17dev",
+  "model": "yolo11s",
+  "mix": "mot17dev",
+  "config_digest": "2f33148787a87b7288e0bb3e193817c51c827791fcabc87f715160c4a1b4697a",
+  "metrics": {
+    "epoch": 100.0,
+    "time": 1730.27,
+    "train/box_loss": 0.4586,
+    "train/cls_loss": 0.27083,
+    "train/dfl_loss": 0.81168,
+    "metrics/precision(B)": 0.9472,
+    "metrics/recall(B)": 0.88287,
+    "metrics/mAP50(B)": 0.93611,
+    "metrics/mAP50-95(B)": 0.63854,
+    "val/box_loss": 1.17706,
+    "val/cls_loss": 0.53965,
+    "val/dfl_loss": 1.1952,
+    "lr/pg0": 3.98e-05,
+    "lr/pg1": 3.98e-05,
+    "lr/pg2": 3.98e-05
+  },
+  "runtimes": {
+    "train_s": 1745.0987215042114
+  },
+  "label": "dev-optimistic",
+  "note": "dev-optimistic: detector trained on MOT17 dev-half GT and scored on dev-half (D43 amendment 3) -- only the R6-at-val number is honest"
+}

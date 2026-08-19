@@ -288,3 +288,29 @@ D49 ARRAY LIVE (2026-08-19 09:26): SLURM array 77150, 23 units, 0-22%8 on gpu_sh
 - NEXT: monitor to completion, retry missing units per the resume rule (each finished
   unit exits immediately), then aggregate --mode local for summary.json (per-arm gate
   selection + pre-registered McNemar p-values).
+
+D50 SWEEP COMPLETE (2026-08-19 12:24): array 77150, 23/23 units, ZERO failures, zero cap
+kills. Actual 7.74 H200-h vs 32.25-34.25 projected (est. basis was RTX 4060; H200 ~4.3x
+cheaper than modelled). summary.json + all 23 unit JSONs pulled to results/sweep/perun_full/.
+
+GATE SCOREBOARD (dev):
+  G2a-floor   id_retention_assoc >= 0.58 : arm D 0.5779  FAIL (short 0.0021)
+  G2a-paired  mcnemar p < 0.05           : best p 0.1431 FAIL (D vs A, seeds .143/.661/.500)
+  G2b         contingent on detector wk  : not evaluated this cycle
+  detector    yolo11s mot17dev mAP50 0.9361 / mAP50-95 0.6385 (dev-optimistic label)
+
+Identity curve (arm D, gate 0.45, 3 seeds): 300/1000/2000/3520 ids ->
+  occ_rank1 0.408 / 0.514 / 0.577 / 0.610   (monotone, still rising)
+  assoc     0.523 / 0.540 / 0.563 / 0.578   (seed spread up to 0.0776 > the whole effect)
+Arm A ImageNet null assoc 0.5567. D29/D36 confirmed at scale: identities lift RETRIEVAL,
+not ASSOCIATION.
+
+ANOMALY: occ-rank1 not cross-arm comparable (per-arm eval gallery via arm_sources()).
+Arm B = 36 sim identities -> occ_rank1 0.875 (highest in sweep) but assoc 0.549 (lowest,
+below the null). Small-gallery artifact; kills any cross-arm occ-rank1 claim. Does NOT
+touch the pre-registered paired criterion (tracker-level, fixed intersection denominator).
+
+BLOCKER / DECISION NEEDED: appearance re-ID at PERUN scale does not deliver G2a. Options:
+(a) more seeds to resolve a sub-noise effect, (b) push the G2b detector/oracle workstream,
+(c) accept the negative result. Not re-scoped unilaterally. viz/perun_sweep_identity_curve.png
+

@@ -1,0 +1,60 @@
+{
+  "unit": "D:1000:0",
+  "arm": "D",
+  "pool": 1000,
+  "seed": 0,
+  "config_digest": "2f33148787a87b7288e0bb3e193817c51c827791fcabc87f715160c4a1b4697a",
+  "n_train_ids": 999,
+  "occ_metrics": {
+    "rank1": 0.9975,
+    "mAP": 0.545504065688864,
+    "occ_rank1": 0.49857142857142855,
+    "occ_mAP": 0.2627012106891764
+  },
+  "per_gate": {
+    "0.4": {
+      "n_segments": 168,
+      "id_retention": 0.27380952380952384,
+      "id_retention_assoc": 0.48936170212765956,
+      "n_assoc_scope": 94,
+      "pre_match_rate": 0.7738095238095238,
+      "oracle_ceiling": 0.5595238095238095,
+      "center_err_coverage": 0.6845238095238095,
+      "cov_prematched": 0.8846153846153846,
+      "time_err_coverage": 0.75,
+      "reemergence_center_err_med": 0.008988948010699459,
+      "reemergence_time_err_med": 20.0
+    },
+    "0.45": {
+      "n_segments": 168,
+      "id_retention": 0.2976190476190476,
+      "id_retention_assoc": 0.5154639175257731,
+      "n_assoc_scope": 97,
+      "pre_match_rate": 0.7797619047619048,
+      "oracle_ceiling": 0.5773809523809523,
+      "center_err_coverage": 0.7083333333333334,
+      "cov_prematched": 0.9083969465648855,
+      "time_err_coverage": 0.7619047619047619,
+      "reemergence_center_err_med": 0.0077101926751299114,
+      "reemergence_time_err_med": 20.0
+    },
+    "0.5": {
+      "n_segments": 168,
+      "id_retention": 0.2916666666666667,
+      "id_retention_assoc": 0.5051546391752577,
+      "n_assoc_scope": 97,
+      "pre_match_rate": 0.7797619047619048,
+      "oracle_ceiling": 0.5773809523809523,
+      "center_err_coverage": 0.7142857142857143,
+      "cov_prematched": 0.916030534351145,
+      "time_err_coverage": 0.7619047619047619,
+      "reemergence_center_err_med": 0.008335837637831307,
+      "reemergence_time_err_med": 20.0
+    }
+  },
+  "runtimes": {
+    "train_s": 938.3245334625244,
+    "embed_s": 37.54225564002991,
+    "track_s": 14.774548292160034
+  }
+}

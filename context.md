@@ -678,3 +678,41 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   MOT17-02 -> 68 full / 41 val-half segments, median gap 37 frames (n.b. > ByteTrack's
   default 30-frame track buffer — exactly the failure mode the hidden-state module targets).
   Same numeric thresholds kept (0.25 / 0.5 / 5); only the contamination semantics changed.
+- **D50 (2026-08-19) PERUN sweep 77150 COMPLETE — G2a FAILS on both limbs at PERUN scale.**
+  23/23 units, zero task failures, zero cap kills. Actual compute **7.74 H200-h** against a
+  32.25-34.25 h projection and a 40 h ceiling: the UNIT_EST_H estimates were derived from
+  RTX 4060 timings and overstate H200 cost ~4.3x. The estimates are not moved (they are
+  pre-registered and they bound the budget conservatively), but the discrepancy is logged
+  here so a future grid can be sized honestly.
+  **G2a-floor: FAIL.** Arm D (pool 3520, gate 0.45) assoc_mean **0.5779** vs the frozen
+  floor **0.58** — short by 0.0021, i.e. a hair, but the threshold does not move (CLAUDE.md).
+  **G2a-paired (THE discriminating criterion, D28-FINAL): FAIL, and not marginally.**
+  D vs A McNemar p = 0.1431 / 0.6612 / 0.5000 across seeds 0/1/2 (n=95); D vs C
+  p = 0.1445 / 0.6128 / 0.7734; C vs A p = 0.3388 / 0.6682 / 0.3318. Nothing approaches
+  p < 0.05. The trained embedder is NOT distinguishable from the ImageNet-R18 null at
+  tracker level, at full PERUN scale, with 3 seeds.
+  **Why: the retrieval/tracker disconnect of D29/D36, now measured on a log-scale identity
+  curve.** occ-rank1 rises monotonically with identities (300 -> 0.408, 1000 -> 0.514,
+  2000 -> 0.577, 3520 -> 0.610) and is still climbing at the pool ceiling. Tracker
+  id_retention_assoc moves far less (0.523 / 0.540 / 0.563 / 0.578) and the per-pool SEED
+  SPREAD reaches 0.0776 — larger than the entire 0.055 effect across a 12x identity range.
+  D36's "single-seed tracker deltas < ~6pt = noise" holds at scale; 3 seeds is not enough
+  to resolve an effect this small. Identity count was the binding constraint on RETRIEVAL,
+  as D32/D36 said, but retrieval is not the binding constraint on ASSOCIATION.
+  **Anomaly logged: occ-rank1 is NOT comparable across arms.** sweep_unit.py sets
+  `eval_sources = arm_sources(cfg, arm)`, so each arm is scored on a gallery drawn from its
+  OWN sources. Arm B (sim only, 36 train identities) posts the highest retrieval of the
+  whole sweep, occ_rank1 0.875, while producing the LOWEST tracker association, 0.549 —
+  below the ImageNet null's 0.557. That is a small-gallery inflation artifact, not a real
+  win, and it means perun_sweep_v2.md's "occ-rank1 primary at sweep scale" cannot carry a
+  cross-arm claim. Within-arm (the D pool curve) the comparison is sound: same sources,
+  same held-out gallery, only pool size varies. The pre-registered discriminating criterion
+  is unaffected — it is tracker-level on a fixed intersection denominator.
+  **Detector workstream (G2b, dev-optimistic label stands):** yolo11s mot17dev mAP50 0.9361
+  / mAP50-95 0.6385 (0.48 h); mot17dev_carla ran 2.42 h against the 2.50 h cap — an 8 min
+  margin, which retroactively confirms amendment 7: yolo11m at ~3.15x GFLOPs would have
+  been killed at the cap in both mixes. Only the R6-at-val number is honest (D43 amd 3).
+  **Consequence:** appearance re-ID at PERUN scale does not deliver G2a. The remaining
+  levers are (a) more seeds to resolve a sub-noise effect, which is expensive for an effect
+  this small, (b) the detector/oracle-ceiling workstream (G2b), or (c) accepting the
+  negative result as the finding. User decision required; nothing is re-scoped unilaterally.

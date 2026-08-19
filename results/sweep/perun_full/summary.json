@@ -1,0 +1,163 @@
+{
+  "name": "perun_full",
+  "config_digest": "2f33148787a87b7288e0bb3e193817c51c827791fcabc87f715160c4a1b4697a",
+  "arms": {
+    "A": {
+      "reference_pool": null,
+      "selected_gate": 0.5,
+      "assoc_mean": 0.5567010309278351,
+      "assoc_spread": 0.0,
+      "occ_rank1_mean": 0.18000000000000002,
+      "n_seeds": 3
+    },
+    "B": {
+      "reference_pool": null,
+      "selected_gate": 0.5,
+      "assoc_mean": 0.5487233978416832,
+      "assoc_spread": 0.03233857840477483,
+      "occ_rank1_mean": 0.8751322751322751,
+      "n_seeds": 3
+    },
+    "C": {
+      "reference_pool": null,
+      "selected_gate": 0.45,
+      "assoc_mean": 0.5673822690643092,
+      "assoc_spread": 0.0541201488569909,
+      "occ_rank1_mean": 0.6180154142581888,
+      "n_seeds": 3
+    },
+    "D": {
+      "reference_pool": 3520,
+      "selected_gate": 0.45,
+      "assoc_mean": 0.5778643036161834,
+      "assoc_spread": 0.07763157894736838,
+      "occ_rank1_mean": 0.6095238095238095,
+      "n_seeds": 3
+    }
+  },
+  "mcnemar": {
+    "DvA": {
+      "s0": {
+        "p_value": 0.14313936233520508,
+        "n_intersection": 95,
+        "retention_a": 0.6210526315789474,
+        "retention_b": 0.5578947368421052
+      },
+      "s1": {
+        "p_value": 0.6611802577972412,
+        "n_intersection": 95,
+        "retention_a": 0.5473684210526316,
+        "retention_b": 0.5578947368421052
+      },
+      "s2": {
+        "p_value": 0.5,
+        "n_intersection": 95,
+        "retention_a": 0.5684210526315789,
+        "retention_b": 0.5578947368421052
+      }
+    },
+    "DvC": {
+      "s0": {
+        "p_value": 0.14453125,
+        "n_intersection": 96,
+        "retention_a": 0.625,
+        "retention_b": 0.5833333333333334
+      },
+      "s1": {
+        "p_value": 0.61279296875,
+        "n_intersection": 95,
+        "retention_a": 0.5473684210526316,
+        "retention_b": 0.5473684210526316
+      },
+      "s2": {
+        "p_value": 0.7734375,
+        "n_intersection": 94,
+        "retention_a": 0.5851063829787234,
+        "retention_b": 0.5957446808510638
+      }
+    },
+    "CvA": {
+      "s0": {
+        "p_value": 0.3388197422027588,
+        "n_intersection": 96,
+        "retention_a": 0.5833333333333334,
+        "retention_b": 0.5520833333333334
+      },
+      "s1": {
+        "p_value": 0.6681880950927734,
+        "n_intersection": 96,
+        "retention_a": 0.5416666666666666,
+        "retention_b": 0.5520833333333334
+      },
+      "s2": {
+        "p_value": 0.33181190490722656,
+        "n_intersection": 94,
+        "retention_a": 0.5957446808510638,
+        "retention_b": 0.5638297872340425
+      }
+    }
+  },
+  "detector": [
+    {
+      "unit": "detector:yolo11s:mot17dev",
+      "model": "yolo11s",
+      "mix": "mot17dev",
+      "config_digest": "2f33148787a87b7288e0bb3e193817c51c827791fcabc87f715160c4a1b4697a",
+      "metrics": {
+        "epoch": 100.0,
+        "time": 1730.27,
+        "train/box_loss": 0.4586,
+        "train/cls_loss": 0.27083,
+        "train/dfl_loss": 0.81168,
+        "metrics/precision(B)": 0.9472,
+        "metrics/recall(B)": 0.88287,
+        "metrics/mAP50(B)": 0.93611,
+        "metrics/mAP50-95(B)": 0.63854,
+        "val/box_loss": 1.17706,
+        "val/cls_loss": 0.53965,
+        "val/dfl_loss": 1.1952,
+        "lr/pg0": 3.98e-05,
+        "lr/pg1": 3.98e-05,
+        "lr/pg2": 3.98e-05
+      },
+      "runtimes": {
+        "train_s": 1745.0987215042114
+      },
+      "label": "dev-optimistic",
+      "note": "dev-optimistic: detector trained on MOT17 dev-half GT and scored on dev-half (D43 amendment 3) -- only the R6-at-val number is honest"
+    },
+    {
+      "unit": "detector:yolo11s:mot17dev_carla",
+      "model": "yolo11s",
+      "mix": "mot17dev_carla",
+      "config_digest": "2f33148787a87b7288e0bb3e193817c51c827791fcabc87f715160c4a1b4697a",
+      "metrics": {
+        "epoch": 100.0,
+        "time": 8700.49,
+        "train/box_loss": 0.28237,
+        "train/cls_loss": 0.17832,
+        "train/dfl_loss": 0.77709,
+        "metrics/precision(B)": 0.93838,
+        "metrics/recall(B)": 0.88913,
+        "metrics/mAP50(B)": 0.94242,
+        "metrics/mAP50-95(B)": 0.63589,
+        "val/box_loss": 1.19003,
+        "val/cls_loss": 0.5123,
+        "val/dfl_loss": 1.19141,
+        "lr/pg0": 0.000597,
+        "lr/pg1": 0.000199,
+        "lr/pg2": 0.000597,
+        "lr/pg3": 0.000199,
+        "lr/pg4": 0.000597,
+        "lr/pg5": 0.000199,
+        "lr/pg6": 0.000597,
+        "lr/pg7": 0.000199
+      },
+      "runtimes": {
+        "train_s": 8722.948722839355
+      },
+      "label": "dev-optimistic",
+      "note": "dev-optimistic: detector trained on MOT17 dev-half GT and scored on dev-half (D43 amendment 3) -- only the R6-at-val number is honest"
+    }
+  ]
+}
