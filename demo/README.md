@@ -84,7 +84,7 @@ not a better tracker (D50). See ../viz/perun_sweep_identity_curve.png.
 | gate | status |
 |---|---|
 | G0 repro | frozen PASS |
-| G1 parity | **PASS on val** -- HOTA 51.07 / IDF1 60.09 / IDsw 298, all better than baseline (D45) |
+| G1 parity | **PASS on val** -- HOTA 51.07 / IDF1 60.09 / IDsw 298, all beat baseline (D45) |
 | G2 center-err | 0.0064 PASS (<=0.015); val 0.0090 PASS |
 | G2 cov_prematched | 0.915 dev PASS / 0.907 val PASS (>=0.90) |
 | G2a-floor (assoc) | dev 0.598-0.604 PASS; **val 0.440 MISS**; PERUN 0.578 vs >=0.58 **FAIL** |
