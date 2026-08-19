@@ -845,3 +845,11 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   regression that MOT17 keeps its half-split), 11 launcher guards (incl. the D49
   timeout-grammar assertion re-asserted for the new emitter, a budget guard proved to
   fire, and a flat-curve OLS case proving a null cannot look significant).
+- **D57b (2026-08-19) PERUN site policy discovered: submission is gated at 4 nodes per
+  user.** `sbatch` refused the second Stage-1 batch with *"celkovy limit je 4 nody (mate 7
+  short + 0 long = 7, pyta 1)"*. It is a SUBMIT-TIME check against jobs already held, not a
+  run-time concurrency cap — which is why every `%8` array sailed through: an array is a
+  single submission regardless of its width. Consequence for operations: a partial
+  re-submission (the D57 recovery path, and the resume rule generally) can be refused
+  purely because earlier units are still running. Handled with a retrying submitter rather
+  than by widening anything; the `%8` cap and every wall limit are untouched.
