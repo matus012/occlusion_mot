@@ -80,12 +80,36 @@ Two honest caveats I keep attached to that number:
 - Even with perfect detections, ~19% of recoverable cases are still lost *inside* the
   tracker. Better detection cannot fix those.
 
-## What is running right now
+## What I then tested, and what came back
 
-12 detector-training runs on PERUN, testing how much of that gap a *realistic* detector
-closes. The detectors train only on datasets that share no images with the test set, so
-the answer will be honest rather than flattering — an earlier version of this experiment
+I trained 12 detectors and measured whether end-to-end tracking really does improve as the
+detector improves. To keep the answer honest, the detectors were trained **only on
+datasets sharing no images with the test set** — an earlier version of this experiment
 trained and tested on the same half, which made it look far better than it was.
+
+**Two answers came back, and they point in opposite directions.**
+
+**The good one:** the relationship is real and almost exactly one-to-one. A point of
+detector accuracy buys about a point of recoverable occlusions (slope 0.90, and the
+statistical uncertainty comfortably excludes zero). That is the cleanest confirmation the
+project has that the detector is what stands in the way.
+
+**The bad one:** every single detector I trained came out **worse** than the free,
+off-the-shelf detector already in use. Best end-to-end score 0.20, against 0.35 for the
+one I was trying to beat, and against the 0.55 target.
+
+**Why they disagree — and this is the interesting part.** The choice that made the
+experiment trustworthy is the same choice that sank it. Training only on *other* datasets
+means the answer cannot be flattered by testing on training data — but those other
+datasets are a different kind of scene (much denser crowds), and that gap cost more
+accuracy than the training gained. The detectors ended up firing far too often: roughly
+70,000–226,000 detections where the baseline produces 80,000 for the same 54,000 real
+people.
+
+So: **I proved where the bottleneck is, and I did not manage to exploit it.** The honest
+summary is that the next step needs a detector trained on the *right kind* of scene — which
+conflicts with the very disjointness that made this measurement believable. That tension
+is unresolved, and I would rather state it than paper over it.
 
 ## What I would say about this project in an interview
 
@@ -101,6 +125,7 @@ seriously instead of tuning until something looked good.
 - **Works and holds up on held-out data:** the occlusion module improves identity
   retention and costs nothing in ordinary tracking quality.
 - **Closed, negative:** scaling the appearance model does not get us to the target.
-- **Open, promising:** the detector has large measured headroom; the run to quantify it
-  is in flight.
+- **Open, quantified, not yet exploited:** the detector has large measured headroom and
+  the relationship is confirmed at ~1:1 — but no detector I trained beat the off-the-shelf
+  baseline, so the target is still unmet.
 - **Known limit:** a residual failure inside the tracker that no detector can fix.

@@ -914,3 +914,16 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   disjointness that made this read honest — that tension is the real open problem, and it
   is not resolved by anything in this document.
   Figure viz/stage1_dose_response.png; summary results/sweep/perun_detector/summary.json.
+- **D63 (2026-08-19) val2 REJECTED [user]; Stage-1 detector demo re-render SKIPPED [user].**
+  The Stage-1 slope was positive, which under D53 decision 1 permitted *drafting* a second
+  val manifest. Drafted with a recommendation against executing it — a val event exists to
+  read a candidate honestly, and Stage 1 produced no candidate worth reading (every trained
+  detector is below the yolo11x baseline). User agreed: **val stays read exactly once
+  (D45)**. `PROPOSED_val2_manifest.md` is retained, marked REJECTED, as the record of what
+  was proposed and declined; it authorises nothing. Separately, the planned second demo
+  render "with the best Stage-1 detector" is cancelled for the same reason — a hero clip
+  built on a detector that is worse than the baseline would misrepresent the result. The
+  demo suite therefore ships on the current best stack (conv embedder + yolo11x
+  detections), which is also the configuration every headline number in the README refers
+  to. Session state consolidated into `SESSION_QUEUE.md` (D62) so a zero-context session
+  can resume.

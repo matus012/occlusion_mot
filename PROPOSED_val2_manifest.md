@@ -1,6 +1,12 @@
-# PROPOSED second val event — DRAFT, NOT APPROVED, NOT RUN
+# PROPOSED second val event — REJECTED BY USER 2026-08-19
 
-**Status: PROPOSAL ONLY. Nothing here has been executed. Val has NOT been touched.**
+**Status: REJECTED. Not approved, not executed, and not to be executed. Val has NOT been
+touched and remains read exactly once (D45).** The document is retained as the record of
+what was proposed and why it was declined — deleting it would erase the reasoning.
+
+The recommendation in section 0 was to decline, and the user agreed. Any future second val
+event needs a NEW proposal and a fresh explicit approval; this file does not authorise
+anything.
 
 Drafted 2026-08-19 because D53 decision 1 says a positive Stage-1 slope earns exactly one
 thing: *the right to draft* this document for separate approval. **Drafting is not
