@@ -42,7 +42,7 @@ official request form only, post-val, user-gated.)
    Val-clean by construction (no val frames in training).
 
 Total: 18 embedder runs + 4 detector runs + cache passes.
-(Exact array enumeration: **25 units** — see amendment 5, D48.)
+(Exact array enumeration: **25 units** — see amendment 5, D48. SUPERSEDED 2026-08-19 by amendment 7, D49: the detector lever fired on measured smoke throughput, dropping yolo11m and taking the grid to **23 units**.)
 
 ## Metrics & decision rules (pre-registered)
 
@@ -147,3 +147,39 @@ produces a better embedder, running it at val REQUIRES a user-approved amendment
 val_manifest.md BEFORE the val event (D35 freeze rule). Default path: val runs with
 the pinned checkpoint; the PERUN winner becomes a pre-registered secondary claim or a
 manifest amendment — user's call, made before val, never after.
+
+## Pre-registration amendment (D49 — 2026-08-19, post-smoke, pre-array; fires a
+## lever that was itself pre-registered in amendment 6 — no new design freedom)
+
+7. **Detector lever fired: `detector.models` reduced to `[yolo11s]`; grid 25 -> 23 units.**
+   Amendment 6 pre-registered the response to a detector class that cannot fit the
+   02:30:00 hard cap: *drop to one detector model rather than burn the remaining budget,
+   and never raise the cap.* The smoke job (SLURM 77122, gpu04, 2026-08-19) supplied the
+   measurement that triggers it.
+
+   Measured: **yolo11s = 88 s/epoch** at the sweep's `imgsz: 960` (smoke epoch 2; epoch 1
+   discarded as warmup-contaminated). At 100 epochs that is ~2.44 h — inside the cap, but
+   only by ~2 s/epoch of margin.
+
+   Projected for yolo11m by GFLOPs ratio at the same imgsz: **154.2 / 48.9 = 3.15x**, so
+   88 s x 3.15 = **~277 s/epoch -> ~7.7 h per 100-epoch run**. That is ~3x the 02:30 cap,
+   so both yolo11m units would be killed leaving no result JSON — 5 h of allocation spent
+   for nothing. The projection is compute-scaling only and ignores yolo11m's larger
+   activation memory and dataloader pressure, so ~277 s is a floor, not a point estimate;
+   the verdict does not depend on the precision.
+
+   Enumeration after the lever: 18 embedder + 3 arm-A ImageNet-null + 2 detector =
+   **23 units**, `--array=0-22%8`, grid total **32.25-34.25 H200-h** against the unchanged
+   **40 h ceiling**.
+
+   Stated before the fact, as amendment 6 requires: the two surviving yolo11s detector
+   units sit only ~2 s/epoch under the cap and are therefore themselves marginal. If one
+   or both die at 02:30, the R6 selection rule (amendment 1) is applied over whichever
+   detector units completed and the shortfall is reported in the selection — the cap is
+   not raised, the ceiling does not move, and no further model substitution is made
+   without a new dated amendment.
+
+   What did NOT change: arms, pools, seeds, epochs, gate_probe, the McNemar pairs, the
+   embedder classes, the 40 h ceiling, and every wall cap. The detector arm is a G2b
+   *workstream* feed (D26/D31), not a G2a claim input, so narrowing it does not touch any
+   pre-registered hypothesis test.

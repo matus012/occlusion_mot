@@ -2,7 +2,7 @@
 # submit via: scripts/sweep_launcher.py --config configs/sweep/perun_full.yaml --mode slurm
 # (emits results/sweep/perun_full/submit.sbatch; sbatch it manually after review).
 #
-# Grid (doc v2 + D48 amendment 5): 25 array units.
+# Grid (doc v2 + D48 amendment 5; D49 amendment 7 fired the detector lever): 23 array units.
 #   18 embedder trainings = ablation core B/C/D @ FULL pool x 3 seeds (9) + arm D
 #      identity-scaling curve {300,1000,2000,3520} x 3 seeds (9 more; the 3520 point
 #      IS the core's full-pool point, shared, not duplicated).
@@ -11,7 +11,11 @@
 #      identical. They exist because the pre-registered McNemar is paired PER SEED
 #      (D vs A, C vs A), which needs an arm-A tracker output per seed. D48 amendment 5
 #      records that the doc's grid table undercounted this cell; enumeration stays 25.
-#    4 detector finetunes = yolo11s + yolo11m x 2 data mixes, ~100 epochs each
+#    2 detector finetunes = yolo11s x 2 data mixes, ~100 epochs each. yolo11m was
+#      DROPPED by the pre-registered D48 lever on 2026-08-19 (amendment 7): the smoke
+#      job measured 88 s/epoch for yolo11s at imgsz 960, and yolo11m is 154.2/48.9 =
+#      3.15x its GFLOPs there, projecting ~277 s/epoch -> ~7.7 h for 100 epochs,
+#      far past the 02:30 hard cap. Lever applied, cap NOT raised.
 #      (mixes = mot17dev vs mot17dev_carla, D43-delta(b): finetune_detector.py's --mix
 #      now really folds CARLA scenario frames into TRAIN).
 name: perun_full
@@ -41,7 +45,7 @@ mcnemar_pairs:
 
 detector:
   enabled: true
-  models: [yolo11s, yolo11m]
+  models: [yolo11s]  # D49 amendment 7: yolo11m dropped, ~277 s/epoch projected vs 02:30 cap
   mixes: [mot17dev, mot17dev_carla]
   base_weights: null  # null -> "<model>.pt" pretrained checkpoint
   epochs: 100
