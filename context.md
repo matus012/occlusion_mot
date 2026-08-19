@@ -826,3 +826,22 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   RTX 4060; the budgeted 0.20 h was not spent, so 32.26 h remains under the 40 h ceiling).
   **Stage 1 is NOT submitted and MUST NOT be: D53 decision 2 requires the verdict to be
   reported to the user and an explicit go before any Stage-1 unit is queued.**
+- **D56 (2026-08-19) Stage-1 implementation: MOT17-disjoint mixes, unit runner, launcher.**
+  Built to perun_detector_v1.md section 5. (a) finetune_detector.py gains `mot20` and
+  `mot20_carla`; MOT20 is not an eval half so `_split_all_frames` uses every frame, while
+  the MOT17 family keeps its D18 half-split guard untouched. Disjointness is asserted
+  TWICE — on resolved source paths (`_assert_no_mot17`, which resolves symlinks so a
+  MOT17 sequence renamed `MOT20-99` is still caught) and again on the materialised
+  dataset. (b) detector_unit.py runs a unit end to end (finetune -> cache detections over
+  MOT17 -> conv embeddings -> FROZEN canonical tracker) and emits both dose-response
+  coordinates per unit. (c) detector_launcher.py emits the array and, in local mode,
+  writes the pre-registered OLS slope + 95% CI.
+  **Caps transcribed, not derived.** My first launcher derived wall caps from the cost
+  model and produced 01:00:00 where the frozen doc's section 4 table says 01:15:00 —
+  tighter than the pre-registration, so it would have killed units the doc permits to
+  finish. Caps now come verbatim from the doc into config `wall_caps`, with an assertion
+  that each sits above its own estimate. Worst case 27.00 h vs 32.26 h remaining.
+  Tests: 7 mix/disjointness guards (incl. the renamed-MOT17 smuggling case and a
+  regression that MOT17 keeps its half-split), 11 launcher guards (incl. the D49
+  timeout-grammar assertion re-asserted for the new emitter, a budget guard proved to
+  fire, and a flat-curve OLS case proving a null cannot look significant).

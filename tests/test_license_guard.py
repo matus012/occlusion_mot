@@ -68,6 +68,10 @@ ALLOWED_TRACKED_VISUALS: dict[str, str] = {
     "viz/detector_arm_dev.png": "plot",
     "viz/scaling_study.png": "plot",
     "viz/scaling_curve_local.png": "plot",
+    # D50/D55: sweep + Stage-0 figures. Pure matplotlib over our own metric JSONs;
+    # no dataset pixels of any kind.
+    "viz/perun_sweep_identity_curve.png": "plot",
+    "viz/stage0_kill_gate.png": "plot",
     "demo/s0_teaser.png": "carla-render",
     "demo/s5_blueprint_grid.png": "carla-render",
     "demo/s5_carla.mp4": "carla-render",

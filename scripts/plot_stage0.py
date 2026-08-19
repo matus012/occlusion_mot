@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
@@ -39,10 +40,12 @@ def main() -> int:
     ax1.bar(x, ceil, color=colors, edgecolor="#222", linewidth=.7)
     for i, v in enumerate(ceil):
         ax1.text(i, v + .015, f"{v:.3f}", ha="center", fontsize=10, weight="bold")
-    ax1.set_xticks(list(x)); ax1.set_xticklabels(labels, fontsize=9)
+    ax1.set_xticks(list(x))
+    ax1.set_xticklabels(labels, fontsize=9)
     ax1.set_ylabel("oracle_ceiling  (associable segments / all)")
     ax1.set_title("Detection quality sets the ceiling", fontsize=11.5, weight="bold")
-    ax1.set_ylim(0, 1.12); ax1.grid(axis="y", alpha=.25)
+    ax1.set_ylim(0, 1.12)
+    ax1.grid(axis="y", alpha=.25)
     ax1.annotate("", xy=(1, ceil[1]), xytext=(0, ceil[0]),
                  arrowprops=dict(arrowstyle="<->", color="#C03030", lw=1.8))
     ax1.text(.5, (ceil[0] + ceil[1]) / 2 + .04, f"+{ceil[1]-ceil[0]:.3f}\nheadroom",
@@ -54,11 +57,13 @@ def main() -> int:
     ax2.axhline(GATE, color="#C03030", ls="--", lw=1.8)
     ax2.text(2.42, GATE + .018, "G2b gate 0.55", color="#C03030",
              fontsize=9.5, weight="bold", ha="right")
-    ax2.set_xticks(list(x)); ax2.set_xticklabels(labels, fontsize=9)
+    ax2.set_xticks(list(x))
+    ax2.set_xticklabels(labels, fontsize=9)
     ax2.set_ylabel("id_retention  (end-to-end)")
     ax2.set_title("A perfect detector clears G2b by a wide margin",
                   fontsize=11.5, weight="bold")
-    ax2.set_ylim(0, 1.12); ax2.grid(axis="y", alpha=.25)
+    ax2.set_ylim(0, 1.12)
+    ax2.grid(axis="y", alpha=.25)
 
     fig.suptitle(
         "Stage 0 kill gate: PASSED — the detector is the binding constraint "

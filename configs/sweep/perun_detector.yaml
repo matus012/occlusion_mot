@@ -1,0 +1,63 @@
+# Stage 1 — G2b detector dose-response (perun_detector_v1.md, FROZEN D53).
+#
+# 12 units = 2 models x 2 MOT17-DISJOINT mixes x 3 seeds. The grid is frozen: decision 3
+# of D53 forbids adding a model, mix, seed or pool without a new dated amendment. The
+# 10.6 h of headroom under the ceiling is margin, NOT room to widen this.
+#
+# Every mix here trains on sources MOT17 has no overlap with (MOT20, CARLA), so a
+# detector trained on them and evaluated on MOT17 dev-half is honest by construction —
+# no dev-optimistic label, and no val consumption (D53 decision 1: val is CLOSED).
+name: perun_detector
+half: dev
+
+models: [yolo11s, yolo11m]
+mixes: [mot20, mot20_carla]
+seeds: [0, 1, 2]
+
+# Per-mix epochs hold frame-passes roughly constant (~357k vs ~371k), so the mixes differ
+# in DATA COMPOSITION, not gradient budget (perun_detector_v1.md section 3).
+epochs:
+  mot20: 40          # 8,931 frames
+  mot20_carla: 20    # 18,531 frames
+imgsz: 960
+batch: 8
+
+# Cost model fitted to sweep 77150 and validated out-of-sample at -7.7%
+# (perun_detector_v1.md section 4). k = 3.7315e-8 h per frame-epoch-GFLOP, carried with a
+# 1.15x safety factor. UNIT_EST_H from the embedder sweep is NOT reused: it was RTX
+# 4060-derived and ran 4.3x conservative on H200 (perun_sweep_v2.md amendment 9).
+cost_model:
+  k_h_per_frame_epoch_gflop: 3.7315e-8
+  safety_factor: 1.15
+  frames:
+    mot20: 8931
+    mot20_carla: 18531
+  gflops:            # measured at imgsz 960
+    yolo11s: 48.9
+    yolo11m: 154.2
+  eval_overhead_h: 0.20   # cache detections + embeddings + tracker run, per unit
+
+# Wall caps are NOT derived — they are transcribed verbatim from perun_detector_v1.md
+# section 4's cap table (FROZEN D53), per (model x mix) rather than per model class
+# (amendment 9's lesson). Deriving them from the cost model produced TIGHTER caps than
+# the pre-registration allows, which would kill units the frozen doc permits to finish.
+# The launcher asserts each cap sits above its own estimate.
+wall_caps:
+  yolo11s:
+    mot20: "01:15:00"
+    mot20_carla: "01:15:00"
+  yolo11m:
+    mot20: "03:15:00"
+    mot20_carla: "03:15:00"
+
+slurm:
+  partition: "gpu_short"
+  account: "perun26011488"
+  gres: "gpu:1"
+  cpus_per_task: 8
+  mem: "64G"
+  max_concurrent: 8       # same cap as array 77150 — never raised
+  budget_ceiling_h: 32.26 # what remains of the 40 h ceiling after sweep 77150 (7.74 h)
+
+env:
+  device: cuda

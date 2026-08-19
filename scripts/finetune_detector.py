@@ -48,7 +48,36 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefm
 logger = logging.getLogger("finetune_detector")
 
 ROOT = Path(__file__).resolve().parents[1]
-VALID_MIXES = ("mot17dev", "mot17dev_carla")
+VALID_MIXES = ("mot17dev", "mot17dev_carla", "mot20", "mot20_carla")
+
+# perun_detector_v1.md section 1 (D53): the mot20* mixes exist so the detector can be
+# trained on sources DISJOINT from the MOT17 evaluation half. That disjointness is the
+# entire honesty argument of the G2b workstream -- if a single MOT17 frame reaches a
+# mot20* train split, every downstream number silently reverts to dev-optimistic. It is
+# asserted at prep time (_assert_no_mot17), not merely documented.
+MOT17_FAMILY = ("mot17dev", "mot17dev_carla")
+MOT20_FAMILY = ("mot20", "mot20_carla")
+CARLA_MIXES = ("mot17dev_carla", "mot20_carla")
+
+
+def mix_family(mix: str) -> str:
+    assert mix in VALID_MIXES, f"unknown mix {mix!r}"
+    return "mot17dev" if mix in MOT17_FAMILY else "mot20"
+
+
+def _assert_no_mot17(paths: list[Path], mix: str) -> None:
+    """Hard guard: no MOT17-derived frame may enter a mot20* split (perun_detector_v1.md).
+
+    Checks the resolved source path, not the stem, so a renamed copy cannot slip past.
+    """
+    if mix_family(mix) != "mot20":
+        return
+    bad = [str(q) for q in paths if "MOT17" in str(q.resolve())]
+    assert not bad, (
+        f"mix={mix} is MOT17-disjoint by construction, but {len(bad)} source frame(s) "
+        f"resolve under a MOT17 path -- this would make every G2b number dev-optimistic. "
+        f"First offenders: {bad[:3]}"
+    )
 
 
 def set_seeds(seed: int) -> None:
@@ -58,6 +87,22 @@ def set_seeds(seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+
+
+def _split_all_frames(seq: MOTSequence, val_frac: float) -> tuple[list[int], list[int]]:
+    """(train, monitor) over the WHOLE sequence -- for MOT17-disjoint sources only.
+
+    MOT20 is not an evaluation half, so there is no D18 half-split to respect: every
+    frame is legitimately trainable. The tail val_frac is held out purely as an
+    ultralytics monitoring split.
+    """
+    frames = list(range(1, seq.seq_length + 1))
+    n = len(frames)
+    n_val = max(1, round(n * val_frac)) if n > 1 else 0
+    train_frames, monitor_frames = frames[: n - n_val], frames[n - n_val :]
+    assert set(train_frames).isdisjoint(monitor_frames)
+    assert set(train_frames) | set(monitor_frames) == set(frames)
+    return train_frames, monitor_frames
 
 
 def _split_dev_frames(seq: MOTSequence, val_frac: float) -> tuple[list[int], list[int]]:
@@ -112,13 +157,14 @@ def _expected_counts(
     seqs: list[MOTSequence], val_frac: float,
     mix: str = "mot17dev", carla_seqs: list[MOTSequence] | None = None,
 ) -> tuple[int, int]:
+    splitter = _split_all_frames if mix_family(mix) == "mot20" else _split_dev_frames
     n_train = n_val = 0
     for seq in seqs:
-        train_frames, monitor_frames = _split_dev_frames(seq, val_frac)
+        train_frames, monitor_frames = splitter(seq, val_frac)
         n_train += len(train_frames)
         n_val += len(monitor_frames)
-    if mix == "mot17dev_carla":
-        assert carla_seqs is not None, "mix=mot17dev_carla requires carla_seqs"
+    if mix in CARLA_MIXES:
+        assert carla_seqs is not None, f"mix={mix} requires carla_seqs"
         n_train += sum(cseq.seq_length for cseq in carla_seqs)  # ALL frames -> TRAIN only
     return n_train, n_val
 
@@ -154,19 +200,28 @@ def _default_out_dir(mix: str) -> Path:
 def prepare_dataset(
     data_root: Path, out_dir: Path, min_vis: float, val_frac: float = 0.1,
     mix: str = "mot17dev", carla_root: Path | None = None,
+    mot20_root: Path | None = None,
 ) -> tuple[Path, dict[str, int]]:
     """Build the YOLO-format dataset from MOT17 dev-half GT (+ CARLA scenario frames
     in TRAIN only when mix=mot17dev_carla). Idempotent: if `out_dir` already holds
     the expected image counts, skip rebuilding and reuse it."""
     assert mix in VALID_MIXES, f"unknown --mix {mix!r} (valid: {VALID_MIXES})"
-    seqs = load_split(data_root, "train", detector="FRCNN")
-    assert seqs, f"no FRCNN train sequences found under {data_root}"
+    family = mix_family(mix)
+    if family == "mot20":
+        assert mot20_root is not None, f"mix={mix} requires --mot20-root"
+        seqs = load_split(mot20_root, "train")
+        assert seqs, f"no MOT20 train sequences found under {mot20_root}"
+        _assert_no_mot17([seq.root for seq in seqs], mix)
+    else:
+        seqs = load_split(data_root, "train", detector="FRCNN")
+        assert seqs, f"no FRCNN train sequences found under {data_root}"
 
     carla_seqs: list[MOTSequence] = []
-    if mix == "mot17dev_carla":
-        assert carla_root is not None, "mix=mot17dev_carla requires --carla-root"
+    if mix in CARLA_MIXES:
+        assert carla_root is not None, f"mix={mix} requires --carla-root"
         carla_seqs = _carla_train_sequences(carla_root)
-        assert carla_seqs, f"mix=mot17dev_carla but no CARLA scenarios found under {carla_root}"
+        assert carla_seqs, f"mix={mix} but no CARLA scenarios found under {carla_root}"
+        _assert_no_mot17([c.root for c in carla_seqs], mix)
 
     n_train_expected, n_val_expected = _expected_counts(seqs, val_frac, mix, carla_seqs)
 
@@ -192,16 +247,19 @@ def prepare_dataset(
     for d in (img_train, img_val, lbl_train, lbl_val):
         d.mkdir(parents=True, exist_ok=True)
 
+    splitter = _split_all_frames if family == "mot20" else _split_dev_frames
     n_train = n_val = 0
     for seq in seqs:
         assert seq.gt is not None, f"{seq.name}: GT required for detector finetuning"
-        train_frames, monitor_frames = _split_dev_frames(seq, val_frac)
+        train_frames, monitor_frames = splitter(seq, val_frac)
         for frames, img_dir, lbl_dir in (
             (train_frames, img_train, lbl_train),
             (monitor_frames, img_val, lbl_val),
         ):
             for frame in frames:
-                assert frame <= seq.seq_length // 2, (
+                # D18 half-split applies to the EVAL dataset only. MOT20 is not an eval
+                # half, so every frame is trainable there; MOT17 keeps the hard guard.
+                assert family == "mot20" or frame <= seq.seq_length // 2, (
                     f"{seq.name}: frame {frame} beyond dev half (D18 violation)"
                 )
                 stem = f"{seq.name}_{frame:06d}"
@@ -213,7 +271,7 @@ def prepare_dataset(
         n_train += len(train_frames)
         n_val += len(monitor_frames)
 
-    if mix == "mot17dev_carla":
+    if mix in CARLA_MIXES:
         for cseq in carla_seqs:
             assert cseq.gt is not None, f"{cseq.name}: CARLA scenario missing GT"
             for frame in range(1, cseq.seq_length + 1):  # ALL frames -> TRAIN only, never val
@@ -230,6 +288,15 @@ def prepare_dataset(
             "mix=%s: added %d CARLA scenario(s) / %d frames to TRAIN only (monitoring val "
             "split stays MOT17-only so the two mixes remain comparable)",
             mix, len(carla_seqs), sum(cseq.seq_length for cseq in carla_seqs),
+        )
+
+    if family == "mot20":
+        # Belt and braces: re-assert on the MATERIALISED dataset, not just the sources.
+        staged = list(img_train.glob("*.jpg")) + list(img_val.glob("*.jpg"))
+        leaked = [q for q in staged if q.name.startswith("MOT17")]
+        assert not leaked, (
+            f"mix={mix}: {len(leaked)} MOT17 frame(s) materialised into the dataset "
+            f"(first: {leaked[:3]}) -- the MOT17-disjointness contract is broken"
         )
 
     dataset_yaml.write_text(
@@ -292,10 +359,17 @@ def main() -> int:
     ap.add_argument("--carla-root", type=Path, default=ROOT / "data" / "sim" / "carla_render",
                     help="CARLA scenario dirs (seqinfo.ini + gt/gt.txt + img1/), used only "
                          "when --mix mot17dev_carla")
+    ap.add_argument("--mot20-root", type=Path, default=ROOT / "data" / "MOT20",
+                    help="MOT20 root (train/<seq>/{seqinfo.ini,gt/gt.txt,img1/}), used only "
+                         "when --mix mot20 or mot20_carla")
     ap.add_argument("--mix", choices=VALID_MIXES, default="mot17dev",
                     help="mot17dev (default): MOT17 dev-half GT only, unchanged behavior. "
                          "mot17dev_carla: additionally folds CARLA scenario frames into the "
-                         "TRAIN split only (monitoring val stays MOT17-only)")
+                         "TRAIN split only (monitoring val stays MOT17-only). "
+                         "mot20 / mot20_carla (perun_detector_v1.md, D53): MOT17-DISJOINT "
+                         "training sources, so a detector trained on them and evaluated on "
+                         "MOT17 dev-half is honest by construction -- no dev-optimistic "
+                         "label, no val consumption")
     ap.add_argument("--min-vis", type=float, default=0.1)
     ap.add_argument("--val-frac", type=float, default=0.1,
                     help="fraction of each sequence's dev-half frames held out for monitoring")
@@ -316,7 +390,8 @@ def main() -> int:
     out_dir = args.out_dir or _default_out_dir(args.mix)
 
     dataset_yaml, counts = prepare_dataset(
-        args.data_root, out_dir, args.min_vis, args.val_frac, args.mix, args.carla_root
+        args.data_root, out_dir, args.min_vis, args.val_frac, args.mix, args.carla_root,
+        args.mot20_root,
     )
     logger.info("dataset ready (mix=%s, train=%d val=%d): %s", args.mix, counts["train"],
                 counts["val"], dataset_yaml)
