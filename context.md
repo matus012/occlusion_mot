@@ -871,3 +871,46 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   e2e 0.167-0.202 against 0.345. Honest training on a disjoint domain costs real accuracy.
   That is itself a finding about the section-1 design and must be reported alongside
   whatever the slope says.
+- **D61 (2026-08-19) STAGE 1 COMPLETE — mechanism CONFIRMED, intervention FAILED.**
+  12/12 units, zero task failures, **10.72 H200-h actual** against a 21.43 h nominal
+  estimate and a 27.00 h worst case at the caps. Cumulative spend 18.46 h of the 40 h
+  ceiling; 21.54 h remain. The ceiling never moved.
+
+  **Pre-registered primary (perun_detector_v1.md s3, all 14 dose-response levels):**
+  `oracle_ceiling ~ mAP50-95(MOT17)` slope **0.9021**, 95% CI **[0.7837, 1.0205]**,
+  R² 0.949. The CI excludes zero, so **the detector-ceiling mechanism is SUPPORTED** —
+  and the slope is near 1:1, i.e. a point of detector mAP buys about a point of
+  recoverable-occlusion ceiling. Secondary `id_retention ~ mAP` slope 0.7738,
+  CI [0.7313, 0.8163], R² 0.991. This is the strongest quantitative confirmation the
+  project has produced of D25/D26's claim that end-to-end retention is detector-capped.
+
+  **G2b verdict: NOT MET, and not close.** Best trained unit `yolo11s:mot20_carla:2` at
+  e2e 0.2024 against the frozen 0.55 — and **0.1428 BELOW the yolo11x baseline's 0.3452**.
+  Every one of the 12 trained detectors is worse on MOT17 than the off-the-shelf detector
+  it was meant to improve on (mAP50-95 0.189-0.228 vs the baseline's 0.397; ceiling
+  0.232-0.345 vs 0.571).
+
+  **Why: the honesty tax.** Section 1 chose MOT17-disjoint training (MOT20 + CARLA) so the
+  dev read would be honest by construction and consume no val. That worked as designed —
+  the numbers are clean — but MOT20 is a far denser, different-domain benchmark, and the
+  domain gap cost more accuracy than finetuning gained. The detectors also over-fire
+  badly: 72k-226k detections over MOT17 dev-half against the baseline's 80k for the same
+  53,678 GT boxes. **The design bought honesty at the price of the very quality it was
+  trying to demonstrate.** That trade is the finding, and it was not visible before the run.
+
+  **Sensitivity analysis, reported because it qualifies the headline.** The pre-registered
+  fit spans x = 0.189 -> 1.000, but the 12 trained units occupy only 0.0391 of that range;
+  the lever arm comes from the two reference points. Restricted to trained units alone:
+  `oracle ~ mAP` slope 2.2374, CI [0.7556, 3.7192], R² 0.467 — still excludes zero, so the
+  ceiling relationship survives; but `e2e ~ mAP` slope 0.4375, CI **[-0.3808, 1.2558]**,
+  R² 0.099 — **includes zero**. So within the narrow band of detectors actually trained
+  here, end-to-end retention does NOT track detector quality significantly. The
+  pre-registered verdict stands as written (it was defined over all 14 levels); this
+  caveat is recorded so the headline is not read as more than it is.
+
+  **What this does and does not license.** It confirms WHERE the bottleneck is; it does
+  NOT demonstrate that training a better detector is achievable by this route. The
+  actionable next step is a better MOT17-domain detector, which conflicts with the
+  disjointness that made this read honest — that tension is the real open problem, and it
+  is not resolved by anything in this document.
+  Figure viz/stage1_dose_response.png; summary results/sweep/perun_detector/summary.json.

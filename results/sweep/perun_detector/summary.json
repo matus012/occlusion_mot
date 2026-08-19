@@ -1,0 +1,200 @@
+{
+  "name": "perun_detector",
+  "n_units": 12,
+  "n_regression_points": 14,
+  "x_axis": "mAP50-95 measured on MOT17 dev-half (D60)",
+  "units": [
+    {
+      "unit": "yolo11s:mot20:0",
+      "model": "yolo11s",
+      "mix": "mot20",
+      "seed": 0,
+      "map50_95": 0.19864589785927428,
+      "map50_95_mot20_split": 0.60287,
+      "oracle_ceiling": 0.26785714285714285,
+      "id_retention": 0.17261904761904762,
+      "id_retention_assoc": 0.6444444444444445,
+      "reference": false
+    },
+    {
+      "unit": "yolo11s:mot20:1",
+      "model": "yolo11s",
+      "mix": "mot20",
+      "seed": 1,
+      "map50_95": 0.2014846471862179,
+      "map50_95_mot20_split": 0.60604,
+      "oracle_ceiling": 0.25,
+      "id_retention": 0.16666666666666666,
+      "id_retention_assoc": 0.6666666666666666,
+      "reference": false
+    },
+    {
+      "unit": "yolo11s:mot20:2",
+      "model": "yolo11s",
+      "mix": "mot20",
+      "seed": 2,
+      "map50_95": 0.20015941613152655,
+      "map50_95_mot20_split": 0.60424,
+      "oracle_ceiling": 0.31547619047619047,
+      "id_retention": 0.19047619047619047,
+      "id_retention_assoc": 0.6037735849056604,
+      "reference": false
+    },
+    {
+      "unit": "yolo11s:mot20_carla:0",
+      "model": "yolo11s",
+      "mix": "mot20_carla",
+      "seed": 0,
+      "map50_95": 0.19958402851928442,
+      "map50_95_mot20_split": 0.59846,
+      "oracle_ceiling": 0.2916666666666667,
+      "id_retention": 0.18452380952380953,
+      "id_retention_assoc": 0.6326530612244898,
+      "reference": false
+    },
+    {
+      "unit": "yolo11s:mot20_carla:1",
+      "model": "yolo11s",
+      "mix": "mot20_carla",
+      "seed": 1,
+      "map50_95": 0.19143822814804248,
+      "map50_95_mot20_split": 0.59867,
+      "oracle_ceiling": 0.23214285714285715,
+      "id_retention": 0.13690476190476192,
+      "id_retention_assoc": 0.5897435897435898,
+      "reference": false
+    },
+    {
+      "unit": "yolo11s:mot20_carla:2",
+      "model": "yolo11s",
+      "mix": "mot20_carla",
+      "seed": 2,
+      "map50_95": 0.21575101153588858,
+      "map50_95_mot20_split": 0.60114,
+      "oracle_ceiling": 0.3333333333333333,
+      "id_retention": 0.20238095238095238,
+      "id_retention_assoc": 0.6071428571428571,
+      "reference": false
+    },
+    {
+      "unit": "yolo11m:mot20:0",
+      "model": "yolo11m",
+      "mix": "mot20",
+      "seed": 0,
+      "map50_95": 0.22823783289191096,
+      "map50_95_mot20_split": 0.60719,
+      "oracle_ceiling": 0.34523809523809523,
+      "id_retention": 0.17261904761904762,
+      "id_retention_assoc": 0.5,
+      "reference": false
+    },
+    {
+      "unit": "yolo11m:mot20:1",
+      "model": "yolo11m",
+      "mix": "mot20",
+      "seed": 1,
+      "map50_95": 0.19096378824968993,
+      "map50_95_mot20_split": 0.6076,
+      "oracle_ceiling": 0.24404761904761904,
+      "id_retention": 0.17857142857142858,
+      "id_retention_assoc": 0.7317073170731707,
+      "reference": false
+    },
+    {
+      "unit": "yolo11m:mot20:2",
+      "model": "yolo11m",
+      "mix": "mot20",
+      "seed": 2,
+      "map50_95": 0.20960879746509206,
+      "map50_95_mot20_split": 0.60697,
+      "oracle_ceiling": 0.2857142857142857,
+      "id_retention": 0.17261904761904762,
+      "id_retention_assoc": 0.6041666666666666,
+      "reference": false
+    },
+    {
+      "unit": "yolo11m:mot20_carla:0",
+      "model": "yolo11m",
+      "mix": "mot20_carla",
+      "seed": 0,
+      "map50_95": 0.2098234514871129,
+      "map50_95_mot20_split": 0.60776,
+      "oracle_ceiling": 0.26785714285714285,
+      "id_retention": 0.17857142857142858,
+      "id_retention_assoc": 0.6666666666666666,
+      "reference": false
+    },
+    {
+      "unit": "yolo11m:mot20_carla:1",
+      "model": "yolo11m",
+      "mix": "mot20_carla",
+      "seed": 1,
+      "map50_95": 0.21612613353783489,
+      "map50_95_mot20_split": 0.61312,
+      "oracle_ceiling": 0.24404761904761904,
+      "id_retention": 0.16071428571428573,
+      "id_retention_assoc": 0.6585365853658537,
+      "reference": false
+    },
+    {
+      "unit": "yolo11m:mot20_carla:2",
+      "model": "yolo11m",
+      "mix": "mot20_carla",
+      "seed": 2,
+      "map50_95": 0.18912904144949705,
+      "map50_95_mot20_split": 0.61436,
+      "oracle_ceiling": 0.23214285714285715,
+      "id_retention": 0.16071428571428573,
+      "id_retention_assoc": 0.6923076923076923,
+      "reference": false
+    },
+    {
+      "unit": "baseline yolo11x",
+      "model": "yolo11x",
+      "mix": "-",
+      "seed": -1,
+      "map50_95": 0.3968829296430065,
+      "map50_95_mot20_split": null,
+      "oracle_ceiling": 0.5714285714285714,
+      "id_retention": 0.34523809523809523,
+      "id_retention_assoc": 0.6041666666666666,
+      "reference": true
+    },
+    {
+      "unit": "Stage-0 GT (visible)",
+      "model": "gtvis",
+      "mix": "-",
+      "seed": -1,
+      "map50_95": 1.0,
+      "map50_95_mot20_split": null,
+      "oracle_ceiling": 0.9702380952380952,
+      "id_retention": 0.7857142857142857,
+      "id_retention_assoc": 0.8098159509202454,
+      "reference": true
+    }
+  ],
+  "dose_response_ceiling": {
+    "n": 14,
+    "slope": 0.9020595187996147,
+    "intercept": 0.09858672168256158,
+    "se": 0.0604101069466355,
+    "ci_lo": 0.7836557091842091,
+    "ci_hi": 1.0204633284150202,
+    "r2": 0.9489301800038794
+  },
+  "dose_response_e2e": {
+    "n": 14,
+    "slope": 0.773805228007186,
+    "intercept": 0.016489881134804846,
+    "se": 0.02169364269493554,
+    "ci_lo": 0.7312856883251123,
+    "ci_hi": 0.8163247676892597,
+    "r2": 0.9906565768118071
+  },
+  "mechanism_supported": true,
+  "best_unit": {
+    "unit": "yolo11s:mot20_carla:2",
+    "id_retention": 0.20238095238095238
+  },
+  "g2b_met": false
+}

@@ -1,0 +1,49 @@
+{
+  "unit": "yolo11s:mot20:1",
+  "model": "yolo11s",
+  "mix": "mot20",
+  "seed": 1,
+  "epochs": 40,
+  "tag": "det_perun_detector_yolo11s_mot20_s1",
+  "det_metrics": {
+    "epoch": 40.0,
+    "time": 2733.41,
+    "train/box_loss": 0.54584,
+    "train/cls_loss": 0.27227,
+    "train/dfl_loss": 0.8537,
+    "metrics/precision(B)": 0.94959,
+    "metrics/recall(B)": 0.9267,
+    "metrics/mAP50(B)": 0.96273,
+    "metrics/mAP50-95(B)": 0.60604,
+    "val/box_loss": 1.25541,
+    "val/cls_loss": 0.48428,
+    "val/dfl_loss": 1.29785,
+    "lr/pg0": 6.95e-05,
+    "lr/pg1": 6.95e-05,
+    "lr/pg2": 6.95e-05
+  },
+  "g2": {
+    "n_segments": 168,
+    "id_retention": 0.16666666666666666,
+    "id_retention_assoc": 0.6666666666666666,
+    "n_assoc_scope": 42,
+    "pre_match_rate": 0.39880952380952384,
+    "oracle_ceiling": 0.25,
+    "center_err_coverage": 0.3630952380952381,
+    "cov_prematched": 0.9104477611940298,
+    "time_err_coverage": 0.39285714285714285,
+    "reemergence_center_err_med": 0.00504746302772173,
+    "reemergence_time_err_med": 23.5
+  },
+  "map50_95": 0.60604,
+  "oracle_ceiling": 0.25,
+  "id_retention": 0.16666666666666666,
+  "id_retention_assoc": 0.6666666666666666,
+  "runtimes": {
+    "train_s": 2767.3595058918,
+    "detect_s": 60.2543249130249,
+    "embed_s": 56.961347579956055,
+    "track_s": 8.727941989898682
+  },
+  "label": "MOT17-disjoint training (perun_detector_v1.md s1) -- NOT dev-optimistic"
+}

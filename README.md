@@ -35,12 +35,13 @@ extracted from GT visibility.
    monotonically (occ-rank1 0.408 → 0.610 over a 12x identity range) while tracker
    association barely moves (0.523 → 0.578) against a seed spread of 0.078 — larger than
    the whole effect. Best paired McNemar p = 0.143 against a required 0.05.
-3. **The detector is the real bottleneck, and it has large measured headroom.** Feeding
-   the frozen tracker perfect (visible) ground-truth boxes and changing nothing else takes
-   the recoverable-occlusion ceiling 0.571 → **0.970** and end-to-end retention 0.345 →
-   **0.786**, clearing the 0.55 target by a wide margin. That is an upper bound, not a
-   promise; a 12-unit run measuring what a *realistic* MOT17-disjoint detector captures is
-   in flight.
+3. **The detector is the bottleneck — confirmed quantitatively, but not yet exploitable.**
+   Perfect (visible) GT boxes take the recoverable-occlusion ceiling 0.571 → **0.970** and
+   end-to-end retention 0.345 → **0.786**. A 12-detector dose-response then measured the
+   relationship directly: ceiling scales with detector mAP at slope **0.90** (95% CI
+   [0.78, 1.02], R² 0.949) — near 1:1. **But** every detector trained on MOT17-disjoint
+   data came out *worse* than the off-the-shelf baseline, so G2b (0.55) is **not met**.
+   The mechanism is proven; the route to exploiting it is not.
 
 ## How it was measured
 
@@ -240,11 +241,42 @@ The `visible only` distinction is load-bearing and was fixed before any number w
 would be a detector that sees through occluders, handing the module the answer it exists
 to infer.
 
-**Stage 1 — dose-response (running).** 12 detectors (2 models x 2 mixes x 3 seeds) trained
-**only on MOT17-disjoint sources** (MOT20 + CARLA), so the dev read is honest by
-construction and consumes no val. Primary analysis is the OLS slope of oracle-ceiling on
-detector mAP with a 95% CI across 14 quality levels; **a flat slope kills the mechanism**
-rather than prompting a retune. Verdict lands here when the array completes.
+**Stage 1 — dose-response: mechanism CONFIRMED, intervention FAILED.** 12 detectors
+(2 models x 2 mixes x 3 seeds) trained **only on MOT17-disjoint sources** (MOT20 + CARLA),
+so the read is honest by construction and consumed no val. 12/12 units, zero failures,
+10.72 H200-h.
+
+![detector dose-response](viz/stage1_dose_response.png)
+
+| | result |
+|---|---|
+| **Primary** `oracle_ceiling ~ mAP50-95` (14 levels) | slope **0.902**, 95% CI **[0.784, 1.021]**, R² 0.949 |
+| Secondary `id_retention ~ mAP50-95` | slope 0.774, CI [0.731, 0.816], R² 0.991 |
+| **Mechanism** (CI excludes zero) | **SUPPORTED** |
+| **G2b** `id_retention >= 0.55` | **NOT MET** — best trained 0.202 |
+
+**The mechanism is confirmed and the intervention still failed, which is the whole
+result.** Detector quality drives the recoverable-occlusion ceiling almost 1:1 — the
+strongest confirmation yet that end-to-end retention is detector-capped. But every one of
+the 12 trained detectors is **worse on MOT17 than the off-the-shelf yolo11x** it was meant
+to beat (mAP 0.189–0.228 vs 0.397; best e2e 0.202 vs the baseline's 0.345).
+
+**Why — the honesty tax.** Training only on MOT17-disjoint data is what made this read
+trustworthy, and it is also what sank it: MOT20 is a far denser, different-domain
+benchmark, and the domain gap cost more than finetuning gained. The trained detectors
+over-fire badly (72k–226k detections vs the baseline's 80k for the same 53,678 GT boxes).
+The design bought honesty at the price of the quality it was trying to demonstrate.
+
+**Caveat that qualifies the headline.** The 12 trained units span only 0.039 of the mAP
+axis; the fit's lever arm comes from the two reference points. Restricted to trained units
+alone the ceiling relationship survives (slope 2.24, CI [0.76, 3.72]) but the end-to-end
+one does **not** — slope 0.44, CI **[−0.38, 1.26]**, which includes zero. The
+pre-registered verdict stands as defined over all 14 levels; this is recorded so it is not
+read as more than it is.
+
+**Open problem, stated plainly:** the actionable next step is a better *MOT17-domain*
+detector, which conflicts with the disjointness that made this read honest. That tension
+is unresolved.
 
 ## Quickstart
 

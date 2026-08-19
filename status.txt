@@ -414,3 +414,30 @@ EARLY SIGNAL (7/12 units): MOT20-trained detectors transfer POORLY to MOT17 --
 oracle_ceiling 0.250-0.333 vs the yolo11x baseline 0.571, e2e 0.167-0.202 vs 0.345.
 Honest disjoint-domain training costs real accuracy. Reportable finding either way.
 
+D61 STAGE 1 COMPLETE (2026-08-19 21:12) — 12/12 units, ZERO failures, 10.72 H200-h
+(nominal est 21.43, worst case at caps 27.00). Cumulative 18.46 h of 40 h; 21.54 h remain.
+
+  PRE-REGISTERED PRIMARY (14 dose-response levels):
+    oracle_ceiling ~ mAP50-95(MOT17)  slope 0.9021  CI [0.7837, 1.0205]  R2 0.949
+    id_retention   ~ mAP50-95(MOT17)  slope 0.7738  CI [0.7313, 0.8163]  R2 0.991
+    MECHANISM SUPPORTED (CI excludes zero) -- detector quality drives the ceiling ~1:1.
+  G2b VERDICT: NOT MET. Best trained e2e 0.2024 vs >=0.55, and 0.1428 BELOW the yolo11x
+    baseline 0.3452. All 12 trained detectors are worse on MOT17 than off-the-shelf
+    (mAP 0.189-0.228 vs 0.397; ceiling 0.232-0.345 vs 0.571).
+  CAUSE -- the honesty tax: MOT17-disjoint training (MOT20+CARLA) is what made the read
+    trustworthy and is also what sank it. Domain gap cost more than finetuning gained;
+    the detectors over-fire (72k-226k dets vs baseline 80k for the same 53,678 GT).
+  SENSITIVITY (reported, qualifies the headline): trained units span only 0.039 of the
+    mAP axis; the lever arm is the 2 reference points. Trained-only: oracle slope 2.2374
+    CI [0.7556, 3.7192] (excludes zero, survives); e2e slope 0.4375 CI [-0.3808, 1.2558]
+    (INCLUDES zero). Pre-registered verdict stands as defined over all 14 levels.
+  OPEN PROBLEM: the next step is a better MOT17-DOMAIN detector, which conflicts with the
+    disjointness that made this honest. Unresolved.
+  viz/stage1_dose_response.png; results/sweep/perun_detector/summary.json.
+
+PROPOSED_val2_manifest.md DRAFTED (D53 d1 permits drafting only; NOT approved, NOT run).
+  My recommendation in the draft: DO NOT RUN IT. There is no candidate worth reading --
+  every Stage-1 detector is worse than the baseline. Carries the mandatory second-look
+  disclosure (D52) and a blank frozen-state block (a manifest naming its checkpoint after
+  the fact is not a pre-registration).
+
