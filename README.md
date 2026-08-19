@@ -3,10 +3,11 @@
 Occlusion-aware multi-object tracking with **hidden-agent state prediction** (P1) and a
 **CARLA occlusion-scenario data engine** for sim2real ablation (P2).
 
-**Status: pre-registered val executed as frozen (D45) — G1 parity PASS on val;
-G2a margin deferred to the PERUN-scale embedder; sweep submission-ready, awaiting HPC
-access.** Dev-half tables below are tuning-time numbers; the val section is the honest
-held-out read. Misses are reported, not tuned away.
+**Status (2026-08-19): pre-registered val executed as frozen (D45); the PERUN-scale
+embedder sweep executed and returned a NULL (D50); the detector bottleneck located and
+quantified (D55).** Dev-half tables are tuning-time numbers; the val section is the honest
+held-out read. Misses are reported, not tuned away — the largest experiment in this repo
+is a negative result, and it is written up as one.
 
 ![CARLA occlusion scenario with per-walker GT visibility](demo/s5_carla_excerpt.gif)
 
@@ -23,6 +24,34 @@ ByteTrack on the standard metrics (HOTA/IDF1 parity gates), and (b) adds a
 hidden-agent module: position estimate while occluded, re-emergence point/time, and
 appearance-gated re-identification on reappearance, evaluated on occlusion segments
 extracted from GT visibility.
+
+## Findings in three lines
+
+1. **Parity holds.** The occlusion module clears every ByteTrack-parity gate on held-out
+   val — HOTA 51.07 / IDF1 60.09 / 298 ID switches, all better than baseline, so the
+   identity gains below cost nothing in ordinary tracking quality.
+2. **Scaling the appearance model does NOT close the gap — a pre-registered null.** 23
+   PERUN units, 3 seeds, criteria frozen before the run: identity count scales *retrieval*
+   monotonically (occ-rank1 0.408 → 0.610 over a 12x identity range) while tracker
+   association barely moves (0.523 → 0.578) against a seed spread of 0.078 — larger than
+   the whole effect. Best paired McNemar p = 0.143 against a required 0.05.
+3. **The detector is the real bottleneck, and it has large measured headroom.** Feeding
+   the frozen tracker perfect (visible) ground-truth boxes and changing nothing else takes
+   the recoverable-occlusion ceiling 0.571 → **0.970** and end-to-end retention 0.345 →
+   **0.786**, clearing the 0.55 target by a wide margin. That is an upper bound, not a
+   promise; a 12-unit run measuring what a *realistic* MOT17-disjoint detector captures is
+   in flight.
+
+## How it was measured
+
+| | |
+|---|---|
+| Benchmark | MOT17 train, half-split — first half dev (all tuning), second half val (held out) |
+| Occlusion segments | extracted from GT visibility (D14): 168 dev / 133 val |
+| Detections | FIXED across every tracker comparison (cached yolo11x), so only the tracker varies |
+| Seeds | ≥3 on every claim at scale; single-seed deltas < 6pt are treated as noise and never claimed |
+| Pre-registration | gates, selection rules and kill criteria frozen in `gates.yaml`, `val_manifest.md`, `perun_sweep_v2.md`, `perun_detector_v1.md` *before* the runs |
+| Discipline | thresholds never move to make a gate pass; every deviation is a dated amendment |
 
 ## Architecture
 
@@ -185,6 +214,38 @@ G2a; that line is closed and reported as a negative result. The remaining headro
 the detector/oracle-ceiling workstream (G2b), pre-registered separately in
 [perun_detector_v1.md](perun_detector_v1.md).
 
+## Detector workstream (G2b) — bottleneck located, dose-response in flight
+
+Pre-registered in [perun_detector_v1.md](perun_detector_v1.md) (frozen D53) *before* any
+run, with the kill criterion written to fire.
+
+**Stage 0 — perfect-detector kill gate.** Substitute ground-truth boxes for detections at
+the top of an otherwise unchanged pipeline. GT is the supremum of any detector, so if it
+cannot reach the 0.55 target, no detector can and the workstream stops. ~0.2 GPU-h to
+falsify a ~21 h commitment.
+
+| detection source | pre-match | oracle ceiling | end-to-end retention |
+|---|---|---|---|
+| yolo11x (current) | 0.762 | 0.571 | 0.345 |
+| **GT, visible only** (detector supremum) | 0.994 | **0.970** | **0.786** |
+| GT, all annotations (*not* achievable) | 1.000 | 1.000 | 0.952 |
+
+**Passed by +0.236.** Detection quality accounts for nearly the whole ceiling gap with the
+tracker untouched. Two caveats kept attached: 0.786 is an *upper bound*, and even at
+perfect detection ~19% of recoverable segments are still lost **inside the tracker** — a
+residual no detector can close.
+
+The `visible only` distinction is load-bearing and was fixed before any number was seen
+(amendment 1): MOT17 annotates fully-occluded targets, 9.3% of all boxes. Feeding those in
+would be a detector that sees through occluders, handing the module the answer it exists
+to infer.
+
+**Stage 1 — dose-response (running).** 12 detectors (2 models x 2 mixes x 3 seeds) trained
+**only on MOT17-disjoint sources** (MOT20 + CARLA), so the dev read is honest by
+construction and consumes no val. Primary analysis is the OLS slope of oracle-ceiling on
+detector mAP with a 95% CI across 14 quality levels; **a flat slope kills the mechanism**
+rather than prompting a retune. Verdict lands here when the array completes.
+
 ## Quickstart
 
 ```powershell
@@ -202,7 +263,8 @@ failure mode to the gate scoreboard.
 
 - `src/omot/` — loaders, MOT IO, detection/embedding caches, tracker, hidden-state module, eval (incl. paired test)
 - `mission.md` / `gates.yaml` / `status.txt` / `context.md` — mission, executable gates, state, full decision log D1–D46
-- `val_manifest.md` / `perun_sweep_v2.md` / `perun_detector_v1.md` — frozen val pre-registration; executed sweep design + post-execution amendments; G2b detector pre-registration (draft)
+- `val_manifest.md` / `perun_sweep_v2.md` / `perun_detector_v1.md` — frozen val pre-registration; executed sweep design + post-execution amendments; frozen G2b detector pre-registration
+- `occlusion_mot_plain.md` — one-page plain-English overview: what was found, what it means, what's next
 - `configs/sweep/` + `scripts/sweep_*.py` — config-driven sweep (identical entrypoint local/SLURM)
 - `demo/` — guided tour + committed CARLA media; `scripts/showcase.py` — wild-clip renderer
 - `runloop.ps1` — autonomous development loop (invokes `claude -p` per iteration against the gates)

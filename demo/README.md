@@ -7,9 +7,8 @@ identity-scaling study -> gate scoreboard. Regenerate everything:
 
 ## S0 -- teaser
 ![teaser](s0_teaser.png)
-One frame from the CARLA driving simulator (scenario `crowd_merge_0017`) with heavy
-inter-walker occlusion, GT visibility burned in (green >=0.5, orange 0.25-0.5,
-red <0.25).
+One CARLA frame (`crowd_merge_0017`) with heavy inter-walker occlusion, GT
+visibility burned in (green >=0.5, orange 0.25-0.5, red <0.25).
 Open: `start demo/s0_teaser.png`
 Caveat: synthetic scene, sets up the problem -- not a tracker result.
 
@@ -46,7 +45,7 @@ qualitative win only; the frozen G2a-paired claim needs PERUN-scale identities (
 Pre-gap | post-gap GT crops for every assoc-scope dev segment under S4, bordered green
 (retained) / red (switched) -- where trained appearance still fails (blur, crowd handoff).
 Untracked (D37 license hygiene: dataset-derived crop grid). Regenerate:
-`.venv/Scripts/python.exe scripts/render_dev_viz.py --base-tag hidden_audit_base --pick-tag hidden_conv_app45 --pick-label "conv app0.45" --pngs-only`
+`.venv/Scripts/python.exe scripts/render_dev_viz.py --pngs-only`
 Caveat: MOT17 GT crops -- never committed to the repo per D37.
 
 ## S5 -- CARLA sim2real feeder
@@ -79,14 +78,12 @@ Caveat: this is why the PERUN sweep needs log-scale identity pools and >=3 seeds
 point, not more local epochs (D33).
 
 ## S8 -- gate scoreboard + next steps
-All G2 rows below: dev half, best config (conv embedder, app gate 0.45).
-
 | gate | status |
 |---|---|
 | G0 repro | frozen PASS |
 | G1 parity | pending |
 | G2 center-err | 0.0064 PASS (<=0.015) |
-| G2 cov_prematched | 0.914 PASS (>=0.90) |
+| G2 cov_prematched | 0.915 PASS (>=0.90) |
 | G2a-floor (assoc) | 0.598-0.604 vs >=0.58 PASS |
 | G2a-paired (McNemar) | p=0.26 n.s. -- pre-PERUN, expected (D29) |
 | G2b (end-to-end) | 0.345 -- pending detector-upgrade arm at scale |
