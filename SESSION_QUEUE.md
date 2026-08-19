@@ -3,7 +3,7 @@
 **Purpose: a fresh session with ZERO prior context can read this file and continue.**
 Updated after every completed item. Last update: 2026-08-19 21:45.
 
-Read alongside: `status.txt` (phase/blockers), `context.md` (decision log D1–D61),
+Read alongside: `status.txt` (phase/blockers), `context.md` (decision log D1–D63),
 `STAGE1_RUNBOOK.md` (how to finish Stage 1 if it ever needs re-running).
 
 ---
