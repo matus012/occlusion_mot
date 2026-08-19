@@ -636,24 +636,37 @@ Identity count scales re-ID retrieval quality monotonically (occ-rank1
 {min(rank1s):.3f} -> {max(rank1s):.3f} over {min(n_ids)} -> {max(n_ids)} identities, both
 seeds); tracker-level assoc retention does NOT resolve at dev scale (seed spread up to
 5.8pt swamps the identity effect at n~97 segments) -- D36.
-Caveat: this is why the PERUN sweep needs log-scale identity pools and >=3 seeds per
-point, not more local epochs (D33).
+Caveat: this local curve motivated the PERUN sweep -- and the sweep then REFUTED the
+tracker-level hypothesis. At full scale (23 units, 3 seeds) retrieval kept climbing
+(occ-rank1 0.408 -> 0.610 over 300 -> 3520 identities) while assoc retention moved only
+0.523 -> 0.578 against a seed spread of 0.078. More identities buy a better embedder,
+not a better tracker (D50). See ../viz/perun_sweep_identity_curve.png.
 
 ## S8 -- gate scoreboard + next steps
 | gate | status |
 |---|---|
 | G0 repro | frozen PASS |
-| G1 parity | pending |
-| G2 center-err | {conv_g2["reemergence_center_err_med"]:.4f} PASS (<=0.015) |
-| G2 cov_prematched | 0.915 PASS (>=0.90) |
-| G2a-floor (assoc) | 0.598-0.604 vs >=0.58 PASS |
-| G2a-paired (McNemar) | p=0.26 n.s. -- pre-PERUN, expected (D29) |
-| G2b (end-to-end) | 0.345 -- pending detector-upgrade arm at scale |
+| G1 parity | **PASS on val** -- HOTA 51.07 / IDF1 60.09 / IDsw 298, all better than baseline (D45) |
+| G2 center-err | {conv_g2["reemergence_center_err_med"]:.4f} PASS (<=0.015); val 0.0090 PASS |
+| G2 cov_prematched | 0.915 dev PASS / 0.907 val PASS (>=0.90) |
+| G2a-floor (assoc) | dev 0.598-0.604 PASS; **val 0.440 MISS**; PERUN 0.578 vs >=0.58 **FAIL** |
+| G2a-paired (McNemar) | **FAIL at scale** -- best p=0.143 over 3 seeds vs <0.05 (D50) |
+| G2b (end-to-end) | 0.345 -- detector confirmed as the binding constraint (D55) |
 | G3 quality | PASS |
 | G4 CARLA feeder | PASS |
 
-Next: PERUN 4-arm ablation (arms A/B/C/D, log-scale identity pools, >=3 seeds -- D33/D37
-sweep design), D18 canonical val run per `val_manifest.md` (blocked on user approval).
+The G2a row is the honest headline: the appearance-scaling route was tested properly at
+PERUN scale and **failed both limbs**. It is reported as a null, not tuned away (D50/D51).
+
+Stage 0 then located the real bottleneck: feeding the frozen tracker perfect (visible) GT
+boxes and changing nothing else lifts the recoverable-occlusion ceiling 0.571 -> 0.970 and
+end-to-end retention 0.345 -> 0.786 (D55, ../viz/stage0_kill_gate.png). Two caveats travel
+with it: 0.786 is an upper bound, not a promise, and ~19% of recoverable segments are
+still lost INSIDE the tracker -- a residual no detector can close.
+
+Next: Stage-1 detector dose-response, 12 units trained only on MOT17-disjoint sources so
+the dev read is honest by construction (perun_detector_v1.md, frozen D53). Val is CLOSED
+for that workstream (D53 decision 1).
 
 Regenerate all clips/images: `.venv/Scripts/python.exe scripts/render_demo.py --all`
 """
