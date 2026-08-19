@@ -272,3 +272,42 @@ Stage 0 answers exactly one question — whether a perfect detector can reach G2
 frozen tracker config. It is authorized to **stop** the workstream (section 2 kill
 criterion). It is **not** authorized to start Stage 1; only decision 2 above can do that.
 
+---
+
+## Amendment 1 (D54, 2026-08-19 — specification gap in section 2, resolved before the run)
+
+Section 2 specifies the Stage-0 arm as "MOT17 dev-half GT boxes as the detection stream"
+and justifies the kill criterion with "GT boxes are the supremum of any detector's
+output". **Those are two different sets, and the difference is material**: MOT17 GT
+annotates targets that are *fully occluded* (visibility 0). On this data that is
+**10,485 boxes, 9.3% of all consider-flagged pedestrian annotations** (112,297 total vs
+101,812 with visibility > 0).
+
+A detection stream that includes visibility-0 rows is not a detector — it sees through
+occluders, which is precisely the capability whose absence creates the occlusion problem
+in the first place. Feeding it to the tracker would hand the hidden-state module the
+answer it is supposed to infer.
+
+**Resolution, fixed before the run and before any number was seen:**
+
+| arm | contents | role |
+|---|---|---|
+| `gtvis` | consider-flagged pedestrians with **visibility > 0** | **PRIMARY — drives the section 2 kill criterion** |
+| `gtall` | consider-flagged pedestrians, any visibility | informative upper-**upper** bound, reported alongside; never gate-bearing |
+
+`gtvis` is the faithful reading of section 2's own stated rationale: it is the supremum of
+what a *detector* can emit. `gtall` is reported because the gap between the two is itself
+the interesting quantity — it measures how much of the ceiling is unreachable by any
+detector, however good.
+
+Why the choice is not free: using `gtall` for the kill would be **too permissive**. It
+could clear 0.55 in a world where no real detector ever could, and the workstream would
+then spend ~21 h chasing an unreachable ceiling — exactly the outcome the kill gate exists
+to prevent. The stricter arm is therefore the correct one, even though it makes the gate
+more likely to fire against the workstream this document proposes.
+
+No threshold, gate, arm, seed or budget changes. This amendment records an
+under-specification in section 2 and the reading adopted for it, with the numbers that
+make the distinction concrete. Implementation: `scripts/cache_gt_detections.py`
+(6 synthetic-data tests, including a containment guard asserting `gtall` is a superset of
+`gtvis`, so the two arms provably bracket the truth).

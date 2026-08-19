@@ -774,3 +774,19 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   (4) **MOT20 incremental transfer approved**, launched in background parallel to Stage 0.
   Section 7 rewritten from open questions to frozen decisions; doc title and status header
   updated from DRAFT to FROZEN.
+- **D54 (2026-08-19) Stage-0 specification gap resolved BEFORE the run: `gtvis` drives the
+  kill, `gtall` is reported alongside.** perun_detector_v1.md section 2 said "GT boxes as
+  the detection stream" but justified the kill with "the supremum of any DETECTOR's
+  output". MOT17 GT annotates fully-occluded targets (visibility 0) — **10,485 boxes, 9.3%
+  of all consider-flagged pedestrian annotations** (112,297 vs 101,812 with vis > 0). A
+  stream including them is not a detector; it sees through occluders and would hand the
+  hidden-state module the very answer it exists to infer. Adopted, and fixed before any
+  number was seen: **`gtvis` (vis > 0) is PRIMARY and gate-bearing**; `gtall` is an
+  upper-upper bound, reported but never gate-bearing. Deliberately the stricter choice —
+  `gtall` would be too permissive and could clear 0.55 in a world where no real detector
+  could, sending ~21 h after an unreachable ceiling, which is the exact failure the kill
+  gate exists to prevent. Logged as perun_detector_v1.md amendment 1 rather than chosen
+  silently, since the document was frozen at D53. Implementation
+  `scripts/cache_gt_detections.py`, byte-compatible with the ordinary detection cache so
+  no downstream consumer can tell a GT cache from a detector cache; 6 synthetic tests
+  including a containment guard proving gtall superset gtvis.
