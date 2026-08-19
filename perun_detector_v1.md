@@ -1,6 +1,8 @@
-# perun_detector_v1 — G2b detector workstream, pre-registration (DRAFT for review)
+# perun_detector_v1 — G2b detector workstream, pre-registration (FROZEN D53)
 
-**Status: DRAFT. Nothing here has been run. No submission until user approval (D51).**
+**Status: FROZEN as of 2026-08-19 (D53). Section 7 records the user's four decisions;
+they are binding. Stage 0 is authorized to run. Stage 1 is NOT — it is blocked on the
+Stage-0 verdict plus explicit user go.**
 
 Authorized by D51 (user decision: accept the embedder null, pursue G2b). This document is
 written to the same standard as `perun_sweep_v2.md`: selection rules, gate semantics and
@@ -237,14 +239,36 @@ If you prefer that G2b never touch val again, **the design above still stands en
 it simply terminates at the dev dose-response, reported as such. Nothing in Stages 0-1
 depends on a val event.
 
-## 7. Open questions for review
+## 7. Frozen decisions (D53, 2026-08-19 — user; binding)
 
-1. **Val:** approve the staged protocol in section 6, or rule val closed permanently? The
-   workstream is viable either way.
-2. **Stage 0 first:** confirm the kill gate runs and reports alone, before Stage 1 is
-   submitted. Recommended — ~0.2 h against a ~21 h commitment.
-3. **Grid width:** 2 models x 2 mixes x 3 seeds is sized for a *dose-response*, not a
-   pairwise winner. If you want a wider quality range instead of 3 seeds, say so — but
-   D36/D50 make 3 seeds close to non-negotiable for any retention claim.
-4. **MOT20 staging:** confirm the ~53 min incremental transfer rather than a bundle
-   rebuild.
+These four were the open questions in the draft. They are now decided and this section is
+the authority on them.
+
+1. **VAL IS CLOSED.** Stages 0 and 1 are **dev-only**. No val event is authorized by this
+   document and none may be run under it. A positive Stage-1 slope earns exactly one
+   thing: the right to **draft** a second frozen val manifest carrying the second-look
+   disclosure of section 6, for **separate** user approval. Drafting is not approval, and
+   approval of this document is not approval of that one. Nothing else about val is
+   licensed by any Stage-1 outcome.
+
+2. **STAGE 0 RUNS AND REPORTS ALONE.** The perfect-detector kill gate is submitted by
+   itself, its verdict is reported to the user, and **Stage 1 submission is blocked on
+   both that verdict AND an explicit user go**. No Stage-1 unit may be queued in
+   anticipation of a favourable Stage-0 result, and the two stages may not be chained with
+   a SLURM dependency — the gate is a human decision point, not a scheduler edge.
+
+3. **GRID AS DRAFTED — NO WIDENING.** 2 models x 2 mixes x 3 seeds = 12 trained units,
+   plus the yolo11x baseline and arm GT for 14 dose-response levels. No additional model,
+   mix, seed or pool may be added without a new dated amendment. The 10.6 h of headroom
+   under the ceiling is **not** an invitation to widen the grid; it is margin.
+
+4. **MOT20 TRANSFER APPROVED** as an incremental payload (3.2 GB / 8,931 frames, ~53 min
+   at the measured uplink), launched in background parallel to Stage 0 rather than
+   blocking it.
+
+### What Stage 0 may and may not conclude
+
+Stage 0 answers exactly one question — whether a perfect detector can reach G2b at the
+frozen tracker config. It is authorized to **stop** the workstream (section 2 kill
+criterion). It is **not** authorized to start Stage 1; only decision 2 above can do that.
+

@@ -762,3 +762,15 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   the `dev-optimistic` label (D43 amd 3) that forced the previous detector arm to reach for
   val in the first place. Stages 0-1 are entirely dev-side; a val event is proposed only if
   the dev dose-response clears, and is the user's call either way.
+- **D53 (2026-08-19) perun_detector_v1.md FROZEN; Stage 0 authorized, Stage 1 blocked
+  [user decisions on all four open questions].**
+  (1) **VAL CLOSED.** Stages 0-1 are dev-only; no val event is authorized under this
+  document. A positive Stage-1 slope earns only the right to DRAFT a second frozen val
+  manifest with second-look disclosure, for separate approval — drafting is not approval.
+  (2) **Stage 0 runs and reports ALONE**; Stage 1 is blocked on its verdict AND an explicit
+  user go. Explicitly forbidden: queueing Stage-1 units in anticipation, or chaining the
+  stages with a SLURM dependency — the gate is a human decision point, not a scheduler edge.
+  (3) **Grid as drafted, no widening**; the 10.6 h headroom is margin, not an invitation.
+  (4) **MOT20 incremental transfer approved**, launched in background parallel to Stage 0.
+  Section 7 rewritten from open questions to frozen decisions; doc title and status header
+  updated from DRAFT to FROZEN.
