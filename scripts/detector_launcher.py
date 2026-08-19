@@ -30,7 +30,9 @@ from detector_unit import (  # noqa: E402
     parse_unit,
     result_path,
     run_unit,
+    unit_tag,
 )
+from eval_detector_map import evaluate as eval_map  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
 logger = logging.getLogger("detector_launcher")
@@ -199,45 +201,100 @@ def ols_with_ci(xs: list[float], ys: list[float]) -> dict[str, float]:
             "ci_lo": slope - 1.96 * se, "ci_hi": slope + 1.96 * se, "r2": r2}
 
 
-def aggregate(cfg: dict[str, Any], results_dir: Path) -> dict[str, Any]:
+def _mot17_map(tag: str, cache_dir: Path) -> float | None:
+    """mAP50-95 on MOT17 dev-half, cached to results/detmap_<tag>.json.
+
+    D60: the dose-response x-axis must be measured on MOT17, per perun_detector_v1.md
+    section 3. ultralytics' results.csv reports validation on the TRAINING mix's own split
+    (MOT20), which is a different dataset from the y-axis and showed 0.005 of spread
+    across units -- no usable x-variance.
+    """
+    dest = ROOT / "results" / f"detmap_{tag}.json"
+    if dest.exists():
+        return json.loads(dest.read_text(encoding="utf-8"))["mAP50_95_mot17dev"]
+    try:
+        res = eval_map(tag, ROOT / "data" / "MOT17", cache_dir)
+    except FileNotFoundError:
+        logger.warning("no cached detections for %s -- excluded from the regression", tag)
+        return None
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(res, indent=2), encoding="utf-8")
+    return res["mAP50_95_mot17dev"]
+
+
+def _reference_points(cache_dir: Path) -> list[dict[str, Any]]:
+    """The two free dose-response levels: the yolo11x baseline and Stage-0 GT.
+
+    Read from disk, never hardcoded, so they cannot drift from the runs that produced them.
+    """
+    out = []
+    for tag, label in (("yolo11x", "baseline yolo11x"), ("gtvis", "Stage-0 GT (visible)")):
+        hidden = ROOT / "results" / f"hidden_dev_stage0_{tag}.json"
+        if not hidden.exists():
+            logger.warning("reference point %s missing (%s) -- skipped", tag, hidden)
+            continue
+        g2 = json.loads(hidden.read_text(encoding="utf-8"))["g2"]
+        m = _mot17_map(tag, cache_dir)
+        if m is None:
+            continue
+        out.append({"unit": label, "model": tag, "mix": "-", "seed": -1, "map50_95": m,
+                    "oracle_ceiling": g2["oracle_ceiling"], "id_retention": g2["id_retention"],
+                    "id_retention_assoc": g2["id_retention_assoc"], "reference": True})
+    return out
+
+
+def aggregate(cfg: dict[str, Any], results_dir: Path,
+              cache_dir: Path | None = None) -> dict[str, Any]:
+    cache_dir = cache_dir or (ROOT / "data" / "cache" / "detections")
     name = cfg["name"]
     units = []
     for u in enumerate_units(cfg):
         model, mix, seed = parse_unit(u)
         p = result_path(results_dir, name, model, mix, seed)
-        if p.exists():
-            units.append(json.loads(p.read_text(encoding="utf-8")))
+        if not p.exists():
+            continue
+        d = json.loads(p.read_text(encoding="utf-8"))
+        d["map50_95_mot20_split"] = d.get("map50_95")   # keep the old number, relabelled
+        d["map50_95"] = _mot17_map(unit_tag(cfg, model, mix, seed), cache_dir)
+        d["reference"] = False
+        units.append(d)
     logger.info("aggregating %d/%d units", len(units), len(enumerate_units(cfg)))
 
-    xs = [u["map50_95"] for u in units if u.get("map50_95") is not None]
-    ys_ceiling = [u["oracle_ceiling"] for u in units if u.get("map50_95") is not None]
-    ys_e2e = [u["id_retention"] for u in units if u.get("map50_95") is not None]
+    points = units + _reference_points(cache_dir)
+    usable = [p for p in points if p.get("map50_95") is not None]
+    xs = [p["map50_95"] for p in usable]
+    ys_ceiling = [p["oracle_ceiling"] for p in usable]
+    ys_e2e = [p["id_retention"] for p in usable]
 
     out: dict[str, Any] = {
         "name": name,
         "n_units": len(units),
+        "n_regression_points": len(usable),
+        "x_axis": "mAP50-95 measured on MOT17 dev-half (D60)",
         "units": [
-            {k: u[k] for k in ("unit", "model", "mix", "seed", "map50_95",
-                               "oracle_ceiling", "id_retention", "id_retention_assoc")}
-            for u in units
+            {k: p.get(k) for k in ("unit", "model", "mix", "seed", "map50_95",
+                                   "map50_95_mot20_split", "oracle_ceiling",
+                                   "id_retention", "id_retention_assoc", "reference")}
+            for p in points
         ],
     }
-    if len(xs) >= 3:
+    if len(usable) >= 3:
         out["dose_response_ceiling"] = ols_with_ci(xs, ys_ceiling)
         out["dose_response_e2e"] = ols_with_ci(xs, ys_e2e)
         ci = out["dose_response_ceiling"]
         out["mechanism_supported"] = bool(ci["ci_lo"] > 0)
-        logger.info("PRIMARY oracle_ceiling ~ mAP50-95: slope=%.4f CI=[%.4f, %.4f] R2=%.3f",
+        logger.info("PRIMARY oracle_ceiling ~ mAP50-95(MOT17): slope=%.4f CI=[%.4f, %.4f] R2=%.3f",
                     ci["slope"], ci["ci_lo"], ci["ci_hi"], ci["r2"])
         logger.info("mechanism supported (CI excludes zero): %s", out["mechanism_supported"])
     else:
-        logger.warning("only %d usable points -- no regression written", len(xs))
+        logger.warning("only %d usable points -- no regression written", len(usable))
 
-    if units:
-        best = max(units, key=lambda u: u["id_retention"])
+    trained = [p for p in points if not p.get("reference")]
+    if trained:
+        best = max(trained, key=lambda p: p["id_retention"])
         out["best_unit"] = {"unit": best["unit"], "id_retention": best["id_retention"]}
         out["g2b_met"] = bool(best["id_retention"] >= 0.55)
-        logger.info("best e2e id_retention %.4f (%s) -> G2b >=0.55: %s",
+        logger.info("best TRAINED e2e id_retention %.4f (%s) -> G2b >=0.55: %s",
                     best["id_retention"], best["unit"], out["g2b_met"])
 
     dest = results_dir / name / "summary.json"

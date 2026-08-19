@@ -853,3 +853,21 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   re-submission (the D57 recovery path, and the resume rule generally) can be refused
   purely because earlier units are still running. Handled with a retrying submitter rather
   than by widening anything; the `%8` cap and every wall limit are untouched.
+- **D60 (2026-08-19) Stage-1 x-axis defect caught on the first four units — it would have
+  manufactured a null.** perun_detector_v1.md s3 fixes the dose-response x-axis as
+  mAP50-95 **measured on MOT17 dev-half**; my implementation read it from ultralytics'
+  `results.csv`, which validates on the TRAINING mix's own split (MOT20). Two different
+  datasets on the two axes. Symptom: across the first four units the results.csv mAP
+  spanned **0.005** (0.6011-0.6060) while oracle_ceiling spanned 0.083 — regressing on a
+  near-constant x gives a huge CI, which the pre-registered kill criterion would have read
+  as "CI includes zero -> mechanism not established". The bug's failure mode was a FALSE
+  NULL, which is exactly the direction a careless reading would have accepted as a result.
+  Fixed by `scripts/eval_detector_map.py`, computing mAP on MOT17 from the same cached
+  detections the tracker consumes. Instrument-proved before use: `gtvis` (built from GT)
+  scores exactly mAP50-95 = 1.0000, `yolo11x` scores 0.3969. 10 unit tests. The old number
+  is retained as `map50_95_mot20_split`, not discarded. No gate, threshold or grid change.
+  **Second observation, independent of the bug:** the MOT20-trained detectors transfer
+  POORLY to MOT17 — oracle_ceiling 0.250-0.333 against the yolo11x baseline's 0.571, and
+  e2e 0.167-0.202 against 0.345. Honest training on a disjoint domain costs real accuracy.
+  That is itself a finding about the section-1 design and must be reported alongside
+  whatever the slope says.

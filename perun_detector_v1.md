@@ -311,3 +311,42 @@ under-specification in section 2 and the reading adopted for it, with the number
 make the distinction concrete. Implementation: `scripts/cache_gt_detections.py`
 (6 synthetic-data tests, including a containment guard asserting `gtall` is a superset of
 `gtvis`, so the two arms provably bracket the truth).
+
+## Amendment 2 (D60, 2026-08-19 — implementation defect in the section 3 x-axis, caught
+## on the first four units and corrected before any verdict was formed)
+
+Section 3 fixes the dose-response x-axis as *"detector `mAP50-95` measured on MOT17
+dev-half"*. The first Stage-1 implementation did not do that: it read `mAP50-95` straight
+out of ultralytics' `results.csv`, which reports validation on the **training mix's own
+held-out split** — MOT20 frames. The x-axis and the y-axis were therefore measured on two
+different datasets.
+
+It surfaced as a symptom rather than by inspection. Across the first four completed units:
+
+| quantity | measured on | spread across units |
+|---|---|---|
+| `mAP50-95` from `results.csv` | MOT20 val split | 0.6011 – 0.6060 (**0.005**) |
+| `oracle_ceiling` | MOT17 dev-half | 0.250 – 0.333 (0.083) |
+
+Regressing the second on the first would have produced a slope with essentially no
+x-variance behind it: a meaningless estimate with a huge CI, which the pre-registered kill
+criterion would then have read as "CI includes zero → mechanism not established". **The
+defect would have manufactured a null.**
+
+**Correction:** `scripts/eval_detector_map.py` computes mAP50-95 on MOT17 dev-half from
+the *same cached detections the tracker consumes*, so both axes describe one detector on
+one dataset. No re-training was required — detections are already cached per detector tag.
+
+Instrument proof, before any Stage-1 number was read through it:
+
+| detection source | mAP50 | mAP50-95 | expected |
+|---|---|---|---|
+| `gtvis` (built *from* MOT17 GT) | **1.0000** | **1.0000** | exactly 1.0 by construction |
+| `yolo11x` (baseline) | 0.6827 | 0.3969 | plausible off-the-shelf value |
+
+The GT arm scoring exactly 1.0 is the check that matters: it proves the matcher, the IoU
+sweep and the GT population agree.
+
+This changes no threshold, gate, arm, seed or budget. It repairs an implementation that
+did not match what section 3 already specified. The superseded MOT20-split number is
+retained per unit as `map50_95_mot20_split` rather than discarded.
