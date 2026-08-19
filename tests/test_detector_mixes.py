@@ -125,3 +125,27 @@ def test_mix_family_mapping_is_total():
         "mot17dev": "mot17dev", "mot17dev_carla": "mot17dev",
         "mot20": "mot20", "mot20_carla": "mot20",
     }
+
+
+def test_link_or_copy_tolerates_a_peer_that_already_linked(tmp_path):
+    """D57 regression: array tasks sharing a mix prep the same dir concurrently.
+
+    os.link raises FileExistsError, and the copy2 fallback then raises SameFileError on
+    the inode the peer already linked. That killed 10 of 12 Stage-1 tasks (array 77354).
+    """
+    src = tmp_path / "src.jpg"
+    src.write_bytes(b"x")
+    dst = tmp_path / "out" / "dst.jpg"
+    fd._link_or_copy(src, dst)
+    fd._link_or_copy(src, dst)  # peer repeats it -- must be a no-op, not an exception
+    assert dst.read_bytes() == b"x"
+
+
+def test_prep_lock_is_exclusive_and_released(tmp_path):
+    d = tmp_path / "ds"
+    with fd._PrepLock(d, timeout_s=1.0) as a:
+        assert a.acquired
+        assert a.path.exists()
+        with fd._PrepLock(d, timeout_s=1.0) as b:
+            assert not b.acquired, "second holder must not claim the lock"
+    assert not a.path.exists(), "lock must be released on exit"

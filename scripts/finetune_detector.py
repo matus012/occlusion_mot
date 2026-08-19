@@ -31,6 +31,7 @@ import os
 import random
 import shutil
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -146,11 +147,62 @@ def _yolo_label_lines(
 
 
 def _link_or_copy(src: Path, dst: Path) -> None:
+    """Hardlink src->dst, tolerating a peer that already created it (D57).
+
+    Array tasks sharing a mix prep the same dataset dir concurrently. Without the
+    FileExistsError branch, os.link raises, the copy2 fallback then raises
+    SameFileError on the inode the peer already linked, and the whole unit dies.
+    """
     dst.parent.mkdir(parents=True, exist_ok=True)
+    if dst.exists():
+        return
     try:
         os.link(src, dst)
+    except FileExistsError:
+        return
     except OSError:
-        shutil.copy2(src, dst)
+        try:
+            shutil.copy2(src, dst)
+        except shutil.SameFileError:
+            return
+
+
+class _PrepLock:
+    """Atomic inter-process lock around dataset prep (D57).
+
+    `prepare_dataset` rmtree()s a dataset whose frame counts do not match. Under a
+    SLURM array that is actively dangerous: a task starting while a PEER is still
+    materialising the same dir sees a partial build, judges it stale, and deletes it
+    out from under the running peer. mkdir is atomic, so it serialises prep; a waiter
+    re-checks completeness afterwards instead of rebuilding.
+    """
+
+    def __init__(self, out_dir: Path, timeout_s: float = 5400.0) -> None:
+        self.path = out_dir.with_suffix(out_dir.suffix + ".preplock")
+        self.timeout_s = timeout_s
+        self.acquired = False
+
+    def __enter__(self) -> _PrepLock:
+        deadline = time.time() + self.timeout_s
+        while True:
+            try:
+                self.path.mkdir(parents=True)
+                self.acquired = True
+                return self
+            except FileExistsError:
+                if time.time() > deadline:
+                    logger.warning("prep lock %s held past %.0fs -- proceeding",
+                                   self.path, self.timeout_s)
+                    return self
+                logger.info("waiting on peer building this dataset (%s)", self.path)
+                time.sleep(15.0)
+
+    def __exit__(self, *exc: object) -> None:
+        if self.acquired:
+            try:
+                self.path.rmdir()
+            except OSError:
+                pass
 
 
 def _expected_counts(
@@ -225,6 +277,21 @@ def prepare_dataset(
 
     n_train_expected, n_val_expected = _expected_counts(seqs, val_frac, mix, carla_seqs)
 
+    # D57: serialise prep across array tasks sharing this mix. Without it, a task that
+    # arrives mid-build sees a partial dir, judges it stale, and rmtree()s it under the
+    # peer that is still writing.
+    with _PrepLock(out_dir):
+        return _prepare_dataset_locked(
+            seqs, carla_seqs, out_dir, min_vis, val_frac, mix, family,
+            n_train_expected, n_val_expected,
+        )
+
+
+def _prepare_dataset_locked(
+    seqs: list[MOTSequence], carla_seqs: list[MOTSequence], out_dir: Path,
+    min_vis: float, val_frac: float, mix: str, family: str,
+    n_train_expected: int, n_val_expected: int,
+) -> tuple[Path, dict[str, int]]:
     dataset_yaml = out_dir / "dataset.yaml"
     img_train, img_val = out_dir / "images" / "train", out_dir / "images" / "val"
     lbl_train, lbl_val = out_dir / "labels" / "train", out_dir / "labels" / "val"
