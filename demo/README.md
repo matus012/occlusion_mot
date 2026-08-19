@@ -5,6 +5,21 @@ Guided tour S0-S8: the failure mode -> geometric hidden-state -> appearance re-I
 identity-scaling study -> gate scoreboard. Regenerate everything:
 `.venv/Scripts/python.exe scripts/render_demo.py --all`
 
+## Watch this one first -- `clips/hero.mp4` (~30 s)
+
+**If you only have half a minute, this is the clip.** ByteTrack baseline on the left, the
+full stack on the right: same video, same cached detections, same occlusion. Watch the ID
+number above the tracked person survive the gap on the right and reset on the left.
+Two segments from two different sequences, so it is not one lucky pick.
+
+Open: `start demo/clips/hero.mp4`
+
+Stack shown: yolo11x cached detections + geometric hidden-state + trained conv embedder
+(app-gate 0.45) -- the exact configuration behind the dev and val tables in the top-level
+README. The Stage-1 PERUN detectors are deliberately NOT used here: every one of them
+scored below this baseline detector on MOT17 (context.md D61), so showing one would
+misrepresent the result.
+
 ## S0 -- teaser
 ![teaser](s0_teaser.png)
 One CARLA frame (`crowd_merge_0017`) with heavy inter-walker occlusion, GT

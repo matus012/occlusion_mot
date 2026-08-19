@@ -101,7 +101,11 @@ def test_pick_segments_selects_expected_patterns_and_hero_dedicated() -> None:
 
     assert picks["s1_vs_s2"].key == "SEQ-A:t1:f10-45"
     assert picks["s3_vs_s4"].key == "SEQ-B:t2:f10-45"
-    assert picks["hero"].key == "SEQ-B:t2:f10-45"  # dedicated hero candidate, not the fallback
+    # D64: hero is now a LIST of side-by-side segments (baseline vs full stack), so the
+    # clip cannot be dismissed as one lucky pick. Only SEQ-B qualifies here, so it is a
+    # single-element list -- and it must be the dedicated candidate, not the fallback.
+    assert isinstance(picks["hero"], list)
+    assert [h.key for h in picks["hero"]] == ["SEQ-B:t2:f10-45"]
 
 
 def test_pick_segments_hero_falls_back_to_s3_vs_s4_when_no_dedicated_candidate() -> None:
@@ -127,7 +131,8 @@ def test_pick_segments_hero_falls_back_to_s3_vs_s4_when_no_dedicated_candidate()
                       "in45": _merge(in45_td, in459), "conv": _merge(conv_td, conv9)})
 
     picks = rd.pick_segments({"SEQ-C": ctx})
-    assert picks["hero"].key == picks["s3_vs_s4"].key
+    assert isinstance(picks["hero"], list)
+    assert [h.key for h in picks["hero"]] == [picks["s3_vs_s4"].key]
 
 
 def _merge(a: object, b: object) -> object:
@@ -167,3 +172,25 @@ def test_pick_crowded_window_finds_peak_within_dev_bound() -> None:
 def test_title_card_returns_requested_size() -> None:
     card = rd._title_card(["hello", "world"], (200, 100))
     assert card.shape == (100, 200, 3)
+
+
+def test_hero_prefers_two_segments_from_different_sequences() -> None:
+    """D64: the hero reel takes a second segment from a DIFFERENT sequence when one
+    qualifies, so the claim rests on more than a single clip."""
+    def _hero_shaped(seq: str, tid: int, height: float):
+        seg = _seg(track_id=tid, lv_frame=10, re_frame=45, height=height)
+        base = _td([(10, tid, 0, 0, 20, height)])                                  # POST_NONE
+        geom = _td([(10, tid, 0, 0, 20, height), (45, tid, 5, 0, 20, height)])
+        in45 = _td([(10, tid, 0, 0, 20, height), (45, tid + 50, 5, 0, 20, height)])  # SWITCHED
+        conv = _td([(10, tid, 0, 0, 20, height), (45, tid, 5, 0, 20, height)])       # RETAINED
+        return _make_ctx(seq, [seg], {"base": base, "geom": geom,
+                                      "in45": in45, "conv": conv})
+
+    ctxs = {"SEQ-A": _hero_shaped("SEQ-A", 1, 90.0),
+            "SEQ-B": _hero_shaped("SEQ-B", 2, 70.0)}
+    picks = rd.pick_segments(ctxs)
+
+    hero = picks["hero"]
+    assert len(hero) == 2, hero
+    assert {h.seq_name for h in hero} == {"SEQ-A", "SEQ-B"}, "must span two sequences"
+    assert hero[0].seq_name == "SEQ-A", "highest-scoring segment leads the reel"

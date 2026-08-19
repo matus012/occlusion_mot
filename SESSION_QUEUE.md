@@ -1,7 +1,7 @@
 # SESSION_QUEUE — resumable state for occlusion-mot
 
 **Purpose: a fresh session with ZERO prior context can read this file and continue.**
-Updated after every completed item. Last update: 2026-08-19 21:45.
+Updated after every completed item. Last update: 2026-08-19 22:40 — SESSION COMPLETE.
 
 Read alongside: `status.txt` (phase/blockers), `context.md` (decision log D1–D63),
 `STAGE1_RUNBOOK.md` (how to finish Stage 1 if it ever needs re-running).
@@ -35,7 +35,7 @@ Read alongside: `status.txt` (phase/blockers), `context.md` (decision log D1–D
 | Grid frozen as drafted, no widening | 2026-08-19 | D53 d3 |
 | MOT20 incremental transfer approved | 2026-08-19 | D53 d4 (done) |
 | **PROPOSED_val2_manifest.md REJECTED — do not run val** | 2026-08-19 | draft stays on disk, marked rejected |
-| **Stage-1 detector demo re-render SKIPPED** | 2026-08-19 | every trained detector is worse than baseline; nothing to show |
+| **Stage-1 TRAINED-DETECTOR demo variant skipped** | 2026-08-19 | corrected scope: only the Stage-1-detector variant is dropped, NOT the demo item. Demo ships on the current best stack (yolo11x dets + hidden-state + conv embedder). |
 
 ---
 
@@ -51,14 +51,25 @@ Array 77354/77367/77386, 12/12 units, zero failures, 10.72 H200-h.
 - Acceptance: 12 result JSONs + summary.json committed locally ✅; slope/CI/table/budget
   reported ✅.
 
-### 2. DEMO REBUILD — ✅ DONE (second pass cancelled by decision)
-- Full suite re-rendered (`render_demo.py --all`) incl. `demo/clips/hero.mp4` ✅
-- Wild-clip showcase re-rendered against `reid_conv` (10 clips + contact sheet) ✅
-- `demo/README.md` S7/S8 rewritten to the post-sweep reality ✅
-- **Stage-1 detector re-render: SKIPPED by user decision** — no trained detector beats the
-  baseline, so a "best detector" hero clip would misrepresent the result.
-- Acceptance: clips regenerate from a clean checkout; license rules held (nothing
-  dataset-derived committed; renders gitignored) ✅
+### 2. DEMO REBUILD — ✅ DONE
+Scope correction 2026-08-19 22:05: only the *Stage-1 trained-detector variant* is dropped.
+The demo item itself ships, on the **current best stack** — yolo11x cached detections +
+geometric hidden-state + trained conv embedder @ app-gate 0.45, the exact config behind
+the dev/val tables.
+- **HERO CLIP REBUILT (D64)** ✅ — `render_hero` rewritten from a 4-stage montage with
+  title cards + CARLA tail (~63 s) into what was actually asked for: **baseline vs full
+  stack side by side, persistent ID labels, ~31 s**, two segments from two different
+  sequences (MOT17-09, MOT17-04) so it cannot be read as one lucky pick. 2 s opener,
+  3 s outro carrying the headline numbers. `render_pair_clip` gained a `canvas_size`
+  parameter so multi-segment concat cannot fail on a size change.
+- `demo/README.md` now opens with a **"Watch this one first"** hero section — the tour
+  previously never mentioned the hero clip at all.
+- Full demo suite re-rendered clean (13 artifacts) ✅; wild-clip showcase re-rendered
+  against `reid_conv` (11 renders + contact sheet) ✅
+- Hero tests updated to the new list contract, plus a new guard that the reel spans two
+  sequences ✅
+- Acceptance: clips regenerate from a clean checkout ✅; hero reads in <30 s without the
+  README ✅; license rules held — `hero.mp4` holds MOT17 pixels, stays gitignored ✅
 
 ### 3. README FINAL PASS — ✅ DONE
 Hero GIF → problem → three-line honest findings → how-it-was-measured table → detail,
@@ -83,10 +94,19 @@ caveats. Every honesty label retained.
 
 ---
 
-## Nothing is running
+## SESSION COMPLETE — nothing is running
 
-No SLURM jobs queued, no background renders, no monitors armed. The only open item is
-item 4, which is blocked on your approval. A successor session can start cold.
+No SLURM jobs, no background renders, no monitors armed. Working tree clean, all gates
+green (ruff + full pytest).
+
+**The only open item is #4 (repo cleanup), which waits on your line-item approval.**
+A successor session can start cold from this file.
+
+### If you approve DELETION_PROPOSAL.md later
+Execution plan is in that file's "How I would execute" section: create `attic/` +
+`attic/MANIFEST.md`, move (never delete) approved Group B/C items, hard-delete only the
+Group A gitignored build artifacts you explicitly mark, run the full suite after EACH
+group, commit per group referencing the line items.
 
 ---
 

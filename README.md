@@ -15,6 +15,12 @@ is a negative result, and it is written up as one.
 <0.25) — the P2 data engine that labels occlusion for free. Full clip:
 `demo/s5_carla.mp4`.*
 
+> **Want the 30-second version?** `demo/clips/hero.mp4` — ByteTrack baseline on the left,
+> this project on the right, same video and same detections, through two real MOT17
+> occlusions. Watch the ID number survive the gap on the right and reset on the left.
+> (Not committed: it contains MOT17 pixels. Regenerate with
+> `python scripts/render_demo.py --only hero`.)
+
 ## Problem
 
 Trackers lose people behind people. On MOT17, ByteTrack retains the identity through

@@ -927,3 +927,23 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   detections), which is also the configuration every headline number in the README refers
   to. Session state consolidated into `SESSION_QUEUE.md` (D62) so a zero-context session
   can resume.
+- **D64 (2026-08-19) Demo scope corrected: hero clip rebuilt as the side-by-side it was
+  always meant to be.** I had over-applied D63 and treated the whole demo item as
+  cancelled; user clarified that only the *Stage-1 trained-detector variant* was dropped.
+  The demo ships on the **current best stack** — yolo11x cached detections + geometric
+  hidden-state + trained conv embedder @ app-gate 0.45, the exact configuration behind the
+  dev and val tables.
+  The existing `hero.mp4` was not what had been asked for: a four-stage progression
+  (S1->S2->S3->S4) with per-stage title cards and a CARLA tail, ~63 s. That is a tour, not
+  a hook. `render_hero` rewritten to produce **one side-by-side clip, ~31 s**: ByteTrack
+  baseline left, full stack right, same frames and same cached detections, persistent ID
+  labels, across **two segments from two different sequences** (MOT17-09 t10, MOT17-04 t89)
+  so it cannot be dismissed as one lucky pick — 2 s opener, 3 s outro carrying the headline
+  numbers. `render_pair_clip` gained a `canvas_size` parameter mirroring `render_solo_clip`
+  so multi-segment concat cannot fail on a frame-size change.
+  Also fixed: `demo/README.md` never mentioned the hero clip at all. The tour now opens
+  with a "Watch this one first" section, and the top-level README points at it too, both
+  stating that the Stage-1 detectors are deliberately absent because every one of them
+  scored below the baseline detector (D61) — showing one would misrepresent the result.
+  License rules unchanged: `hero.mp4` contains MOT17 pixels, stays gitignored, regenerable
+  with `--only hero`.

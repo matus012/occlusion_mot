@@ -14,7 +14,7 @@ Sections (--only <name>, default runs all):
   s6        -- demo/clips/s6_detector.mp4  stock vs finetuned detector, dets only
   s5        -- demo/s5_carla.mp4 + demo/s5_blueprint_grid.png  CARLA feeder (committable)
   s0        -- demo/s0_teaser.png        CARLA occlusion teaser frame
-  hero      -- demo/clips/hero.mp4       4-stage progression + CARLA tail
+  hero      -- demo/clips/hero.mp4       THE clip: baseline vs full stack, side by side
   readme    -- demo/README.md
 
 Usage: .venv/Scripts/python.exe scripts/render_demo.py --all
@@ -250,15 +250,26 @@ def pick_segments(ctxs: dict[str, dict]) -> dict[str, SegPick]:
     picks: dict[str, SegPick] = {"s1_vs_s2": s1s2_cands[0], "s3_vs_s4": s3s4_cands[0]}
     if hero_cands:
         hero_cands.sort(key=lambda p: -p.score)
-        picks["hero"] = hero_cands[0]
-        log.info("hero: dedicated candidate found (n=%d)", len(hero_cands))
+        # two segments, ideally from different sequences, so the hero cannot be read as
+        # one lucky pick; falls back to the top two if only one sequence qualifies.
+        chosen = [hero_cands[0]]
+        for cand in hero_cands[1:]:
+            if cand.seq_name != chosen[0].seq_name:
+                chosen.append(cand)
+                break
+        if len(chosen) == 1 and len(hero_cands) > 1:
+            chosen.append(hero_cands[1])
+        picks["hero"] = chosen
+        log.info("hero: %d dedicated candidate(s), using %d segment(s) from %s",
+                 len(hero_cands), len(chosen), [c.seq_name for c in chosen])
     else:
-        picks["hero"] = picks["s3_vs_s4"]
+        picks["hero"] = [picks["s3_vs_s4"]]
         log.info("hero: no dedicated base-fails+in45-switches+conv-retains segment -- "
                   "falling back to the s3_vs_s4 pick")
     for name, pick in picks.items():
-        log.info("picked %s: %s (score=%.1f, gap=%d)", name, pick.key, pick.score,
-                  pick.seg.gap_length)
+        for one in (pick if isinstance(pick, list) else [pick]):
+            log.info("picked %s: %s (score=%.1f, gap=%d)", name, one.key, one.score,
+                      one.seg.gap_length)
     return picks
 
 
@@ -268,7 +279,10 @@ def pick_segments(ctxs: dict[str, dict]) -> dict[str, SegPick]:
 def render_pair_clip(
     seq_name: str, seg: OcclusionSegment, ctx: dict, left_key: str, right_key: str,
     left_label: str, right_label: str, dest: Path,
-) -> None:
+    canvas_size: tuple[int, int] | None = None,
+) -> tuple[int, int]:
+    """Side-by-side clip. Returns the (w, h) canvas used, so several segments can be
+    concatenated into one hero reel without ffmpeg refusing on a size change."""
     seq = load_sequence(ROOT / "data" / "MOT17" / "train" / seq_name)
     left_td, right_td = ctx["tds"][left_key], ctx["tds"][right_key]
     out_l = dv.outcome_for(seg, left_td)
@@ -276,18 +290,26 @@ def render_pair_clip(
     f0 = max(1, seg.last_visible_frame - PAD_FRAMES)
     f1 = min(int(ctx["mid"]), seg.reemergence_frame + PAD_FRAMES)
 
+    used_size: tuple[int, int] | None = None
+
     def frames() -> Iterable[np.ndarray]:
+        nonlocal used_size
         for f in range(f0, f1 + 1):
             img = cv2.imread(str(seq.frame_path(f)))
             assert img is not None, f"missing frame {seq.frame_path(f)}"
             left = dv.draw_panel(img, f, left_td, ctx["dets"], ctx["gt"], seg, out_l, left_label)
             right = dv.draw_panel(img, f, right_td, ctx["dets"], ctx["gt"], seg, out_r, right_label)
             canvas = _append_legend(np.hstack([left, right]))
+            if canvas_size:
+                canvas = cv2.resize(canvas, canvas_size)
+            used_size = (canvas.shape[1], canvas.shape[0])
             n = 2 if seg.last_visible_frame <= f <= seg.reemergence_frame else 1
             for _ in range(n):
                 yield canvas
 
     _write_video(frames(), dest, dv.FPS)
+    assert used_size is not None
+    return used_size
 
 
 def render_solo_clip(
@@ -498,28 +520,49 @@ _HERO_STAGES = [
 ]
 
 
-def render_hero(pick: SegPick, ctx: dict, dest: Path, carla_scenario: Path) -> None:
+def render_hero(picks: list[SegPick], ctxs: dict, dest: Path) -> None:
+    """THE hero clip: ByteTrack baseline (left) vs the full stack (right), side by side,
+    through real occlusions, with persistent ID labels.
+
+    Design constraints (D64, user): ONE clip, ~30 s, readable in the first few seconds by
+    someone who will not read the README. So: no four-stage build-up, no CARLA tail, no
+    per-stage title cards. Just the comparison that carries the claim, over several
+    segments so it cannot be dismissed as one lucky pick.
+    """
     with tempfile.TemporaryDirectory() as td_str:
         td = Path(td_str)
         parts: list[Path] = []
         canvas_size: tuple[int, int] | None = None
-        for i, (key, caption) in enumerate(_HERO_STAGES, 1):
-            stage_path = td / f"stage{i}.mp4"
-            canvas_size = render_solo_clip(
-                pick.seq_name, pick.seg, ctx, key, LABELS[key], stage_path, canvas_size,
+
+        for i, pick in enumerate(picks, 1):
+            seg_path = td / f"seg{i}.mp4"
+            canvas_size = render_pair_clip(
+                pick.seq_name, pick.seg, ctxs[pick.seq_name], "base", "conv",
+                "ByteTrack baseline", "+ hidden-state + trained re-ID",
+                seg_path, canvas_size,
             )
-            title_path = td / f"title{i}.mp4"
-            card = _title_card(caption.split("\n"), canvas_size)
-            _write_video((card for _ in range(2 * dv.FPS)), title_path, dv.FPS)
-            parts += [title_path, stage_path]
+            if i == 1:  # one short opener, then straight into the evidence
+                title = td / "title.mp4"
+                card = _title_card(
+                    ["Same video. Same detections. Same occlusion.",
+                     "Left: ByteTrack.   Right: ours.",
+                     "Watch the ID number survive the gap."],
+                    canvas_size,
+                )
+                _write_video((card for _ in range(2 * dv.FPS)), title, dv.FPS)
+                parts.append(title)
+            parts.append(seg_path)
 
         assert canvas_size is not None
-        tail_path = td / "tail.mp4"
-        render_carla_clip(
-            tail_path, carla_scenario, frame_range=(1, 4 * dv.FPS),
-            canvas_size=canvas_size, fps=dv.FPS,
+        outro = td / "outro.mp4"
+        card = _title_card(
+            ["MOT17 dev-half, 168 occlusion segments:",
+             "identity retention 0.292 -> 0.345",
+             "standard tracking quality unchanged (HOTA/IDF1 parity)"],
+            canvas_size,
         )
-        parts.append(tail_path)
+        _write_video((card for _ in range(3 * dv.FPS)), outro, dv.FPS)
+        parts.append(outro)
 
         list_file = td / "concat.txt"
         list_file.write_text(
@@ -532,7 +575,7 @@ def render_hero(pick: SegPick, ctx: dict, dest: Path, carla_scenario: Path) -> N
              "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(dest)],
             check=True, timeout=900,
         )
-    log.info("wrote %s (4 stages + title cards + CARLA tail, concat demuxer re-encode)", dest)
+    log.info("wrote %s (baseline vs full stack, %d segment(s) side by side)", dest, len(picks))
 
 
 # ---------------------------------------------------------------------------------
@@ -566,6 +609,21 @@ Guided tour S0-S8: the failure mode -> geometric hidden-state -> appearance re-I
 (ImageNet null vs trained embedder) -> detector upgrade -> CARLA sim2real feeder ->
 identity-scaling study -> gate scoreboard. Regenerate everything:
 `.venv/Scripts/python.exe scripts/render_demo.py --all`
+
+## Watch this one first -- `clips/hero.mp4` (~30 s)
+
+**If you only have half a minute, this is the clip.** ByteTrack baseline on the left, the
+full stack on the right: same video, same cached detections, same occlusion. Watch the ID
+number above the tracked person survive the gap on the right and reset on the left.
+Two segments from two different sequences, so it is not one lucky pick.
+
+Open: `start demo/clips/hero.mp4`
+
+Stack shown: yolo11x cached detections + geometric hidden-state + trained conv embedder
+(app-gate 0.45) -- the exact configuration behind the dev and val tables in the top-level
+README. The Stage-1 PERUN detectors are deliberately NOT used here: every one of them
+scored below this baseline detector on MOT17 (context.md D61), so showing one would
+misrepresent the result.
 
 ## S0 -- teaser
 ![teaser](s0_teaser.png)
@@ -718,8 +776,8 @@ def main() -> int:
     if "s0" in sections:
         render_teaser(DEMO_DIR / "s0_teaser.png", CARLA_SCENARIO)
     if "hero" in sections:
-        p = picks["hero"]
-        render_hero(p, ctxs[p.seq_name], CLIPS_DIR / "hero.mp4", CARLA_SCENARIO)
+        hero_picks = picks["hero"] if isinstance(picks["hero"], list) else [picks["hero"]]
+        render_hero(hero_picks, ctxs, CLIPS_DIR / "hero.mp4")
     if "readme" in sections:
         write_readme(picks)
     return 0

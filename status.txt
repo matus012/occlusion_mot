@@ -448,3 +448,18 @@ re-render SKIPPED (no trained detector beats the baseline, so a hero clip would
 misrepresent the result). Resumable state: SESSION_QUEUE.md. Narrative: session_handoff.md.
 Cumulative H200 spend 18.46 h of the 40 h ceiling; 21.54 h remain; ceiling never moved.
 
+D64 (2026-08-19 22:15) DEMO SCOPE CORRECTED — the demo item was NOT cancelled, only its
+Stage-1 trained-detector variant. Rebuilt on the current best stack (yolo11x dets +
+hidden-state + conv embedder @ app0.45):
+- hero.mp4 rewritten from a ~63 s four-stage montage into ONE ~31 s side-by-side:
+  baseline left vs full stack right, persistent ID labels, 2 segments from 2 sequences
+  (MOT17-09 t10, MOT17-04 t89). render_pair_clip gained canvas_size so multi-segment
+  concat is safe.
+- demo/README.md now opens with "Watch this one first" (it previously never mentioned the
+  hero clip); top-level README points at it too.
+- full demo suite re-rendered clean (13 artifacts); wild-clip showcase re-rendering.
+
+SESSION COMPLETE 2026-08-19 22:40. Gates green (ruff clean, full pytest green), tree
+clean, nothing running. All queue items done except repo cleanup, which waits on user
+line-item approval of DELETION_PROPOSAL.md. Resume from SESSION_QUEUE.md.
+
