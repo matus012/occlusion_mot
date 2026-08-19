@@ -1,7 +1,7 @@
 # SESSION_QUEUE — resumable state for occlusion-mot
 
 **Purpose: a fresh session with ZERO prior context can read this file and continue.**
-Updated after every completed item. Last update: 2026-08-19 22:40 — SESSION COMPLETE.
+Updated after every completed item. Last update: 2026-08-19 23:05 — SESSION COMPLETE.
 
 Read alongside: `status.txt` (phase/blockers), `context.md` (decision log D1–D63),
 `STAGE1_RUNBOOK.md` (how to finish Stage 1 if it ever needs re-running).
@@ -75,6 +75,25 @@ the dev/val tables.
 Hero GIF → problem → three-line honest findings → how-it-was-measured table → detail,
 plus a detector-workstream section carrying the Stage-0 and Stage-1 verdicts with their
 caveats. Every honesty label retained.
+
+### 6. TECHNICAL REPORT — ✅ DONE
+`report/omot_report.md` (~4,100 words, arXiv-short-paper shape): abstract, problem, method,
+protocol, results, limitations, reproducibility appendix. Every number cites a committed
+result file by path.
+- Reviewer pass for overclaiming found and fixed **three** issues:
+  (a) the median occlusion gap was stated as 37 frames and used to argue it exceeds
+      ByteTrack's 30-frame buffer — the committed index says **25.0**, which is *inside*
+      the buffer. The buffer argument now rests on the tail (p90 = 97.3) where it actually
+      holds, which is both correct and a stronger point.
+  (b) CARLA segment count 223 → **225** per `results/carla_feeder.json`. **The top-level
+      README still says 223 and is stale** — not touched, out of scope for this item.
+  (c) segment-count sourcing split correctly: 168 dev-half comes from the run outputs,
+      133 val-half from the segment index (they do not sum to the 328 full-sequence count).
+- Verified independently: G0 ΔHOTA 0.522 / ΔIDF1 0.070 recomputed from
+  `results/g0_equivalence/`; IDsw 359 → 298 is a 17.0 % reduction.
+- Acceptance: every cited path exists and is git-tracked ✅; honesty labels carried verbatim
+  (dev-optimistic, R6 prototype, MOT17-disjoint) ✅; claims table maps each claim to
+  supported / not established / refuted ✅
 
 ### 4. REPO CLEANUP — ⏸ BLOCKED on ⚠ line-item approval
 `DELETION_PROPOSAL.md` written. **Nothing moved or deleted.**
