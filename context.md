@@ -790,3 +790,39 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   `scripts/cache_gt_detections.py`, byte-compatible with the ordinary detection cache so
   no downstream consumer can tell a GT cache from a detector cache; 6 synthetic tests
   including a containment guard proving gtall superset gtvis.
+- **D55 (2026-08-19) STAGE 0 PASSED — the detector IS the binding constraint. Kill gate
+  does not fire; Stage 1 is now unblocked-in-principle but still HELD per D53 decision 2.**
+  Three arms, frozen canonical tracker (b90/d1.0/g1.5/overlap 0.25/kf/app0.45, conv
+  embedder), MOT17 dev half, n=168 segments. ONLY the detection source varies (the
+  FIXED-DETECTIONS inversion of perun_detector_v1.md section 1).
+
+  | arm | pre_match | oracle_ceiling | e2e id_retention | assoc | center_err |
+  |---|---|---|---|---|---|
+  | yolo11x (current) | 0.762 | 0.571 | 0.345 | 0.604 | 0.00639 |
+  | **gtvis (PRIMARY)** | 0.994 | **0.970** | **0.786** | 0.810 | 0.00037 |
+  | gtall (not achievable) | 1.000 | 1.000 | 0.952 | 0.952 | 0.00032 |
+
+  **Kill criterion (fires below 0.55): measured 0.786 on the gate-bearing gtvis arm.
+  PASSES by +0.236.** D25/D26's mechanism is confirmed at the ceiling: detection quality
+  accounts for almost the entire oracle_ceiling gap (0.571 -> 0.970), and e2e retention
+  more than doubles (0.345 -> 0.786) with the tracker completely untouched. G2b at 0.55 is
+  reachable in principle, with ~0.24 of margin above the gate.
+  **This corrects the pessimistic prior I recorded in perun_detector_v1.md section 0.**
+  That prior rested on D45's R6: a yolo11s finetuned on dev-half GT failed to lift the val
+  ceiling (0.632 -> 0.586). Both readings are true and compatible — R6 says *that
+  particular finetune was not better than yolo11x*, Stage 0 says *a better detector has
+  enormous headroom*. The prior was evidence about one weak detector, not about the
+  mechanism. Stage 1 remains the test of how much of the 0.399 ceiling headroom a
+  realistically trainable detector actually captures; gtvis is an upper bound, NOT a
+  prediction, and must never be reported as an achievable number.
+  **Residual finding, logged for later:** even at perfect visible detection, assoc
+  retention is 0.810, not 1.0 — ~19% of associable segments are still lost inside the
+  tracker. That is an association-side gap the detector workstream cannot close, and it
+  bounds what G2b can reach even with a perfect detector. Note also reemergence_time_err
+  stays at 21.5 frames (provisional gate <= 5, non-gate-bearing) and does NOT improve with
+  perfect detections — it is not detector-limited.
+  Implementation D54; figure viz/stage0_kill_gate.png; raw
+  results/hidden_dev_stage0_{yolo11x,gtvis,gtall}.json. Cost: ~0 H200-h (run locally on the
+  RTX 4060; the budgeted 0.20 h was not spent, so 32.26 h remains under the 40 h ceiling).
+  **Stage 1 is NOT submitted and MUST NOT be: D53 decision 2 requires the verdict to be
+  reported to the user and an explicit go before any Stage-1 unit is queued.**

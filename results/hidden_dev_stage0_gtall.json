@@ -1,0 +1,25 @@
+{
+  "config": {
+    "occl_buffer": 90,
+    "vel_damping": 1.0,
+    "recover_gate": 1.5,
+    "occl_overlap_thresh": 0.25,
+    "lowconf_noise_scale": 1.0,
+    "lowconf_mode": "kf",
+    "app_gate_lost": 0.45,
+    "app_gate_recover": 0.45
+  },
+  "g2": {
+    "n_segments": 168,
+    "id_retention": 0.9523809523809523,
+    "id_retention_assoc": 0.9523809523809523,
+    "n_assoc_scope": 168,
+    "pre_match_rate": 1.0,
+    "oracle_ceiling": 1.0,
+    "center_err_coverage": 1.0,
+    "cov_prematched": 1.0,
+    "time_err_coverage": 1.0,
+    "reemergence_center_err_med": 0.00031550562479130777,
+    "reemergence_time_err_med": 21.5
+  }
+}

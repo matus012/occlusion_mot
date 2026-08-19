@@ -347,3 +347,19 @@ Embedder line CLOSED: null accepted as the finding (user decision (c)+(b)).
   FRAMES are not on the cluster, only re-ID crops).
 NO RUNS until the doc is approved.
 
+D55 STAGE 0 PASSED (2026-08-19 18:04) — kill gate does NOT fire. Stage 1 HELD for user go.
+  arm        pre_match  oracle   e2e    assoc   center_err
+  yolo11x      0.762    0.571   0.345   0.604    0.00639
+  gtvis*       0.994    0.970   0.786   0.810    0.00037   (* PRIMARY, gate-bearing)
+  gtall        1.000    1.000   0.952   0.952    0.00032   (upper-upper, not achievable)
+Kill fires below 0.55; measured 0.786 => PASSES by +0.236. Detector confirmed as the
+binding constraint: oracle_ceiling 0.571 -> 0.970 with the tracker untouched.
+Corrects the pessimistic prior in perun_detector_v1.md s0 (D45 R6 was evidence about one
+weak finetune, not about the mechanism). gtvis is an UPPER BOUND, not a prediction.
+Residual: assoc 0.810 even at perfect detection => ~19% of associable segments lost inside
+the tracker; detector work cannot close that. time_err 21.5f unchanged by perfect
+detections (not detector-limited).
+Cost ~0 H200-h (ran locally on the 4060); 32.26 h still remains under the 40 h ceiling.
+MOT20 incremental transfer running in background (3.2 GB, ~55 min).
+NEXT: user go/no-go on Stage 1 (12 trained detectors, 21.65 h). NOT submitted, per D53 d2.
+
