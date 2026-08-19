@@ -263,8 +263,11 @@ def render_sbatch(cfg: dict, config_path: Path, results_dir: Path = RESULTS_ROOT
     result_lines = "\n".join(
         f'  "{posix_relpath(result_path_for_unit(u, cfg, results_dir))}"' for u in units
     )
+    # coreutils `timeout` form (NUMBER[smhd]) -- NOT the SLURM HH:MM:SS used by
+    # --time above. Passing HH:MM:SS makes every task die instantly on
+    # "timeout: invalid time interval", leaving no result JSON (D49).
     limit_lines = "\n".join(
-        f'  "{budget["classes"][unit_class(u)]["time_limit"]}"' for u in units
+        f'  "{budget["classes"][unit_class(u)]["time_limit_timeout"]}"' for u in units
     )
 
     config_posix = posix_relpath(config_path)

@@ -318,10 +318,26 @@ def unit_class(unit: str) -> str:
     return "embedder_null" if parsed[1] == "A" else "embedder"
 
 
-def _hms(hours: float) -> str:
+def _wall_minutes(hours: float) -> int:
     """Round UP to the next 5 minutes -- a wall limit must never round down."""
-    total_min = int(-(-hours * 60 // 5) * 5)
+    return int(-(-hours * 60 // 5) * 5)
+
+
+def _hms(hours: float) -> str:
+    """SLURM `--time` form (HH:MM:SS). NOT valid input for coreutils `timeout`."""
+    total_min = _wall_minutes(hours)
     return f"{total_min // 60:02d}:{total_min % 60:02d}:00"
+
+
+def _timeout_arg(hours: float) -> str:
+    """coreutils `timeout` DURATION form.
+
+    `timeout` accepts NUMBER[smhd] and rejects SLURM's HH:MM:SS outright
+    ("invalid time interval"), which kills the task in under a second and leaves no
+    result JSON. The two formats are NOT interchangeable -- emit each where it belongs.
+    Seconds, so the value is exactly the same wall as `time_limit`.
+    """
+    return f"{_wall_minutes(hours) * 60}s"
 
 
 def budget_table(cfg: dict[str, Any]) -> dict[str, Any]:
@@ -345,6 +361,7 @@ def budget_table(cfg: dict[str, Any]) -> dict[str, Any]:
             "cap_h": UNIT_TIME_CAP_H.get(cls),
             "billed_high_h": billed_high,
             "time_limit": _hms(wall_h),
+            "time_limit_timeout": _timeout_arg(wall_h),
             "subtotal_low_h": round(n * low, 2),
             "subtotal_high_h": round(n * billed_high, 2),
         }

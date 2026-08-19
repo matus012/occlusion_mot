@@ -298,3 +298,38 @@ def test_aggregate_gate_selection_reads_per_gate_blocks_from_unit_results(
     assert summary["arms"]["A"]["assoc_mean"] == pytest.approx((0.55 + 0.57) / 2)
     assert summary["mcnemar"] == {}
     assert (results_dir / cfg["name"] / "summary.json").exists()
+
+
+def test_timeout_limits_use_coreutils_duration_grammar(tmp_path):
+    """Every LIMITS entry must be valid input to coreutils `timeout` (D49).
+
+    Regression: the emitted array once passed SLURM's HH:MM:SS to `timeout`, which
+    rejects it ("invalid time interval"). All 23 tasks died in under a second and
+    left no result JSON. The suite asserted only the `#SBATCH --time` line, so
+    nothing caught it. `timeout` accepts NUMBER[smhd] and nothing else.
+    """
+    import re
+
+    cfg = _base_cfg()
+    config_path = _write_config(tmp_path, cfg)
+    text = sl.render_sbatch(cfg, config_path, tmp_path / "results")
+
+    limits = re.search(r"^LIMITS=\(\n(.*?)^\)", text, re.S | re.M)
+    assert limits, "no LIMITS array in the emitted sbatch"
+    entries = re.findall(r'"([^"]+)"', limits.group(1))
+    assert entries, "LIMITS array is empty"
+
+    grammar = re.compile(r"^\d+(\.\d+)?[smhd]?$")
+    for e in entries:
+        assert grammar.match(e), f"{e!r} is not a coreutils timeout DURATION"
+        assert ":" not in e, f"{e!r} looks like SLURM HH:MM:SS, which timeout rejects"
+
+    # and the duration must equal the class wall limit it came from, exactly
+    table = sc.budget_table(cfg)["classes"]
+    wanted = {c["time_limit_timeout"] for c in table.values() if c["n_units"]}
+    assert set(entries) <= wanted, (set(entries), wanted)
+    for c in table.values():
+        if not c["n_units"]:
+            continue
+        h, m, s = (int(x) for x in c["time_limit"].split(":"))
+        assert int(c["time_limit_timeout"].rstrip("smhd")) == h * 3600 + m * 60 + s
