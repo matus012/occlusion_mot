@@ -441,3 +441,10 @@ PROPOSED_val2_manifest.md DRAFTED (D53 d1 permits drafting only; NOT approved, N
   disclosure (D52) and a blank frozen-state block (a manifest naming its checkpoint after
   the fact is not a pre-registration).
 
+SESSION CLOSE 2026-08-19 21:45 — all queue items done except repo cleanup (blocked on
+user line-item approval). Nothing running: no SLURM jobs, no renders, no monitors.
+D63 [user]: val2 REJECTED (val stays read exactly once, D45); Stage-1 detector demo
+re-render SKIPPED (no trained detector beats the baseline, so a hero clip would
+misrepresent the result). Resumable state: SESSION_QUEUE.md. Narrative: session_handoff.md.
+Cumulative H200 spend 18.46 h of the 40 h ceiling; 21.54 h remain; ceiling never moved.
+

@@ -1,7 +1,7 @@
 # SESSION_QUEUE — resumable state for occlusion-mot
 
 **Purpose: a fresh session with ZERO prior context can read this file and continue.**
-Updated after every completed item. Last update: 2026-08-19 21:30.
+Updated after every completed item. Last update: 2026-08-19 21:45.
 
 Read alongside: `status.txt` (phase/blockers), `context.md` (decision log D1–D61),
 `STAGE1_RUNBOOK.md` (how to finish Stage 1 if it ever needs re-running).
@@ -73,15 +73,20 @@ caveats. Every honesty label retained.
 - Group D: what NOT to touch, with reasons (`results/`, `viz/`, detection caches, `logs/`).
 - **Next action: wait.** Do not execute any group without per-line approval.
 
-### 5. PROJECT DOCS — 🔄 IN PROGRESS
-- `occlusion_mot_plain.md` — needs the Stage-1 verdict folded in (currently ends at
-  "experiment in flight"). ← **next action**
-- `context.md` D1–D61 current ✅ · `status.txt` current ✅
-- `STAGE1_RUNBOOK.md` ✅ · `SESSION_QUEUE.md` (this file) ✅
-- Remaining: mark `PROPOSED_val2_manifest.md` REJECTED in-file and in `context.md`;
-  final `status.txt`; `session_handoff.md`; one-paragraph session summary.
+### 5. PROJECT DOCS — ✅ DONE
+- `occlusion_mot_plain.md` — Stage-1 verdict folded in ✅
+- `context.md` D1–D63 current ✅ · `status.txt` current ✅
+- `STAGE1_RUNBOOK.md` ✅ · `SESSION_QUEUE.md` (this file) ✅ · `session_handoff.md` ✅
+- `PROPOSED_val2_manifest.md` marked REJECTED in-file and in `context.md` D63 ✅
 - Acceptance: a fresh reader can answer "what was found, what it means, what's next"
-  from `occlusion_mot_plain.md` alone.
+  from `occlusion_mot_plain.md` alone ✅
+
+---
+
+## Nothing is running
+
+No SLURM jobs queued, no background renders, no monitors armed. The only open item is
+item 4, which is blocked on your approval. A successor session can start cold.
 
 ---
 
