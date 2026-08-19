@@ -1,0 +1,250 @@
+# perun_detector_v1 — G2b detector workstream, pre-registration (DRAFT for review)
+
+**Status: DRAFT. Nothing here has been run. No submission until user approval (D51).**
+
+Authorized by D51 (user decision: accept the embedder null, pursue G2b). This document is
+written to the same standard as `perun_sweep_v2.md`: selection rules, gate semantics and
+decision criteria are fixed *before* any run, and the kill criteria are written to fire.
+
+---
+
+## 0. What this workstream tests, and the honest prior
+
+**G2b (frozen, D26):** end-to-end `id_retention >= 0.55`. Current state: **0.345 dev /
+0.278 val**. The claim under test is D25/D26's mechanism — that end-to-end retention is
+*detector-capped*, so a better detector raises `oracle_ceiling` and pulls e2e up with it.
+
+**The prior is not favourable, and this document says so up front rather than discovering
+it later.** The D45 val event already produced one honest detector read (R6): a yolo11s
+finetuned on dev-half GT lifted dev `oracle_ceiling` 0.583 -> 0.845, but on val the lift
+**did not transfer** (0.632 -> 0.586), while e2e moved only 0.278 -> 0.338. The dev lift
+was dev-optimism — the detector had trained on the half it was scored on. So the single
+existing honest measurement of this mechanism is **negative-to-weak**.
+
+That is why Stage 0 is a cheap falsification gate placed *before* any training budget is
+committed, and why this design front-loads the honest read onto dev instead of reaching
+for val.
+
+## 1. The design fault this document exists to fix
+
+Every detector number in the project so far carries the `dev-optimistic` label (D43
+amendment 3): the detector was finetuned on **MOT17 dev-half GT** and scored on **MOT17
+dev-half**. That is why R6 needed val to be read honestly at all — and val is now spent
+(section 6).
+
+**Fix: train the detector only on sources DISJOINT from the evaluation half.** MOT20 and
+CARLA share no frames, sequences or scenes with MOT17. A detector trained on MOT20 +
+CARLA and evaluated on MOT17 dev-half is **honest by construction**, and consumes no val.
+This buys back an unlimited, un-contaminated dev read of exactly the mechanism G2b
+depends on.
+
+### FIXED-DETECTIONS rule: deliberately inverted here, and how
+
+`CLAUDE.md` requires tracker-vs-tracker comparisons to use identical cached detections.
+This workstream varies the detector *as the independent variable*, so the rule is
+inverted, not broken:
+
+> **Tracker config is FROZEN across every unit** at the D28-final canonical setting
+> (b90 / d1.0 / g1.5 / overlap 0.25 / kf 1.0 / app-gate 0.45, conv embedder). Only the
+> detection source varies. Every comparison in this document is detector-vs-detector at a
+> fixed tracker, never tracker-vs-tracker.
+
+No gate in `gates.yaml` moves. G2a is closed (D50/D51) and is not re-opened by any result
+here.
+
+## 2. Stage 0 — perfect-detector kill gate (runs FIRST, ~0.2 H200-h)
+
+Before spending any training budget, establish the ceiling that detector improvement is
+chasing, by substituting ground-truth boxes for detections at the top of an otherwise
+unchanged pipeline.
+
+- **Arm GT:** MOT17 dev-half GT boxes as the detection stream (class/confidence filled to
+  satisfy the detection contract), frozen tracker, conv embedder.
+- Reports the full `aggregate()` set, `oracle_ceiling` and e2e `id_retention`.
+
+**KILL CRITERION, written to fire:**
+
+> If **arm GT e2e `id_retention` < 0.55**, then no detector — however good — can reach
+> G2b at this tracker configuration, because GT boxes are the supremum of any detector's
+> output. The detector workstream is then **STOPPED**, its remaining budget is not spent,
+> and G2b is reported as unreachable-by-detector with arm GT as the evidence. The gate is
+> NOT lowered and the finding is not re-scoped; the next question becomes a
+> tracker/association question, which is outside this document.
+
+This costs ~0.2 h and can falsify a ~21 h workstream. It runs alone and its result is
+reported before Stage 1 is submitted.
+
+Informative-only from the same run: `oracle_ceiling` under GT boxes bounds how much of the
+current 0.58 ceiling is detector-attributable at all.
+
+## 3. Stage 1 — detector dose-response (only if Stage 0 clears)
+
+The question is not "is detector X better than detector Y". It is **whether end-to-end
+retention responds to detector quality at all**. Stage 1 therefore measures a
+*dose-response curve* over 12 trained detectors spanning a wide quality range, plus two
+free reference points.
+
+### Grid
+
+| factor | levels | n |
+|---|---|---|
+| model | yolo11s (48.9 GFLOPs @960), yolo11m (154.2) | 2 |
+| train mix (MOT17-disjoint) | `mot20` (8,931 fr, 40 ep), `mot20_carla` (18,531 fr, 20 ep) | 2 |
+| seed | 0, 1, 2 | 3 |
+| **trained units** | | **12** |
+
+Epochs are set per mix to hold frame-passes roughly constant (~357k vs ~371k), so the
+mixes differ in *data composition*, not in gradient budget.
+
+**Free reference points (no training cost):** the frozen `yolo11x` cached detections (the
+D1 baseline, dev `oracle_ceiling` 0.583) and arm GT from Stage 0. With the 12 trained
+points that gives **14 detector-quality levels**.
+
+### Pre-registered analysis
+
+1. **Primary (dose-response):** OLS of `oracle_ceiling` on detector `mAP50-95` measured on
+   MOT17 dev-half, across all 14 points; report slope, 95% CI and R². Seeds enter as
+   replicates, not as separate fits.
+   **The mechanism claim is supported only if the slope is positive with a CI excluding
+   zero.** A flat curve means detector quality does not bind the ceiling, and is reported
+   as exactly that rather than tuned around.
+2. **Secondary:** same regression with e2e `id_retention` as the response.
+3. **G2b verdict:** `id_retention >= 0.55` (frozen D26 semantics, unchanged), evaluated at
+   the best single detector and reported with its seed spread. **Single-seed deltas < 6pt
+   are noise (D36/D50) and are never claimed** — the lesson the embedder sweep paid for,
+   binding here.
+4. **Every** trained detector's mAP and every arm's retention are reported. No
+   cherry-picking, no post-hoc arm selection.
+
+### Kill criterion
+
+> If the Stage-1 primary slope's 95% CI includes zero, the detector-ceiling mechanism is
+> **not established**, G2b is reported as not achieved by this route, and no further
+> detector budget is requested. Thresholds do not move.
+
+## 4. Budget — rebuilt from measured H200 throughput
+
+`perun_sweep_v2.md` amendment 9 records that `UNIT_EST_H` was 4.3x conservative because it
+was derived from RTX 4060 timings. This document does **not** reuse those numbers. It uses
+a cost model fitted to the executed sweep:
+
+```
+cost_h = frames x epochs x GFLOPs(model, imgsz=960) x k
+k      = 3.7315e-8   h per frame-epoch-GFLOP
+```
+
+calibrated on the measured point `yolo11s / mot17dev / 100 ep = 0.485 h` and **validated
+out-of-sample** on the second measured point:
+
+| unit | predicted | measured | error |
+|---|---|---|---|
+| yolo11s / mot17dev / 100 ep | 0.485 h (fit) | 0.485 h | — |
+| yolo11s / mot17dev_carla / 100 ep | 2.237 h | 2.423 h | **-7.7%** |
+
+The model under-predicts by ~8%, so every figure below carries a **1.15x safety factor**.
+This is a documented recalibration with its evidence attached, not a silent edit of a
+pre-registered constant.
+
+| unit class | n | est/unit (incl. 1.15x) | subtotal |
+|---|---|---|---|
+| Stage 0 arm GT | 1 | 0.20 h | 0.20 h |
+| yolo11s / mot20 / 40 ep | 3 | 0.75 h | 2.25 h |
+| yolo11m / mot20 / 40 ep | 3 | 2.37 h | 7.11 h |
+| yolo11s / mot20_carla / 20 ep | 3 | 0.78 h | 2.34 h |
+| yolo11m / mot20_carla / 20 ep | 3 | 2.45 h | 7.35 h |
+| per-detector eval (cache dets + embed + track) | 12 | 0.20 h | 2.40 h |
+| **total** | | | **21.65 h** |
+
+**Against 32.26 H200-h remaining under the unchanged 40 h ceiling** (7.74 h spent by sweep
+77150). Headroom 10.6 h. The ceiling does not move.
+
+### Wall caps — applied PER UNIT, not per model class
+
+Amendment 9's lesson: detector cost is bimodal by **mix**, not by model (0.485 h vs
+2.423 h for the *same* model), so amendment 7's model-level lever was coarser than the
+cost structure. Caps here are per `(model x mix)` unit:
+
+| unit | est | wall cap |
+|---|---|---|
+| yolo11s / mot20 | 0.75 h | 01:15:00 |
+| yolo11m / mot20 | 2.37 h | 03:15:00 |
+| yolo11s / mot20_carla | 0.78 h | 01:15:00 |
+| yolo11m / mot20_carla | 2.45 h | 03:15:00 |
+
+Worst case at the caps: 0.2 + 3(1.25) + 3(3.25) + 3(1.25) + 3(3.25) + 2.4 = **29.6 h**,
+still under the 32.26 h remaining. A unit that overruns its cap is killed and leaves no
+result JSON (existing resume rule); it is reported as a missing dose-response point, and
+the cap is not raised.
+
+**yolo11x is excluded by budget, pre-registered:** 5.9-6.1 h/unit x 3 seeds x 2 mixes is
+~36 h alone, over the remaining ceiling. It is not a candidate, and no result will be
+narrated as "yolo11x would have".
+
+## 5. Implementation work required before submission (not yet done)
+
+1. `finetune_detector.py`: `VALID_MIXES` is currently `("mot17dev", "mot17dev_carla")`.
+   Add `mot20` and `mot20_carla` with the same prep/caching contract and the same
+   dataset-dir-name-encodes-the-mix rule, plus a guard asserting **no MOT17 frame can
+   enter a `mot20*` train split** — the entire honesty argument rests on that.
+2. Stage-0 GT-detection source: a detection stream built from MOT17 dev-half GT satisfying
+   the existing detection-cache contract.
+3. Bundle: **MOT20 frames are not on the cluster.** `data/MOT20` is 3.2 GB / 8,931 frames
+   and was never staged (the bundle carries MOT20 *crops* for re-ID, not frames). At the
+   measured ~1 MB/s uplink that is a **~53 min transfer** — acceptable, and far cheaper
+   than a bundle rebuild. Ship it as an incremental payload with its own sha256 manifest
+   entry.
+4. Tests: mix-disjointness guard, cost-model regression, and a `timeout`-grammar-class
+   guard for any newly emitted script (the D49 bug class).
+
+## 6. Val protocol — FLAGGED, not assumed
+
+**A G2b val event is NOT covered by any existing pre-registration, and this document does
+not assume one.**
+
+What the record says:
+
+- `val_manifest.md` binds **"the single D18 val event"**, executed exactly once at D45
+  (2026-08-09). It is written for one pass and contains no provision for re-use.
+- **D18.2:** exactly ONE config advances; the single canonical val run requires explicit
+  user approval.
+- **D18.3:** if val misses, re-tuning and **re-running require explicit approval** — the
+  contamination decision is explicitly user-owned.
+- **D46** accepted the G2a-floor val miss and deferred the margin to the PERUN embedder.
+  Nothing in D45 or D46 authorizes a second val pass, for G2b or anything else.
+- R6 **already spent** a detector-arm read at val (e2e 0.278 -> 0.338; the ceiling lift did
+  not transfer).
+
+So a second val event needs its **own justification and its own frozen manifest**, and it
+carries a statistical cost that must be stated rather than glossed:
+
+> Val has now been observed once. A second val event is no longer a virgin read: the D45
+> outcome is part of the knowledge that shaped this design. Any G2b val number must be
+> reported as a **second-look** result with the first look disclosed, or its nominal error
+> rate is not what it appears to be.
+
+**Proposed protocol, for user decision — not adopted here:**
+
+1. Stages 0 and 1 run **entirely on dev**, with MOT17-disjoint training data. They are
+   honest by construction and consume no val. This is sufficient to establish or refute
+   the dose-response mechanism.
+2. **Only if** Stage 1 establishes a positive slope AND the best detector reaches
+   `id_retention >= 0.55` on dev does a val event become worth proposing.
+3. That event would require: a new `val_manifest_g2b.md` frozen before the run, a single
+   pre-committed detector (no selection at val), explicit user approval per D18.2, and
+   mandatory second-look disclosure per the paragraph above.
+
+If you prefer that G2b never touch val again, **the design above still stands entirely** —
+it simply terminates at the dev dose-response, reported as such. Nothing in Stages 0-1
+depends on a val event.
+
+## 7. Open questions for review
+
+1. **Val:** approve the staged protocol in section 6, or rule val closed permanently? The
+   workstream is viable either way.
+2. **Stage 0 first:** confirm the kill gate runs and reports alone, before Stage 1 is
+   submitted. Recommended — ~0.2 h against a ~21 h commitment.
+3. **Grid width:** 2 models x 2 mixes x 3 seeds is sized for a *dose-response*, not a
+   pairwise winner. If you want a wider quality range instead of 3 seeds, say so — but
+   D36/D50 make 3 seeds close to non-negotiable for any retention claim.
+4. **MOT20 staging:** confirm the ~53 min incremental transfer rather than a bundle
+   rebuild.

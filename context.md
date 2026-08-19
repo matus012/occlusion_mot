@@ -716,3 +716,49 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   levers are (a) more seeds to resolve a sub-noise effect, which is expensive for an effect
   this small, (b) the detector/oracle-ceiling workstream (G2b), or (c) accepting the
   negative result as the finding. User decision required; nothing is re-scoped unilaterally.
+- **D51 (2026-08-19) Null ACCEPTED as the finding; G2b detector workstream authorized
+  [user decision: (c) + (b)].** The PERUN-scale embedder claim is CLOSED. D46 deferred the
+  G2a margin to "the PERUN-scale embedder"; D50 ran that test properly powered (23 units,
+  3 seeds, pre-registered) and it fails both limbs. Per D18.3 discipline the outcome is
+  reported, not tuned away, and no threshold moves. Write-up executed in three places:
+  (a) **README** — the sweep section is rewritten from "designed, submission-ready" to
+  "executed; the null is the finding", carrying the full gate scoreboard, ALL nine McNemar
+  p-values (no cherry-picking), the identity-curve figure, the mechanism, and the
+  cross-arm caveat stated prominently rather than buried.
+  (b) **perun_sweep_v2.md amendments 8 + 9** — annotations in place, no history rewritten.
+  Amendment 8 demotes occ-rank1 from "primary at sweep scale" to a within-arm diagnostic
+  and bounds exactly what may still be said with it; the original line is left intact with
+  a STRUCK pointer, matching the amendment-4 precedent. Amendment 9 records the 4.3x
+  UNIT_EST_H over-estimate as a measured recalibration WITHOUT retro-editing the
+  pre-registered numbers, and qualifies amendment 7: the detector class is bimodal by MIX
+  (0.485 h vs 2.423 h for the same model), so yolo11m would have fit on mot17dev (~1.5 h)
+  though not on mot17dev_carla (~7.6 h). Amendment 7 was applied exactly as written — its
+  lever is model-level — so the action stands; the lesson (cap per unit, not per model
+  class) is carried into the next design rather than used to re-litigate the last one.
+  (c) **P2 claim reported as NOT ESTABLISHED.** The pre-registered D > C rule requires mean
+  assoc(D) > (C) AND mean occ-rank1(D) > (C) with non-overlapping seed ranges. The first
+  holds (0.5779 > 0.5674); the second fails (0.6095 < 0.6180) and is cross-arm-invalid
+  under amendment 8. "sim+real > real-only" is therefore not established — stated plainly
+  in README rather than being quietly dropped.
+  **G2b workstream:** pre-registration drafted as perun_detector_v1.md against the 32.26 h
+  remaining under the unchanged 40 h ceiling, with UNIT_EST_H rebuilt from measured H200
+  throughput. VAL IS THE OPEN QUESTION and is flagged, not assumed — see D52.
+- **D52 (2026-08-19) A G2b val event is NOT pre-authorized — flagged, not assumed.**
+  Checked what D45's pre-registration actually permits, per user instruction. Findings:
+  `val_manifest.md` binds "the **single** D18 val event", executed once on 2026-08-09; it
+  is written for one pass and contains no re-use provision. D18.2 allows exactly ONE
+  config to advance and requires explicit user approval for the canonical val run. D18.3
+  makes re-running a user-owned contamination decision requiring explicit approval. D46
+  accepted the G2a-floor miss and deferred to the PERUN embedder — that deferral is now
+  discharged by D50 — but authorizes nothing further. And R6 has ALREADY spent a
+  detector-arm read at val (e2e 0.278 -> 0.338, oracle-ceiling lift did NOT transfer,
+  0.632 -> 0.586). **Conclusion: a G2b val pass would be a SECOND val event, needs its own
+  justification and its own frozen manifest, and must be reported as a second-look result
+  with the first look disclosed — val has been observed once, so a second read is not a
+  virgin read and its nominal error rate is not what it appears to be.**
+  Design response, so the workstream does not depend on that decision: perun_detector_v1.md
+  trains the detector ONLY on MOT17-disjoint sources (MOT20 + CARLA) and evaluates on
+  MOT17 dev-half, which is honest by construction and consumes no val. This also repairs
+  the `dev-optimistic` label (D43 amd 3) that forced the previous detector arm to reach for
+  val in the first place. Stages 0-1 are entirely dev-side; a val event is proposed only if
+  the dev dose-response clears, and is the user's call either way.

@@ -314,3 +314,36 @@ BLOCKER / DECISION NEEDED: appearance re-ID at PERUN scale does not deliver G2a.
 (a) more seeds to resolve a sub-noise effect, (b) push the G2b detector/oracle workstream,
 (c) accept the negative result. Not re-scoped unilaterally. viz/perun_sweep_identity_curve.png
 
+D51/D52 WRITE-UP + G2b PRE-REGISTRATION DRAFTED (2026-08-19) — awaiting user review.
+Embedder line CLOSED: null accepted as the finding (user decision (c)+(b)).
+- README: PERUN section rewritten "designed/submission-ready" -> "executed; the null is
+  the finding". Carries the gate scoreboard, all 9 McNemar p-values, the identity-curve
+  figure, the mechanism, and the cross-arm occ-rank1 caveat stated prominently. Also
+  reports the P2 claim (sim+real > real-only) as NOT ESTABLISHED per its own
+  pre-registered conjunction (assoc conjunct holds 0.5779>0.5674; occ-rank1 conjunct
+  fails 0.6095<0.6180 and is cross-arm-invalid anyway).
+- perun_sweep_v2.md amendments 8 + 9 appended; the "primary at sweep scale" line
+  annotated IN PLACE with a STRUCK pointer (amendment-4 precedent), history not rewritten.
+  amd 8 demotes occ-rank1 to a within-arm diagnostic and bounds what may still be said.
+  amd 9 records the 4.3x UNIT_EST_H over-estimate as a measured recalibration WITHOUT
+  retro-editing pre-registered numbers, and qualifies amd 7 (cost is bimodal by MIX, not
+  model: yolo11m would have fit mot17dev ~1.5h but not mot17dev_carla ~7.6h; amd 7 was
+  applied exactly as written so the action stands, the lesson goes forward).
+- perun_detector_v1.md DRAFTED (not submitted, nothing run):
+    Stage 0 = perfect-detector kill gate, ~0.2 h. If GT-boxes e2e < 0.55 the whole
+      workstream STOPS -- no detector can beat GT. 0.2 h can falsify ~21 h.
+    Stage 1 = dose-response over 14 detector-quality levels (12 trained + yolo11x
+      baseline + GT), primary = OLS slope of oracle_ceiling on mAP50-95 with 95% CI;
+      flat curve => mechanism not established (kill written to fire).
+    Honest by construction: detector trains ONLY on MOT17-disjoint MOT20+CARLA, evaluated
+      on MOT17 dev-half -- repairs the dev-optimistic label, consumes no val.
+    Budget 21.65 h (worst case at caps 29.6 h) vs 32.26 h remaining under the unchanged
+      40 h ceiling. Cost model k=3.7315e-8 h/frame-epoch-GFLOP, validated out-of-sample
+      at -7.7% error, carried with a 1.15x safety factor. Caps PER UNIT, not per model.
+    yolo11x pre-registered as excluded on budget (~36 h alone).
+- BLOCKERS FOR USER: (1) val decision per D52 -- staged second-event protocol or val
+  closed permanently (workstream viable either way); (2) approve Stage 0 running alone
+  first; (3) grid width; (4) MOT20 staging (3.2 GB / ~53 min incremental transfer -- MOT20
+  FRAMES are not on the cluster, only re-ID crops).
+NO RUNS until the doc is approved.
+

@@ -48,6 +48,10 @@ Total: 18 embedder runs + 4 detector runs + cache passes.
 
 - Per embedder run: occ-rank1 / occ-mAP under D38 bounds (primary at sweep scale;
   resolves identity effects — D36), plus standard rank1/mAP.
+  (**"primary at sweep scale" STRUCK by amendment 8, D51**: occ-rank1 is computed on a
+  PER-ARM gallery, so it cannot carry a cross-arm claim. It remains valid WITHIN an arm —
+  the D pool curve — and as a training-health check. Original text left intact; see
+  amendment 8 for what it is demoted to and why.)
 - Tracker-level (dev half, FIXED yolo11x detections): per-arm best gate from a 3-point
   gate probe {0.40, 0.45, 0.50}; assoc retention reported as MEAN +/- spread over the
   3 seeds. Single-seed deltas < 6pt are noise (D36) — never claimed.
@@ -55,6 +59,12 @@ Total: 18 embedder runs + 4 detector runs + cache passes.
   intersection denominator; report all p-values, no cherry-picking.
 - D > C verdict: mean assoc(D) > mean assoc(C) AND mean occ-rank1(D) > (C) with
   non-overlapping seed ranges; anything weaker is reported as "not established".
+  (**Executed D51: NOT ESTABLISHED.** mean assoc D 0.5779 > C 0.5674 satisfies the first
+  conjunct; mean occ-rank1 D 0.6095 < C 0.6180 fails the second outright, and the seed
+  ranges overlap. Per this rule as written, the P2 claim "sim+real > real-only" is
+  reported as not established. Note also that amendment 8 makes the occ-rank1 conjunct
+  cross-arm-invalid in the first place — the verdict is "not established" on the assoc
+  conjunct alone regardless.)
 
 ## Budget (H200, single-GPU jobs; model is ResNet18 @ 64x128 — small)
 
@@ -183,3 +193,60 @@ manifest amendment — user's call, made before val, never after.
    embedder classes, the 40 h ceiling, and every wall cap. The detector arm is a G2b
    *workstream* feed (D26/D31), not a G2a claim input, so narrowing it does not touch any
    pre-registered hypothesis test.
+
+## Post-execution amendment (D51 — 2026-08-19, after the sweep ran; records what the
+## executed run showed about this document's own instruments. No re-scoping, no
+## threshold movement, no re-narration of outcomes.)
+
+8. **occ-rank1 is demoted from "primary at sweep scale" to a within-arm diagnostic.**
+   `sweep_unit.py` sets `eval_sources = arm_sources(cfg, arm)`: every arm is scored on a
+   retrieval gallery drawn from its OWN sources. The arms therefore do not share a
+   gallery, and occ-rank1 is not comparable across them. This was not visible before the
+   run because no arm had a pathologically small source set until arm B was measured.
+
+   The measurement that exposes it: **arm B trains on 36 sim identities and posts
+   occ_rank1 0.875 — the highest retrieval in the entire sweep — while producing
+   id_retention_assoc 0.549, the LOWEST tracker association in the sweep, below the
+   ImageNet null's 0.557.** A tiny gallery makes rank-1 retrieval easy; it says nothing
+   about association. Arm C (3,484 ids) posts 0.618 and arm D (3,520 ids) 0.610.
+
+   Scope of the demotion:
+   - **Invalid:** any cross-arm occ-rank1 comparison, including the occ-rank1 conjunct of
+     the D > C rule above.
+   - **Still valid:** occ-rank1 WITHIN one arm across pools — the arm-D identity curve
+     (300/1000/2000/3520 -> 0.408/0.514/0.577/0.610) holds the source mix fixed and varies
+     only pool size, so the gallery is constructed the same way at every point.
+   - **Unaffected:** the pre-registered discriminating criterion, G2a-paired. It is
+     tracker-level and evaluated on a fixed intersection denominator shared by both
+     configs under test, so no gallery asymmetry can reach it.
+
+   This amendment does not change any gate, threshold, arm, pool, seed, or decision rule.
+   It records that one SECONDARY instrument named in this document measures less than the
+   document claimed for it, and bounds what may still be said with it.
+
+9. **UNIT_EST_H was 4.3x conservative; recorded, not retro-applied.** Measured H200 wall
+   time per unit against `sweep_common.UNIT_EST_H`:
+
+   | class | est/unit | measured mean | measured range | factor |
+   |---|---|---|---|---|
+   | embedder_null | 0.45 h | 0.045 h | 0.045-0.046 | 10.0x over |
+   | embedder | 1.55 h | 0.261 h | 0.184-0.294 | 5.9x over |
+   | detector | 1.5-3.0 h | 1.454 h | 0.485-2.423 | in range, but bimodal |
+
+   Grid total **7.74 H200-h** against a 32.25-34.25 h projection and the 40 h ceiling.
+   The estimates were derived from RTX 4060 timings. They are NOT edited retroactively:
+   they bounded this run conservatively and correctly, and a pre-registered number is not
+   revised to look better after the fact. The corrected basis is carried forward into
+   perun_detector_v1.md, where it is stated as a measured recalibration with this table
+   as its evidence.
+
+   Also recorded, because it qualifies amendment 7 rather than excusing it: the detector
+   class is bimodal **by MIX, not by model** — yolo11s took 0.485 h on `mot17dev` and
+   2.423 h on `mot17dev_carla`, a 5x spread from dataset size alone. Amendment 7's
+   yolo11m projection (~277 s/epoch) was taken from the smoke job, which ran the EXPENSIVE
+   mix. Applying the measured mix ratio, yolo11m would have cost ~7.6 h on
+   `mot17dev_carla` (correctly killed) but only ~1.5 h on `mot17dev` — inside the 2.5 h
+   cap. Amendment 7 was applied exactly as pre-registered (its lever is model-level:
+   "drop to one detector model"), so the action was correct and is not revisited. The
+   lesson is a design lesson for the next grid: **cost is per (model x mix) and the cap
+   should be applied per unit, not per model class.** perun_detector_v1.md adopts that.

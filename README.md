@@ -62,7 +62,8 @@ extracted from GT visibility.
 
 The baseline→full-stack progression (+5.3pt e2e, +9.9pt assoc) exceeds the seed-noise
 band; individual embedder-variant differences do not, and are therefore not claimed —
-trained-vs-ImageNet is p=0.26 (paired McNemar, n=96) pending PERUN-scale identities.
+trained-vs-ImageNet is p=0.26 (paired McNemar, n=96) — resolved at PERUN scale and
+still not significant (best p=0.143 over 3 seeds); see the sweep section below.
 Re-emergence position error: 0.0055–0.0064 of the image diagonal (gate ≤0.015).
 
 **Detector arm** *(dev-optimistic: detector finetuned ON dev-half GT and scored on
@@ -123,20 +124,66 @@ the repo. A wild-clip qualitative showcase (10 permissive-stock clips, annotated
 available locally / on request — regenerate with `scripts/showcase.py --src
 showcase/sources --out showcase/renders`.
 
-## PERUN sweep — designed, pre-registered, submission-ready
+## PERUN sweep — executed. The null is the finding.
 
-4-arm ablation (ImageNet-null / sim-only / real-only / sim+real; the P2 claim is
-**sim+real > real-only**), log-scale identity pools {300, 1k, 2k, 3.5k} × 3 seeds,
-detector finetunes at scale. Fully pre-registered in
-[perun_sweep_v2.md](perun_sweep_v2.md) (selection rules, gate semantics, decision
-criteria fixed before any run). Budget: **~30–36 H200h** (40h ceiling). The local
-dry-run executed the identical entrypoint end-to-end. Submission, once
-partition/account are filled in `configs/sweep/perun_full.yaml`:
+4-arm ablation (ImageNet-null / sim-only / real-only / sim+real), log-scale identity
+pools {300, 1k, 2k, 3.5k} x 3 seeds, plus detector finetunes. Fully pre-registered in
+[perun_sweep_v2.md](perun_sweep_v2.md) *before* any run — selection rules, gate
+semantics and decision criteria all fixed in advance. Executed 2026-08-19 on TUKE PERUN
+(H200): **23/23 units, zero failures, 7.74 H200-h** against a 40 h ceiling.
 
-```bash
-python3 scripts/sweep_launcher.py --config configs/sweep/perun_full.yaml --mode slurm
-sbatch results/sweep/perun_full/submit.sbatch
-```
+**Both G2a criteria fail, and that is the reported result.**
+
+| verdict | criterion | sweep | bound |
+|---|---|---|---|
+| **FAIL** | G2a-floor assoc retention | 0.5779 | >= 0.58 |
+| **FAIL** | G2a-paired McNemar (the module claim) | best p = 0.143 | < 0.05 |
+| **not established** | P2 claim: sim+real > real-only | see below | pre-registered conjunction |
+| — | detector arm (dev-optimistic) | mAP50 0.936 | informs G2b |
+
+McNemar p-values, all seeds, no cherry-picking — D vs A: 0.143 / 0.661 / 0.500;
+D vs C: 0.145 / 0.613 / 0.773; C vs A: 0.339 / 0.668 / 0.332 (n ~ 95).
+
+![identity scaling at PERUN scale](viz/perun_sweep_identity_curve.png)
+
+**The mechanism, which is why this is a finding and not just a miss.** Identity count
+scales *retrieval* cleanly and monotonically — occ-rank1 0.408 -> 0.514 -> 0.577 ->
+0.610 across a 12x identity range, still climbing at the pool ceiling. Tracker
+*association* does not follow: 0.523 -> 0.540 -> 0.563 -> 0.578, an 0.055 total effect
+against a per-pool seed spread reaching **0.078**. The seed noise is larger than the
+entire effect. More identities buy a better embedder and not a better tracker, because
+association is not what the embedder is failing at — the detector ceiling is.
+
+That claim is not new here; it was predicted at local scale (D29, D36) and this sweep
+is the properly-powered test of it. It survived.
+
+**Caveat that constrains what may be read off this sweep — stated prominently because
+it limits our own headline metric.** occ-rank1 is computed on a **per-arm gallery**
+(`eval_sources = arm_sources(cfg, arm)`), so **cross-arm occ-rank1 comparisons are
+invalid**. The sim-only arm trains on 36 identities and posts the sweep's *highest*
+retrieval (0.875) together with its *lowest* association (0.549 — below the ImageNet
+null). That is small-gallery inflation, not a result. Consequences, applied honestly:
+
+- The within-arm identity curve above **is** valid (fixed sources, only pool varies).
+- The pre-registered P2 verdict required `mean assoc(D) > mean assoc(C)` **and**
+  `mean occ-rank1(D) > (C)`. The first holds (0.5779 > 0.5674); the second does not
+  (0.6095 < 0.6180) and is cross-arm-invalid anyway. Per the rule as written, **"sim+real
+  beats real-only" is not established.**
+- G2a-paired is untouched by this: it is tracker-level on a fixed intersection
+  denominator shared by both configs under test.
+
+Recorded as [perun_sweep_v2.md](perun_sweep_v2.md) amendment 8, which annotates the
+original "primary at sweep scale" line in place rather than rewriting it.
+
+**Budget estimates were 4.3x conservative** (7.74 h actual vs 32.25-34.25 h projected;
+`UNIT_EST_H` was RTX 4060-derived). The pre-registered numbers are *not* edited after
+the fact — they bounded the run correctly. The measured basis is carried into the next
+pre-registration as a documented recalibration (amendment 9).
+
+**Where this leaves the project.** Appearance re-ID at PERUN scale does not deliver
+G2a; that line is closed and reported as a negative result. The remaining headroom is
+the detector/oracle-ceiling workstream (G2b), pre-registered separately in
+[perun_detector_v1.md](perun_detector_v1.md).
 
 ## Quickstart
 
@@ -155,7 +202,7 @@ failure mode to the gate scoreboard.
 
 - `src/omot/` — loaders, MOT IO, detection/embedding caches, tracker, hidden-state module, eval (incl. paired test)
 - `mission.md` / `gates.yaml` / `status.txt` / `context.md` — mission, executable gates, state, full decision log D1–D46
-- `val_manifest.md` / `perun_sweep_v2.md` — frozen val pre-registration; approved sweep design
+- `val_manifest.md` / `perun_sweep_v2.md` / `perun_detector_v1.md` — frozen val pre-registration; executed sweep design + post-execution amendments; G2b detector pre-registration (draft)
 - `configs/sweep/` + `scripts/sweep_*.py` — config-driven sweep (identical entrypoint local/SLURM)
 - `demo/` — guided tour + committed CARLA media; `scripts/showcase.py` — wild-clip renderer
 - `runloop.ps1` — autonomous development loop (invokes `claude -p` per iteration against the gates)
