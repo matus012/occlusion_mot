@@ -87,8 +87,9 @@ cd /mnt/project/perun26011488/omot/omot_hpc/repo
 sbatch results/sweep/perun_full/submit.sbatch
 ```
 
-25 units, `--array=0-24%8`, per-task `--time=02:30:00`, 8 concurrent (one full node).
-Budget **35.25–39.25 H200-h against the 40 h ceiling** — worst case fits.
+**23 units** (18 embedder + 3 arm-A ImageNet-null + 2 detector), `--array=0-22%8`,
+per-task `--time=02:30:00`, 8 concurrent (one full node).
+Budget **32.25–34.25 H200-h against the 40 h ceiling** — worst case fits.
 
 Monitoring one-liner:
 
