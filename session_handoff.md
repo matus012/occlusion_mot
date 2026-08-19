@@ -1,63 +1,67 @@
-# Session handoff — 2026-07-23 (context rotation before local-max phase L2)
+# Session handoff — 2026-08-19 (autonomous evening session)
 
-Read order for the next session: CLAUDE.md → mission.md → status.txt → gates.yaml →
-context.md (D1–D28) → this file. This file holds ONLY what those do not.
+**Start here, then read `SESSION_QUEUE.md`.** That file is the resumable state: queue
+items, acceptance criteria, decisions received, and the approval-gated list. This file is
+the narrative of what happened in this session and why.
 
-## Where we are (one line)
-L1 of the local-max directive is done (G2a audit → D28 recalibration proposal PENDING
-user); next is L2 (visualization/demo pipeline), then L3–L6 per the user directive in
-D27; PERUN access pending on the user side; D18 val protocol untouched.
+## What this session did
 
-## In-flight / pending
-- D28-PROPOSAL (G2a >= 0.58) awaits user decision — do NOT touch gates.yaml G2a until then.
-- L2–L6 queued (user directive, verbatim in D27 context entry + status.txt).
-- CARLA server is STOPPED (GPU freed). Restart before any sim rendering:
-  `tools\CARLA_0.9.15\WindowsNoEditor\CarlaUE4\Binaries\Win64\CarlaUE4-Win64-Shipping.exe
-  CarlaUE4 -RenderOffScreen -quality-level=Low -carla-rpc-port=2000`
-  then probe with .venv-sim + scratchpad probe (SERVER_UP takes 60–120s; restart the
-  server between LONG driver batches — it memory-thrashes after ~30 sequential runs).
-- motchallenge.net was still down; D13 re-hash vs official zip remains queued.
+Took the project from "PERUN sweep submission-ready" to "both PERUN workstreams executed,
+analysed and written up".
 
-## Environment gotchas (hard-won, not in governance files)
-- PowerShell 5.1 mangles quotes in `python -c` one-liners and here-strings passed to
-  native exes → ALWAYS write scratch .py files. `Out-File -Encoding utf8` adds a BOM →
-  read with utf-8-sig.
-- A Windows venv's python.exe is a LAUNCHER: every run shows two processes (launcher +
-  base interpreter with identical cmdline). Not a duplicate job. (See D-incident-adjacent
-  correction in status history; misdiagnosing this killed a healthy download once.)
-- CARLA: instance-seg ids are renderer-internal (stable per scene arrangement, NOT actor
-  ids); same-blueprint walkers SHARE an id → per-scenario blueprint uniqueness in
-  sim_driver is LOAD-BEARING (seeded permutation). Sensors lag set_transform by 1 tick;
-  walkers returning from underground need ~4 settle ticks (mesh streaming). Child
-  pedestrian blueprints 0009–0014 never render under teleport control (excluded).
-- The two DirectX DLLs (XINPUT1_3, X3DAudio1_7) live NEXT TO CarlaUE4-Win64-Shipping.exe
-  (no admin install); if the exe "hangs at 6MB RAM", it's a hidden loader error dialog.
-- .claude/settings.json post-edit hook runs ruff+pytest on every .py write — suite is
-  ~47 tests and quick, but budget for it on bulk edits.
-- supervision==0.29.1 pin is load-bearing (ByteTrack removed in 0.30). numpy 1.26.4 pin +
-  np.float shim in trackeval_runner are load-bearing (TrackEval unmaintained).
+1. **Embedder sweep (array 77150)** — 23/23 units, 7.74 H200-h. Result: **a null**. G2a
+   fails both limbs (floor 0.5779 vs 0.58; best paired McNemar p=0.143 vs <0.05). Accepted
+   as the finding rather than tuned away (D50/D51).
+2. **Detector workstream** — pre-registered fresh (`perun_detector_v1.md`, frozen D53).
+   - **Stage 0** (kill gate, ~0 H200-h, ran locally): perfect visible GT boxes take the
+     ceiling 0.571 → 0.970 and e2e 0.345 → 0.786. **Passed by +0.236.** The detector is
+     the binding constraint (D55).
+   - **Stage 1** (12 units, 10.72 H200-h): mechanism **CONFIRMED** — ceiling scales with
+     detector mAP at slope 0.902, CI [0.784, 1.021], R² 0.949 — but **G2b NOT MET**,
+     because every MOT17-disjoint-trained detector came out worse than the off-the-shelf
+     baseline (D61).
+3. **Docs/demo** — README restructured for a 90-second reader, demo suite and showcase
+   re-rendered, `occlusion_mot_plain.md` written, cleanup proposal drafted.
 
-## Open hypotheses (unverified — treat as leads, not facts)
-- Proto embedder retrieval numbers (occ-rank1 0.888) are flattered by same-sequence
-  near-duplicate galleries; tracker-level gain is the real signal (+1.8pt assoc over
-  ImageNet). Full-convergence training (L3) expected to add ~2–4pt assoc-retention; if it
-  lands >= 0.62 dev, the D28 threshold 0.58 has margin on val.
-- Val-half assoc-scope n will be ~76 (133 x ~0.577) → noisier than dev; sigma ~0.057.
-- The 22% never-tracked-pre-gap mass may be partially recoverable by the detector
-  workstream (L5/G2b), not only the 20% post-miss mass.
+## Four defects I introduced and caught — read these before trusting my code
 
-## Dead ends already tried (do not re-litigate without new evidence)
-- fuse_score with COCO detections (worse IDF1/IDsw), coast-only lowconf mode (regressed
-  on real data), kf noise inflation (neutral), buffer size beyond 60 (zero expiries),
-  semantic-tag self-calibration for instance ids (picked scenery), actor-id == instance-id
-  (false), cross-backend visibility correlation as a gate (structurally unsound — see D23).
+1. **D49 `timeout` format** — the emitted array passed SLURM `HH:MM:SS` to coreutils
+   `timeout`, which rejects it. All 23 tasks of array 77126 died in under a second. The
+   suite had only ever asserted the `#SBATCH --time` line. Fixed + mutation-tested guard.
+2. **D57 dataset-prep race** — concurrent `os.link` → `FileExistsError` → `copy2` →
+   `SameFileError` killed 10/12 Stage-1 tasks. Fixed with a tolerant link *and* a prep
+   lock, which also closed a worse latent race (a peer `rmtree`-ing a dataset mid-build).
+3. **D60 wrong-dataset x-axis** — the dose-response x-axis was read from ultralytics'
+   `results.csv`, which validates on the *MOT20 training split*, not MOT17. **Its failure
+   mode was a false null**: near-zero x-variance would have produced a wide CI that the
+   pre-registered kill criterion reads as "mechanism not established". Fixed and
+   instrument-proved (`gtvis` scores exactly 1.0000).
+4. **Wall caps derived instead of transcribed** — my launcher computed `01:00:00` where
+   the frozen doc says `01:15:00`, i.e. tighter than the pre-registration, which would
+   have killed units the doc permits to finish. Caps now come verbatim from the doc.
 
-## Disposable artifacts
-- results/raw/dev_half/trackers/hidden_* (~60 tagged grid dirs) and coasting twins:
-  regenerable, delete-safe with user approval only (standing rule).
-- data/sim/carla_render_10bp: v3 renders (10-blueprint era) — tracking GT valid,
-  re-ID labels superseded; kept for comparison.
+The pattern worth noting: three of the four would have produced a *plausible-looking wrong
+answer* rather than an obvious crash.
 
-## Working tree
-Clean at commit d7caee4 + this handoff commit; branch main, pushed to
-github.com/matus012/occlusion_mot (private).
+## State of the frozen record
+
+`gates.yaml`, `val_manifest.md`, `perun_sweep_v2.md`, `perun_detector_v1.md` are all
+intact. Two amendments were appended to `perun_sweep_v2.md` (8: occ-rank1 demoted to a
+within-arm diagnostic; 9: UNIT_EST_H recalibration) and two to `perun_detector_v1.md`
+(1: gtvis/gtall split; 2: the MOT17 x-axis correction). **No threshold was ever moved and
+no history was rewritten.**
+
+## Val
+
+Read exactly once (D45, 2026-08-09). A second event was drafted when the Stage-1 slope came
+back positive, with a recommendation against running it — **user rejected it** (D63).
+`PROPOSED_val2_manifest.md` is retained, marked REJECTED, and authorises nothing.
+
+## What I would pick up next
+
+- `DELETION_PROPOSAL.md` Group A: ~36 GB of gitignored build artifacts, awaiting
+  line-item approval. Only material cleanup win.
+- The open research problem: a better **MOT17-domain** detector, which conflicts with the
+  disjointness that made the Stage-1 read honest. That tension is the real frontier.
+- The tracker-side residual: ~19% of recoverable segments are lost inside the tracker even
+  with perfect detections. No detector work can close it.

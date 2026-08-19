@@ -76,7 +76,7 @@ detector has a lot of room to run.
 Two honest caveats I keep attached to that number:
 
 - 79% is a **ceiling, not a promise**. A real detector lands somewhere between 34.5% and
-  79%. Measuring where is the experiment currently running.
+  79% — the next section is my attempt to find out where, and it did not go as hoped.
 - Even with perfect detections, ~19% of recoverable cases are still lost *inside* the
   tracker. Better detection cannot fix those.
 
