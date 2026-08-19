@@ -34,8 +34,13 @@ units died — go to *Recovery*.
 ssh login02.perun.tuke.sk 'cd /mnt/project/perun26011488/omot/omot_hpc/repo && source scripts/hpc_env.sh && .venv/bin/python scripts/detector_launcher.py --config configs/sweep/perun_detector.yaml --mode local'
 ```
 
-It runs **no new units** when every result exists. It writes
-`results/sweep/perun_detector/summary.json` and prints the two lines that matter:
+It runs **no new units** when every result exists. On first run it also computes each
+detector's **mAP50-95 on MOT17 dev-half** from the cached detections (D60) and caches that
+to `results/detmap_<tag>.json` — this is the dose-response x-axis, and it is NOT the number
+in ultralytics' `results.csv` (that one validates on the MOT20 training split; see
+amendment 2). Expect it to take a few minutes the first time.
+
+It writes `results/sweep/perun_detector/summary.json` and prints the lines that matter:
 
 ```
 PRIMARY oracle_ceiling ~ mAP50-95: slope=... CI=[..., ...] R2=...
@@ -58,6 +63,23 @@ best e2e id_retention ... -> G2b >=0.55: True|False
 **If the slope is positive, val is still NOT unlocked.** D53 decision 1: a positive slope
 earns only the right to *draft* a second frozen val manifest with second-look disclosure,
 for separate approval. Drafting is not approval. Do not run val.
+
+### Sanity checks before you believe the slope
+
+The two reference points are computed, not hardcoded, and both are already verified on the
+cluster:
+
+| detection source | mAP50-95 on MOT17 | meaning |
+|---|---|---|
+| `gtvis` | **1.0000** | built from GT, so anything but 1.0 means the evaluator is broken |
+| `yolo11x` | **0.3969** | the baseline the trained detectors are compared against |
+
+If `gtvis` is not exactly 1.0000, stop and fix the evaluator before reading any verdict.
+
+Also expect the trained detectors to sit **below** the yolo11x baseline on MOT17 —
+observed 0.25–0.33 oracle-ceiling against the baseline's 0.571. Training on MOT20 (a
+different, far denser domain) costs real accuracy on MOT17. That is a genuine cost of the
+honest disjoint-training design and should be reported alongside the slope, not hidden.
 
 ## 4 — Pull the results back
 

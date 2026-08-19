@@ -405,3 +405,12 @@ AUTONOMOUS SESSION 2026-08-19 evening — queue state at 19:45
                         STAGE1_RUNBOOK.md written as the deadline hedge.
   APPROVAL-GATED, untouched: second val run; any deletion; force-push; public-facing.
 
+D60 (2026-08-19 20:10): Stage-1 x-axis defect found and fixed mid-flight; would have
+manufactured a FALSE NULL. results.csv mAP measures the MOT20 training split, not MOT17.
+eval_detector_map.py now computes it on MOT17 from the cached detections; instrument-
+proved (gtvis = 1.0000 exactly, yolo11x = 0.3969) and reproduced bit-identically on the
+cluster. Reference points staged cluster-side so aggregation runs there.
+EARLY SIGNAL (7/12 units): MOT20-trained detectors transfer POORLY to MOT17 --
+oracle_ceiling 0.250-0.333 vs the yolo11x baseline 0.571, e2e 0.167-0.202 vs 0.345.
+Honest disjoint-domain training costs real accuracy. Reportable finding either way.
+
