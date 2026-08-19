@@ -360,6 +360,7 @@ Residual: assoc 0.810 even at perfect detection => ~19% of associable segments l
 the tracker; detector work cannot close that. time_err 21.5f unchanged by perfect
 detections (not detector-limited).
 Cost ~0 H200-h (ran locally on the 4060); 32.26 h still remains under the 40 h ceiling.
-MOT20 incremental transfer running in background (3.2 GB, ~55 min).
+MOT20 incremental transfer DONE (2026-08-19 18:42): 3.2 GB, 44 min, sha256 OK
+  (3b62453b...), unpacked to cluster repo/data/MOT20 = 8931 frames across 4 sequences,
+  matching local exactly. Stage-1 prerequisite (4) satisfied.
 NEXT: user go/no-go on Stage 1 (12 trained detectors, 21.65 h). NOT submitted, per D53 d2.
-
