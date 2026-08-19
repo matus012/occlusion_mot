@@ -2,7 +2,9 @@
 
 Smoke job **passed** (SLURM 77122, gpu04). The pre-registered detector lever
 **fired** on its throughput read, so the grid is now **23 units, not 25**.
-Builder has autonomy from here: submit, monitor, retry, aggregate.
+
+**Array 77150 SUBMITTED and running** (2026-08-19 09:26). A first attempt, 77126,
+died instantly on a `timeout` format bug -- see *Cluster repo provenance* below.
 
 ---
 
@@ -139,6 +141,49 @@ SLURM values filled in `configs/sweep/perun_full.yaml`:
 
 `gpu_short` (2-day limit) and `gpu_long` (4-day) span the same 26 nodes; the longest
 unit wall is 02:30, so the short queue is correct and schedules sooner.
+
+## Cluster repo provenance (IMPORTANT)
+
+The cluster tree is **NOT** a pristine extraction of the shipped bundle. It is:
+
+```
+bundle 8421645  +  patch 4c97f1d  (3 files, hot-patched 2026-08-19 09:20)
+```
+
+`repo.tar` inside `omot_hpc_8421645.tar.gz` still hashes as `VERIFY OK` — the manifest
+is untouched and remains valid for the bundle as shipped. These three files on the
+cluster now differ from it, by deliberate operator action (user-approved, option (a)):
+
+| File | sha256 (patch 4c97f1d) |
+|---|---|
+| `scripts/sweep_common.py` | `a2b4a6dc732eead34a2dc3340e6be191a8256a6dfc5c28c945bc2d139bf8df15` |
+| `scripts/sweep_launcher.py` | `f68e7ca52e342037a35839c77a0a47c119bcdf095c2fe15a647a5dbb38e50838` |
+| `tests/test_sweep_launcher.py` | `13cebad76cc94c5b6736a4b4c422dceaff4668fecd147e3f6547468079f1fc44` |
+
+Verified byte-identical local vs post-scp (`sha256sum -c`, all three OK). The
+pre-patch originals are preserved at `.pre_4c97f1d/` in the repo root:
+
+| File | sha256 (bundle 8421645) |
+|---|---|
+| `sweep_common.py` | `b517851cf0fb5886adf74e5b598ec8d3b5d3342657db3b6b73777fe230cde6af` |
+| `sweep_launcher.py` | `8110395b15cb5f2fcefdfb01b8032b2cde9cf964c8920376b39146c40eaf537e` |
+| `test_sweep_launcher.py` | `276bc5c364cf7a0ed10e6fa69db1f4688cd7af0f850595135085dd588da726af` |
+
+**Why:** array 77126 lost all 23 tasks in under a second to
+`timeout: invalid time interval '02:10:00'`. coreutils `timeout` takes `NUMBER[smhd]`
+and rejects SLURM's `HH:MM:SS`; the emitted `LIMITS` array reused the `#SBATCH --time`
+string, so per-class wall enforcement could never have run. Zero result JSONs, zero
+GPU-hours. Fix emits `2400s / 7800s / 9000s` — the same walls to the second — while
+`--time` keeps `HH:MM:SS`.
+
+It is a third file, not two, because the new regression test had to ship for it to be
+runnable on the cluster tree. It was run there before regenerating: **passes**.
+
+Three cluster test failures are environmental and pre-existing, not from the patch:
+`test_shipped_perun_full_config_has_slurm_placeholders` (we filled the placeholders --
+that is the HPC-day edit), `test_every_requirement_names_a_real_path` (wants the dev-box
+`data/wheelhouse`; on the cluster it is `../wheelhouse`), and
+`test_every_source_module_is_tracked_by_git` (the tree is a tar extraction, not a git repo).
 
 ## Storage layout
 

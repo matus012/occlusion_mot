@@ -262,3 +262,29 @@ D49 deviations from HPC_RUNBOOK.md (both deliberate, recorded in READY.md):
 
 NEXT: user submits smoke by hand, reads GPU probe + per-epoch detector time, then
 go/no-go on the 25-unit array.
+
+D49 ARRAY LIVE (2026-08-19 09:26): SLURM array 77150, 23 units, 0-22%8 on gpu_short.
+- amendment 7 fired pre-submit: smoke 77122 measured yolo11s 88 s/epoch @ imgsz 960;
+  yolo11m projected ~277 s/epoch (154.2/48.9 GFLOPs ratio) = ~7.7 h vs the 02:30 hard
+  cap, so detector.models dropped to [yolo11s]. Grid 25 -> 23 units, 32.25-34.25 H200-h
+  vs the unchanged 40 h ceiling. Cap NOT raised.
+- FIRST SUBMISSION 77126 FAILED COMPLETELY: all 23 tasks died in <1 s on
+  "timeout: invalid time interval". coreutils timeout takes NUMBER[smhd] and rejects
+  SLURM HH:MM:SS; the emitted LIMITS array reused the #SBATCH --time string, so the
+  per-class wall enforcement could never have run on any grid. 0 result JSONs, 0
+  GPU-hours consumed. The suite only ever asserted the #SBATCH --time line -- that was
+  the coverage hole. Fixed in 4c97f1d (sweep_common._timeout_arg + time_limit_timeout;
+  launcher emits it), plus a mutation-checked regression test on the coreutils DURATION
+  grammar. Walls identical to the second: 2400s / 7800s / 9000s.
+- CLUSTER REPO IS NOW 8421645 + patch 4c97f1d (3 files, user-approved option (a)):
+    scripts/sweep_common.py       a2b4a6dc732eead34a2dc3340e6be191a8256a6dfc5c28c945bc2d139bf8df15
+    scripts/sweep_launcher.py     f68e7ca52e342037a35839c77a0a47c119bcdf095c2fe15a647a5dbb38e50838
+    tests/test_sweep_launcher.py  13cebad76cc94c5b6736a4b4c422dceaff4668fecd147e3f6547468079f1fc44
+  Verified byte-identical local vs post-scp; pre-patch originals kept at .pre_4c97f1d/.
+  Bundle manifest untouched and still VERIFY OK for the bundle as shipped.
+  Regression test was run ON the cluster tree before regenerating: passes. Three other
+  cluster test failures are environmental (filled placeholders, ../wheelhouse layout,
+  non-git tree), not patch-related.
+- NEXT: monitor to completion, retry missing units per the resume rule (each finished
+  unit exits immediately), then aggregate --mode local for summary.json (per-arm gate
+  selection + pre-registered McNemar p-values).
