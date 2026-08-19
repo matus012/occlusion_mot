@@ -383,3 +383,25 @@ D56/D57 STAGE 1 SUBMITTED (2026-08-19 19:12) — array 77354, 12 units, 0-11%8.
 - budget: 12 units, nominal 21.43 h, worst case at caps 27.00 h vs 32.26 h remaining.
   Caps transcribed verbatim from the frozen doc, not derived.
 
+AUTONOMOUS SESSION 2026-08-19 evening — queue state at 19:45
+  [1] STAGE-1 WATCH   : ARMED (persistent monitor, 15 min poll). Array live: 7 units
+                        running (77354_0/5 + 77367_1/2/6/7/8), 5 mot20_carla units held
+                        behind the D57b site node limit with a retrying submitter.
+                        0/12 results yet. Aggregation is one command (STAGE1_RUNBOOK.md).
+  [2] DEMO REBUILD    : DONE for the current stack. render_demo.py --all re-rendered every
+                        clip incl. hero.mp4; showcase re-rendered against reid_conv
+                        (10 clips + contact sheet). demo/README.md S7/S8 rewritten to the
+                        post-sweep reality (G2a null, Stage-0 bottleneck, val CLOSED).
+                        PENDING: re-render + hero clip with the Stage-1 best detector,
+                        which needs the array to finish.
+  [3] README FINAL    : DONE. hero GIF -> problem -> three-line findings -> how-it-was-
+                        measured table -> detail. New detector-workstream section with the
+                        Stage-0 table and both caveats. Stage-1 verdict slot left explicit.
+  [4] REPO CLEANUP    : PROPOSAL WRITTEN (DELETION_PROPOSAL.md), nothing moved or deleted.
+                        Group A alone is ~36 GB of gitignored build artifacts. Awaiting
+                        line-item approval.
+  [5] PROJECT DOCS    : occlusion_mot_plain.md written (1-page plain English).
+                        context.md D51-D59 current. status.txt = this file.
+                        STAGE1_RUNBOOK.md written as the deadline hedge.
+  APPROVAL-GATED, untouched: second val run; any deletion; force-push; public-facing.
+
