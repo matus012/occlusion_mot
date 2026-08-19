@@ -85,8 +85,10 @@ result file by path.
       ByteTrack's 30-frame buffer — the committed index says **25.0**, which is *inside*
       the buffer. The buffer argument now rests on the tail (p90 = 97.3) where it actually
       holds, which is both correct and a stronger point.
-  (b) CARLA segment count 223 → **225** per `results/carla_feeder.json`. **The top-level
-      README still says 223 and is stale** — not touched, out of scope for this item.
+  (b) CARLA segment count 223 → **225** per `results/carla_feeder.json`. (I first
+      reported the stale value as living in README.md — wrong: README never carried it.
+      The stale instances were `status.txt` and `context.md` D23, both handled in D66:
+      status corrected outright, the dated D23 entry annotated rather than rewritten.)
   (c) segment-count sourcing split correctly: 168 dev-half comes from the run outputs,
       133 val-half from the segment index (they do not sum to the 328 full-sequence count).
 - Verified independently: G0 ΔHOTA 0.522 / ΔIDF1 0.070 recomputed from

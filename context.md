@@ -241,7 +241,11 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   creation (uv 0.11.30 minor-version-link bug on Windows).
 - **D23 (2026-07-23) G4 frozen — sim feeder validated; what the validation may claim.**
   24 CARLA scenarios rendered (Town10HD, deterministic teleport paths), 223 occlusion
-  segments, exact per-walker visibility via isolation-calibrated instance ids.
+  segments [ANNOTATION D66, 2026-08-19: the committed `results/carla_feeder.json` records
+  `n_occlusion_segments: 225`. The 223 above is left as written -- dated entries are not
+  rewritten -- but 225 is the number that traces to the artifact and is what
+  report/omot_report.md and status.txt now use.], exact per-walker visibility via
+  isolation-calibrated instance ids.
   Validation lessons burned in: (a) cross-backend visibility correlation is structurally
   unsound where occluder PROPS differ from spec slabs (a mock walker lingering in a
   spec-box shadow reads "always hidden" while the sim correctly sees it — walker-6 case);
@@ -947,3 +951,12 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   scored below the baseline detector (D61) — showing one would misrepresent the result.
   License rules unchanged: `hero.mp4` contains MOT17 pixels, stays gitignored, regenerable
   with `--only hero`.
+- **D66 (2026-08-19) CARLA segment count reconciled to the artifact: 223 -> 225.**
+  `results/carla_feeder.json` records `n_occlusion_segments: 225`; two documents still
+  carried 223. Corrected in `status.txt` (current-state, so it is simply wrong there) and
+  **annotated, not rewritten**, in the D23 entry above — dated decision entries are
+  historical record and the D-log rule forbids editing them silently, so the annotation
+  states the artifact value and leaves the original text standing. Also corrected my own
+  error in `SESSION_QUEUE.md`: I had reported the stale value as living in `README.md`,
+  which never carried it. No gate, threshold or result changes; this is a provenance fix so
+  every published count traces to the committed artifact.

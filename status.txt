@@ -36,7 +36,7 @@ phase 5 state:
   MOTSequence + scenario spec + mock backend; then sim install + >=20 scenarios (G4).
 
 - 5b COMPLETE — G4 PASS (D23): CARLA 0.9.15 operational (D22 bring-up), sim_driver with
-  isolation-calibrated visibility, 24 scenarios / 223 segments (results/carla_feeder.json),
+  isolation-calibrated visibility, 24 scenarios / 225 segments (results/carla_feeder.json),
   agreement validation 24/24 (results/sim_agreement.json). Re-ID dataset extracted:
   161 identities / 59,563 crops, identity-disjoint split (data/sim/reid).
 
