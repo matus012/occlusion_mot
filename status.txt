@@ -1,5 +1,8 @@
-phase: 4-hidden-state
-updated: 2026-07-22 (session 2)
+state: CLOSED (2026-09-04)
+phase: complete — P1 (tracker + hidden-state) and P2 (CARLA data engine) delivered;
+       G2 retention floor and G2b detector gate NOT MET and reported as such.
+updated: 2026-09-04 (close-out session)
+final compute: 18.46 / 40 H200-h on TUKE PERUN (21.54 h unspent; ceiling never moved)
 
 done:
 - Phases 0-1: scaffold + eval harness (34 tests green, coverage >80%, G3 PASS)
@@ -462,4 +465,43 @@ hidden-state + conv embedder @ app0.45):
 SESSION COMPLETE 2026-08-19 22:40. Gates green (ruff clean, full pytest green), tree
 clean, nothing running. All queue items done except repo cleanup, which waits on user
 line-item approval of DELETION_PROPOSAL.md. Resume from SESSION_QUEUE.md.
+
+================================================================================
+PROJECT CLOSED — 2026-09-04 (close-out session, D67)
+================================================================================
+State: CLOSED. No work in progress, nothing running, no SLURM jobs, no monitors.
+Final compute: 18.46 / 40 H200-h (embedder sweep 7.74 + detector Stage 1 10.72;
+Stage 0 ran locally on the RTX 4060 at ~0 H200-h). 21.54 h unspent. Ceiling never moved.
+
+Delivered:
+- own ByteTrack-equivalent tracker, implementation equivalence frozen as G0
+- hidden-agent state module: damped prediction, 90-frame tail-sized buffer,
+  appearance-gated recovery. Parity gates PASS on held-out val
+  (HOTA 49.98 -> 51.07, IDF1 58.28 -> 60.09, IDsw 359 -> 298); retention 0.292 -> 0.345
+- CARLA occlusion-scenario data engine, 24 scenarios / 225 occlusion segments,
+  exact per-walker visibility GT (G4 PASS)
+- offline hash-verified HPC pipeline (bundle 8421645 + patch 4c97f1d), 35 units executed
+- technical report report/omot_report.md; README carries the Headline summary
+
+Proven: end-to-end retention is detector-capped. GT visible boxes 0.345 -> 0.786,
+ceiling 0.571 -> 0.970; 12-detector dose-response slope 0.902 CI [0.784, 1.021] R2 0.949.
+
+Null / not met (reported, never tuned away):
+- trained appearance embedder vs ImageNet null at tracker level: NOT ESTABLISHED at any
+  scale tested (best paired McNemar p = 0.143 vs frozen 0.05)
+- every MOT17-disjoint-trained detector scored BELOW off-the-shelf yolo11x -> G2b NOT MET
+- sim+real > real-only (P2): NOT ESTABLISHED by its own pre-registered rule
+- G2 end-to-end retention 0.55: NOT MET (0.345 dev / 0.278 val)
+
+Open forks — FUTURE WORK, NOT PURSUED:
+1. A better MOT17-DOMAIN detector, which conflicts with the disjointness that made the
+   Stage-1 read honest. The tension is unresolved.
+2. The tracker-side residual: ~19% of recoverable segments are lost inside the tracker
+   even with perfect detections. No detector work can close it.
+3. Sim-to-real transfer (P2) beyond the data engine itself.
+
+Housekeeping this session: DELETION_PROPOSAL.md Group A executed (A1 superseded transfer
+bundle, A2 staging tree, A4 CARLA installer zip) — 28.81 GiB freed, all gitignored, zero
+repo/history/result impact. A3 (deployed bundle 8421645, provenance anchor) and A5 (the
+working CARLA install) KEPT per the proposal. Groups B/C/D untouched.
 

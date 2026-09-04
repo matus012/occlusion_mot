@@ -3,6 +3,31 @@
 Occlusion-aware multi-object tracking with **hidden-agent state prediction** (P1) and a
 **CARLA occlusion-scenario data engine** for sim2real ablation (P2).
 
+## Headline
+
+**Built:** an own ByteTrack-equivalent tracker (implementation equivalence frozen as G0),
+a hidden-agent state module (damped motion prediction while occluded, a 90-frame buffer
+sized on the measured gap *tail*, appearance-gated recovery), a CARLA occlusion-scenario
+data engine that emits exact per-walker visibility ground truth, and an offline,
+hash-verified HPC pipeline that executed 35 pre-registered units on TUKE PERUN H200s for
+**18.46 of a 40 H200-h** budget that was never moved. **Proven:** the module clears every
+ByteTrack-parity gate on held-out val (HOTA 49.98 -> 51.07, IDF1 58.28 -> 60.09, ID
+switches 359 -> 298) while raising occlusion retention 0.292 -> 0.345, and end-to-end
+retention is **detector-capped** -- substituting ground-truth visible boxes at the top of
+an unchanged pipeline lifts retention **0.345 -> 0.786** and the recoverable-occlusion
+ceiling 0.571 -> 0.970, with a 12-detector dose-response fixing the ceiling on detector
+mAP at slope **0.902** (95% CI [0.784, 1.021], R2 0.949). **Null:** the trained appearance
+embedder never beat an ImageNet null at tracker level at any scale tested (best paired
+p = 0.143 against a frozen 0.05); all 12 detectors trained on MOT17-disjoint data scored
+*below* the off-the-shelf yolo11x baseline, leaving the 0.55 retention gate **not met**;
+and *sim+real > real-only* is **not established** by its own pre-registered rule.
+**Bottom line:** no model trained in this project improved end-to-end tracking -- the
+mechanism behind the ceiling is established, the route to exploiting it is not. **Project
+closed 2026-09-04**; the three remaining forks -- a MOT17-domain detector that keeps the
+disjointness that made this read honest, the ~19% tracker-side residual that survives
+perfect detections, and sim-to-real transfer -- are recorded as future work and were not
+pursued.
+
 **Status (2026-08-19): pre-registered val executed as frozen (D45); the PERUN-scale
 embedder sweep executed and returned a NULL (D50); the detector bottleneck located and
 quantified (D55).** Dev-half tables are tuning-time numbers; the val section is the honest
@@ -300,7 +325,7 @@ failure mode to the gate scoreboard.
 ## Repo map
 
 - `src/omot/` — loaders, MOT IO, detection/embedding caches, tracker, hidden-state module, eval (incl. paired test)
-- `mission.md` / `gates.yaml` / `status.txt` / `context.md` — mission, executable gates, state, full decision log D1–D46
+- `mission.md` / `gates.yaml` / `status.txt` / `context.md` — mission, executable gates, state, full decision log D1–D67
 - `val_manifest.md` / `perun_sweep_v2.md` / `perun_detector_v1.md` — frozen val pre-registration; executed sweep design + post-execution amendments; frozen G2b detector pre-registration
 - `occlusion_mot_plain.md` — one-page plain-English overview: what was found, what it means, what's next
 - `configs/sweep/` + `scripts/sweep_*.py` — config-driven sweep (identical entrypoint local/SLURM)

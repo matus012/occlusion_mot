@@ -960,3 +960,34 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   error in `SESSION_QUEUE.md`: I had reported the stale value as living in `README.md`,
   which never carried it. No gate, threshold or result changes; this is a provenance fix so
   every published count traces to the committed artifact.
+
+- **D67 (2026-09-04) PROJECT CLOSED — close-out session.** State set to CLOSED in
+  `status.txt`; final compute **18.46 / 40 H200-h** (embedder sweep 7.74 + detector
+  Stage 1 10.72; Stage 0 ran locally at ~0 H200-h), 21.54 h unspent, the 40 h ceiling
+  never moved. Delivered: the G0-frozen tracker, the hidden-state module (parity gates
+  PASS on held-out val, retention 0.292 -> 0.345), the CARLA data engine (24 scenarios,
+  225 segments, exact per-walker visibility GT), the offline hash-verified HPC pipeline,
+  and `report/omot_report.md`. Proven: end-to-end retention is **detector-capped** — GT
+  visible boxes take retention 0.345 -> 0.786 and the ceiling 0.571 -> 0.970, dose-response
+  slope 0.902 CI [0.784, 1.021] R² 0.949. Null and reported as such: the trained embedder
+  never beat the ImageNet null at tracker level (best paired p = 0.143 vs frozen 0.05);
+  all 12 MOT17-disjoint-trained detectors scored below off-the-shelf yolo11x, so **G2b is
+  NOT MET**; *sim+real > real-only* is **not established** by its own pre-registered rule;
+  and G2's 0.55 retention target is **not met** (0.345 dev / 0.278 val). **No model trained
+  in this project improved end-to-end tracking, and nothing here claims otherwise.** A
+  `## Headline` section was added at the top of `README.md` carrying exactly these numbers,
+  matched to the report.
+  **The three open forks are recorded as FUTURE WORK, NOT PURSUED:** (1) a better
+  *MOT17-domain* detector, which conflicts with the disjointness that made the Stage-1 read
+  honest — the tension is unresolved; (2) the ~19% of recoverable segments lost *inside the
+  tracker* even with perfect detections, which no detector work can close; (3) sim-to-real
+  transfer (P2) beyond the data engine itself. None is blocked; each is simply out of
+  scope at closure.
+  Housekeeping: `DELETION_PROPOSAL.md` **Group A executed** on owner approval — A1
+  (superseded transfer bundle `omot_hpc_f1df992.tar.gz` + sidecars), A2 (`dist/omot_hpc`
+  staging tree) and A4 (`tools/CARLA_0.9.15.zip`) hard-deleted for **28.81 GiB** freed.
+  All three were gitignored build artifacts: zero repository, history or result impact,
+  and each is regenerable (`make_hpc_bundle.py build --reuse`; re-download for CARLA).
+  A3 (`omot_hpc_8421645.tar.gz`, the provenance anchor for the deployed cluster tree) and
+  A5 (the working CARLA install) were **KEPT** per the proposal's own recommendation.
+  Groups B, C and D were not touched.

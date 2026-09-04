@@ -1,5 +1,12 @@
 # Session handoff — 2026-08-19 (autonomous evening session)
 
+> **PROJECT CLOSED 2026-09-04 (D67).** This file is retained as the narrative record of
+> the session that executed both PERUN workstreams. It is no longer a handoff: there is
+> nothing to pick up. Final state is `status.txt` (`state: CLOSED`), the write-up is
+> `report/omot_report.md`, and the summary is the `## Headline` section of `README.md`.
+> Final compute 18.46 / 40 H200-h. The "what I would pick up next" section below has been
+> rewritten as future work that was **not pursued**.
+
 **Start here, then read `SESSION_QUEUE.md`.** That file is the resumable state: queue
 items, acceptance criteria, decisions received, and the approval-gated list. This file is
 the narrative of what happened in this session and why.
@@ -57,11 +64,20 @@ Read exactly once (D45, 2026-08-09). A second event was drafted when the Stage-1
 back positive, with a recommendation against running it — **user rejected it** (D63).
 `PROPOSED_val2_manifest.md` is retained, marked REJECTED, and authorises nothing.
 
-## What I would pick up next
+## Future work — not pursued (recorded at closure, D67)
 
-- `DELETION_PROPOSAL.md` Group A: ~36 GB of gitignored build artifacts, awaiting
-  line-item approval. Only material cleanup win.
-- The open research problem: a better **MOT17-domain** detector, which conflicts with the
-  disjointness that made the Stage-1 read honest. That tension is the real frontier.
-- The tracker-side residual: ~19% of recoverable segments are lost inside the tracker even
-  with perfect detections. No detector work can close it.
+The project closed with these three forks open. None is blocked; each was simply out of
+scope at closure, and none is claimed as a result.
+
+1. **A better MOT17-domain detector.** The actionable next step, and it conflicts with the
+   MOT17-disjointness that made the Stage-1 read honest. That tension is unresolved and is
+   the real frontier.
+2. **The tracker-side residual.** ~19% of recoverable segments are lost inside the tracker
+   even with perfect detections. No detector work can close it.
+3. **Sim-to-real transfer (P2) beyond the data engine.** *sim+real > real-only* is **not
+   established** by its own pre-registered rule (assoc holds, occ-rank1 fails and is
+   cross-arm-invalid anyway).
+
+`DELETION_PROPOSAL.md` Group A — the repo-cleanup item this file previously listed — was
+executed at closure on owner approval: 28.81 GiB of gitignored build artifacts removed
+(A1, A2, A4), with A3 and A5 kept as the proposal recommended. Groups B/C/D untouched.
