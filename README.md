@@ -332,4 +332,12 @@ failure mode to the gate scoreboard.
 - `demo/` — guided tour + committed CARLA media; `scripts/showcase.py` — wild-clip renderer
 - `runloop.ps1` — autonomous development loop (invokes `claude -p` per iteration against the gates)
 
-License: AGPL-3.0-only (see context.md D9 — ultralytics dependency).
+## Licensing & data
+
+License: **AGPL-3.0-only**, because the direct dependency `ultralytics` is itself
+AGPL-3.0 (see `context.md` D9). Datasets (MOT17, MOT20, CrowdHuman) are used under
+their non-commercial research licences for evaluation and for detector
+fine-tuning / re-ID experiments only — **no weights trained on them are released**;
+trained checkpoints stay local (gitignored) and are never committed or attached to
+a release. Full dependency list with licences, and dataset/simulator/compute notes:
+[THIRD_PARTY.md](THIRD_PARTY.md).
