@@ -104,7 +104,7 @@ for the dated entry.
 
 | Component | Licence | Notes |
 |---|---|---|
-| CARLA simulator (0.9.15) | Code: MIT. Assets/content: CC-BY | Used as the P2 occlusion-scenario feeder (`sim_driver.py` and the CARLA render pipeline). CARLA itself, and its rendered output, are **not redistributed**: `data/sim/` and `showcase/renders/` are gitignored; only our own loaders, manifests, and metric JSONs derived from CARLA runs are tracked. |
+| CARLA simulator (0.9.15) | Code: MIT. Assets/content: CC-BY | Used as the P2 occlusion-scenario feeder (`sim_driver.py` and the CARLA render pipeline). CARLA itself and the bulk render output are **not redistributed** (`data/sim/` and `showcase/renders/` are gitignored). Exception: four small demo media rendered from CARLA scenes are committed — `demo/s5_carla.mp4`, `demo/s5_carla_excerpt.gif`, `demo/s5_blueprint_grid.png`, `demo/s0_teaser.png` — shared under CARLA's CC-BY content licence with this attribution: *rendered with the CARLA simulator (carla.org), assets © CARLA Team, CC-BY*. |
 
 ## Compute
 
