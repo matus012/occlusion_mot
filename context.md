@@ -991,3 +991,22 @@ TrackEval on top candidates; val-half touched exactly once for final numbers.
   A3 (`omot_hpc_8421645.tar.gz`, the provenance anchor for the deployed cluster tree) and
   A5 (the working CARLA install) were **KEPT** per the proposal's own recommendation.
   Groups B, C and D were not touched.
+
+- **D68 (2026-09-26) Licensing docs added post-closure.** Verified the repo's own claim
+  that no weights trained on MOT17/MOT20/CrowdHuman are released: `git ls-files` carries
+  no `*.pt/.pth/.onnx/.engine/.ckpt/.safetensors/.bin/.zip/.tar*` (blocked by `.gitignore`
+  and `tests/test_license_guard.py`), `gh release list -R matus012/occlusion_mot` returns
+  no releases, and README/docs link no downloadable weights. `scripts/finetune_detector.py`
+  (MOT17 dev-half), `scripts/detector_unit.py` (MOT20) and `scripts/train_reid.py` all write
+  checkpoints under gitignored paths (`*/weights/best.pt`, `data/models/*.pt`) — the claim
+  holds as written. Added `THIRD_PARTY.md` (every dependency + licence from `.venv`
+  `importlib.metadata`, ultralytics AGPL-3.0 called out as why the repo is AGPL-3.0-only;
+  datasets, CARLA, PERUN sections) and a `## Licensing & data` section in `README.md`
+  pointing to it. Fixed the `occulsion` -> `occlusion` typo in `status.txt`'s "done:"
+  summary line (the current, correctly-spelled repo URL). **Not fixed, deliberately:** D12
+  and D17 above both use the spelling `occulsion_mot` because that was the repo's *actual*
+  name at the time each entry describes (D12: creation; D17: the rename itself, which reads
+  as a no-op if "fixed"). Rewriting those would falsify the decision log rather than correct
+  a typo. State line updated: `status.txt` now reads `shipped (closed 2026-09-04; licensing
+  docs added 2026-09-26)`. Closed the stale 2026-08-10 PERUN-submission row in
+  `reports/blockers.md` (project closed 2026-09-04, no PERUN work is outstanding).

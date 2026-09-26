@@ -1,4 +1,4 @@
-state: CLOSED (2026-09-04)
+state: shipped (closed 2026-09-04; licensing docs added 2026-09-26)
 phase: complete — P1 (tracker + hidden-state) and P2 (CARLA data engine) delivered;
        G2 retention floor and G2b detector gate NOT MET and reported as such.
 updated: 2026-09-04 (close-out session)
@@ -14,7 +14,7 @@ done:
   measured (D16): id_retention 0.263, coasting center-err 0.0155@75% cov, time-err 25.5f.
   G2 position/retention thresholds FROZEN: <= 0.015 center-err @ >= 0.90 coverage,
   >= 0.55 retention. time-err stays provisional (user amendment, freezes last).
-- Repo public at github.com/matus012/occulsion_mot (user-approved), main pushed.
+- Repo public at github.com/matus012/occlusion_mot (user-approved), main pushed.
 
 phase 4 state (HALTED at D18 gate, awaiting user decision):
 - v1 geometric module (classification+buffer+damping+recovery) + v2 lowconf handling
