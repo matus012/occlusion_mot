@@ -1,0 +1,62 @@
+"""Phase 2: cache yolo11x person detections for every MOT17 train sequence (run ONCE).
+
+The cache is the fixed-detections source of truth (context.md D1). ~8GB VRAM is plenty
+for batch-1 inference. Usage:
+  .venv/Scripts/python.exe scripts/cache_detections.py [--device cuda|cpu]
+"""
+from __future__ import annotations
+
+import argparse
+import logging
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from omot.data.mot import load_split  # noqa: E402
+from omot.detect.cache import cache_detections  # noqa: E402
+
+logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
+logger = logging.getLogger("cache_detections")
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data-root", type=Path, default=ROOT / "data" / "MOT17")
+    ap.add_argument("--cache-dir", type=Path, default=ROOT / "data" / "cache" / "detections")
+    ap.add_argument("--model", default="yolo11x.pt", help="cache tag key (filenames)")
+    ap.add_argument("--weights", type=Path, default=None,
+                    help="optional custom checkpoint path (e.g. a finetuned .pt); when set, "
+                         "--model must differ from the default so the yolo11x cache is never "
+                         "overwritten (FIXED DETECTIONS invariant)")
+    ap.add_argument("--device", default=None, help="cuda|cpu (default: auto)")
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--only", default=None, help="cache only this sequence name")
+    args = ap.parse_args()
+
+    if args.weights is not None:
+        assert args.model != ap.get_default("model"), (
+            "--weights requires a non-default --model cache tag "
+            "(never overwrite the yolo11x cache; e.g. --model yolo11s_ft)"
+        )
+
+    seqs = load_split(args.data_root, "train", detector="FRCNN")
+    if args.only is not None:
+        seqs = [s for s in seqs if s.name == args.only]
+        if not seqs:
+            raise SystemExit(f"sequence {args.only!r} not found")
+    model_path = str(args.weights) if args.weights is not None else args.model
+    cache_tag = Path(args.model).stem
+    for seq in seqs:
+        cache_detections(
+            seq, args.cache_dir, model_name=model_path, device=args.device, seed=args.seed,
+            cache_tag=cache_tag,
+        )
+    logger.info("all %d sequences cached", len(seqs))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

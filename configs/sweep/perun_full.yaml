@@ -1,0 +1,84 @@
+# PERUN full sweep (perun_sweep_v2.md + D43 amendments). NOT executed locally --
+# submit via: scripts/sweep_launcher.py --config configs/sweep/perun_full.yaml --mode slurm
+# (emits results/sweep/perun_full/submit.sbatch; sbatch it manually after review).
+#
+# Grid (doc v2 + D48 amendment 5; D49 amendment 7 fired the detector lever): 23 array units.
+#   18 embedder trainings = ablation core B/C/D @ FULL pool x 3 seeds (9) + arm D
+#      identity-scaling curve {300,1000,2000,3520} x 3 seeds (9 more; the 3520 point
+#      IS the core's full-pool point, shared, not duplicated).
+#    3 arm-A ImageNet-null units = A:full:{0,1,2}. NOT extra trainings -- arm A does
+#      no training, and ImageNet weights are seed-independent, so all three are
+#      identical. They exist because the pre-registered McNemar is paired PER SEED
+#      (D vs A, C vs A), which needs an arm-A tracker output per seed. D48 amendment 5
+#      records that the doc's grid table undercounted this cell; enumeration stays 25.
+#    2 detector finetunes = yolo11s x 2 data mixes, ~100 epochs each. yolo11m was
+#      DROPPED by the pre-registered D48 lever on 2026-08-19 (amendment 7): the smoke
+#      job measured 88 s/epoch for yolo11s at imgsz 960, and yolo11m is 154.2/48.9 =
+#      3.15x its GFLOPs there, projecting ~277 s/epoch -> ~7.7 h for 100 epochs,
+#      far past the 02:30 hard cap. Lever applied, cap NOT raised.
+#      (mixes = mot17dev vs mot17dev_carla, D43-delta(b): finetune_detector.py's --mix
+#      now really folds CARLA scenario frames into TRAIN).
+name: perun_full
+half: dev
+gate_probe: [0.40, 0.45, 0.50]
+epochs: 60
+batches_per_epoch: 400
+eval_every: 5  # D43-delta(a): budget-load-bearing (5x eval-cost cut, see context.md D43)
+seeds: [0, 1, 2]
+pools: [null]  # default: full pool for every arm except D's override below
+
+arms:
+  A:
+    sources: null  # ImageNet null -- no training, cache pass only
+  B:
+    sources: [sim]
+  C:
+    sources: [mot17_dev, mot20, market1501]
+  D:
+    sources: [mot17_dev, sim, mot20, market1501]
+    pools: [300, 1000, 2000, 3520]  # identity-scaling curve (D36 log-scale requirement)
+
+mcnemar_pairs:
+  - [D, A]
+  - [D, C]
+  - [C, A]
+
+detector:
+  enabled: true
+  models: [yolo11s]  # D49 amendment 7: yolo11m dropped, ~277 s/epoch projected vs 02:30 cap
+  mixes: [mot17dev, mot17dev_carla]
+  base_weights: null  # null -> "<model>.pt" pretrained checkpoint
+  epochs: 100
+  imgsz: 960
+  batch: 8
+
+# D43-delta(d): partition/account are unfilled placeholders on purpose -- load_config
+# WARNS (never fails) on them so local use is never blocked, but submission-side stays
+# visibly incomplete until a human fills in the real PERUN values.
+#
+# D47: THESE TWO STRINGS ARE THE ENTIRE HPC-DAY EDIT. Everything else -- wall limits,
+# array size, concurrency, log paths, the offline environment -- is derived by
+# sweep_launcher.py from this file. Per-unit `time` is no longer set by hand: limits
+# come from sweep_common.UNIT_EST_H x SLURM_TIME_MARGIN, per unit class, and the grid
+# total is asserted against budget_ceiling_h before a script is written.
+#
+# D48: the detector class additionally carries a HARD 02:30:00 wall cap
+# (sweep_common.UNIT_TIME_CAP_H), which is what pulls the grid's worst case from
+# 41.25 h to 39.25 h under the ceiling below. See perun_sweep_v2.md amendment 6 --
+# a detector unit over 2.5 h is killed and leaves no result JSON, by design.
+slurm:
+  partition: "<FILL-PERUN-PARTITION>"
+  account: "<FILL-PERUN-ACCOUNT>"
+  gres: "gpu:1"
+  # Deliberately modest: an 8x H200 node is typically 64-128 cores / 1-2 TB, so
+  # 8 cores + 64 GB per task lets all 8 GPUs of one node run concurrently without
+  # the request itself becoming the reason the array sits in the queue. Raise
+  # cpus_per_task if the crop-decode DataLoader turns out to be the bottleneck.
+  cpus_per_task: 8
+  mem: "64G"
+  max_concurrent: 8      # 8x H200 per node -> one node saturated, no more
+  time_smoke: "00:40:00"
+  budget_ceiling_h: 40   # perun_sweep_v2.md; never moved to make a check pass
+
+env:
+  device: cuda

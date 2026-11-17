@@ -1,0 +1,10 @@
+{
+  "base_tag": "hidden_audit_base",
+  "pick_tag": "hidden_d26best",
+  "a1_pick_retains": "<repo>\\viz\\a1_pick_retains_MOT17-04-FRCNN_t66_gap109.mp4",
+  "a2_pick_retains": "<repo>\\viz\\a2_pick_retains_MOT17-10-FRCNN_t31_gap47.mp4",
+  "b_pick_tracker_failure": "<repo>\\viz\\b_pick_tracker_failure_MOT17-02-FRCNN_t36_gap128.mp4",
+  "c_detector_ceiling": "<repo>\\viz\\c_detector_ceiling_MOT17-02-FRCNN_t68_gap145.mp4",
+  "crops_png": "<repo>\\viz\\crops_assoc_scope.png",
+  "summary_png": "<repo>\\viz\\summary_retention_grid.png"
+}

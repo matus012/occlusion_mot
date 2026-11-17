@@ -1,0 +1,49 @@
+{
+  "unit": "yolo11m:mot20_carla:0",
+  "model": "yolo11m",
+  "mix": "mot20_carla",
+  "seed": 0,
+  "epochs": 20,
+  "tag": "det_perun_detector_yolo11m_mot20_carla_s0",
+  "det_metrics": {
+    "epoch": 20.0,
+    "time": 3394.75,
+    "train/box_loss": 0.54125,
+    "train/cls_loss": 0.26291,
+    "train/dfl_loss": 0.86167,
+    "metrics/precision(B)": 0.95311,
+    "metrics/recall(B)": 0.93191,
+    "metrics/mAP50(B)": 0.96459,
+    "metrics/mAP50-95(B)": 0.60776,
+    "val/box_loss": 1.24051,
+    "val/cls_loss": 0.46627,
+    "val/dfl_loss": 1.34739,
+    "lr/pg0": 0.000119,
+    "lr/pg1": 0.000119,
+    "lr/pg2": 0.000119
+  },
+  "g2": {
+    "n_segments": 168,
+    "id_retention": 0.17857142857142858,
+    "id_retention_assoc": 0.6666666666666666,
+    "n_assoc_scope": 45,
+    "pre_match_rate": 0.36904761904761907,
+    "oracle_ceiling": 0.26785714285714285,
+    "center_err_coverage": 0.3333333333333333,
+    "cov_prematched": 0.9032258064516129,
+    "time_err_coverage": 0.3630952380952381,
+    "reemergence_center_err_med": 0.005267325784943832,
+    "reemergence_time_err_med": 25.0
+  },
+  "map50_95": 0.60776,
+  "oracle_ceiling": 0.26785714285714285,
+  "id_retention": 0.17857142857142858,
+  "id_retention_assoc": 0.6666666666666666,
+  "runtimes": {
+    "train_s": 3418.9524443149567,
+    "detect_s": 63.73739266395569,
+    "embed_s": 42.026973485946655,
+    "track_s": 5.886753559112549
+  },
+  "label": "MOT17-disjoint training (perun_detector_v1.md s1) -- NOT dev-optimistic"
+}

@@ -1,0 +1,52 @@
+# Direct dependencies of the PERUN sweep path, for LINUX/cu126 resolution.
+#
+# This is the *input* to requirements-lock.txt (the offline cluster lock):
+#   uv pip compile requirements-hpc.in \
+#       --python-platform x86_64-manylinux_2_28 --python-version 3.11 \
+#       --extra-index-url https://download.pytorch.org/whl/cu126 \
+#       --index-strategy unsafe-best-match -o requirements-lock.txt
+# (scripts/make_hpc_bundle.py --refresh-lock runs exactly that command.)
+#
+# Deliberate deviations from the dev-box requirements.txt, both HPC-motivated:
+#   * opencv-python -> opencv-python-headless: compute nodes routinely lack
+#     libGL.so.1, which the non-headless wheel dlopen()s at `import cv2`.
+#     Same `cv2` module, no code change.
+#   * trackeval (git dep) is EXCLUDED: the sweep entrypoint runs run_hidden.py
+#     with --skip-trackeval, so TrackEval is never imported on the cluster. It is
+#     a git+https dependency and would need network at install time.
+#   * carla is EXCLUDED: simulation is a dev-box/phase-5 concern; the sweep
+#     consumes already-extracted crops (data/reid/sim) and rendered scenario
+#     frames (data/sim/carla_render), never the CARLA client.
+#
+# Versions are pinned to the dev-box requirements.txt wherever the package exists
+# for both platforms, so cluster results stay comparable to local ones.
+
+torch==2.13.0+cu126
+torchvision==0.28.0+cu126
+
+numpy==1.26.4
+scipy==1.17.1
+pillow==12.2.0
+pyyaml==6.0.3
+opencv-python-headless==4.11.0.86
+
+matplotlib==3.11.1
+pandas==3.0.3
+# polars is NOT listed: nothing in src/ or scripts/ imports it (it arrived as a
+# transitive dev-box dep) and polars-runtime-32==1.43.0 is yanked upstream.
+
+ultralytics==8.4.104
+supervision==0.29.1
+lapx==0.9.4
+pycocotools==2.0.11
+
+motmetrics==1.4.0
+xmltodict==1.0.4
+defusedxml==0.7.1
+
+psutil==7.2.2
+tqdm==4.69.0
+requests==2.34.2
+
+pytest==9.1.1
+pytest-timeout==2.4.0

@@ -1,0 +1,245 @@
+{
+  "dev_baseline": {
+    "config": {
+      "occl_buffer": 30,
+      "vel_damping": 1.0,
+      "recover_gate": 0.0001,
+      "occl_overlap_thresh": 1.1,
+      "lowconf_noise_scale": 1.0,
+      "lowconf_mode": "kf",
+      "app_gate_lost": null,
+      "app_gate_recover": null
+    },
+    "g2": {
+      "n_segments": 168,
+      "id_retention": 0.2916666666666667,
+      "pre_match_rate": 0.7678571428571429,
+      "center_err_coverage": 0.6547619047619048,
+      "time_err_coverage": 0.7559523809523809,
+      "reemergence_center_err_med": 0.0068980815762932895,
+      "reemergence_time_err_med": 20.0
+    }
+  },
+  "ranked": [
+    {
+      "tag": "app40_g15",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 1.5,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.4,
+        "app_gate_recover": 0.4
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.34523809523809523,
+        "pre_match_rate": 0.7678571428571429,
+        "center_err_coverage": 0.7023809523809523,
+        "time_err_coverage": 0.7619047619047619,
+        "reemergence_center_err_med": 0.005462674054567447,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app40_g30",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 3.0,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.4,
+        "app_gate_recover": 0.4
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.34523809523809523,
+        "pre_match_rate": 0.7678571428571429,
+        "center_err_coverage": 0.7023809523809523,
+        "time_err_coverage": 0.7619047619047619,
+        "reemergence_center_err_med": 0.005462674054567447,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app50_g30",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 3.0,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.5,
+        "app_gate_recover": 0.5
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.3273809523809524,
+        "pre_match_rate": 0.7678571428571429,
+        "center_err_coverage": 0.6964285714285714,
+        "time_err_coverage": 0.7619047619047619,
+        "reemergence_center_err_med": 0.006462610801514137,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app50_g15",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 1.5,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.5,
+        "app_gate_recover": 0.5
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.32142857142857145,
+        "pre_match_rate": 0.7678571428571429,
+        "center_err_coverage": 0.6964285714285714,
+        "time_err_coverage": 0.7619047619047619,
+        "reemergence_center_err_med": 0.006462610801514137,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app30_g15",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 1.5,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.3,
+        "app_gate_recover": 0.3
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.30952380952380953,
+        "pre_match_rate": 0.7619047619047619,
+        "center_err_coverage": 0.7023809523809523,
+        "time_err_coverage": 0.75,
+        "reemergence_center_err_med": 0.0069480729309520815,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app30_g30",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 3.0,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.3,
+        "app_gate_recover": 0.3
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.30952380952380953,
+        "pre_match_rate": 0.7619047619047619,
+        "center_err_coverage": 0.7023809523809523,
+        "time_err_coverage": 0.75,
+        "reemergence_center_err_med": 0.0069480729309520815,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app-100_g15",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 1.5,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": null,
+        "app_gate_recover": null
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.30952380952380953,
+        "pre_match_rate": 0.7797619047619048,
+        "center_err_coverage": 0.6964285714285714,
+        "time_err_coverage": 0.7738095238095238,
+        "reemergence_center_err_med": 0.00717714408005748,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app-100_g30",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 3.0,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": null,
+        "app_gate_recover": null
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.2916666666666667,
+        "pre_match_rate": 0.7797619047619048,
+        "center_err_coverage": 0.7023809523809523,
+        "time_err_coverage": 0.7738095238095238,
+        "reemergence_center_err_med": 0.009023738514484797,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app20_g30",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 3.0,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.2,
+        "app_gate_recover": 0.2
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.2619047619047619,
+        "pre_match_rate": 0.7619047619047619,
+        "center_err_coverage": 0.6785714285714286,
+        "time_err_coverage": 0.75,
+        "reemergence_center_err_med": 0.011806620374643884,
+        "reemergence_time_err_med": 20.0
+      }
+    },
+    {
+      "tag": "app20_g15",
+      "config": {
+        "occl_buffer": 90,
+        "vel_damping": 1.0,
+        "recover_gate": 1.5,
+        "occl_overlap_thresh": 0.25,
+        "lowconf_noise_scale": 1.0,
+        "lowconf_mode": "kf",
+        "app_gate_lost": 0.2,
+        "app_gate_recover": 0.2
+      },
+      "g2": {
+        "n_segments": 168,
+        "id_retention": 0.25595238095238093,
+        "pre_match_rate": 0.7619047619047619,
+        "center_err_coverage": 0.6785714285714286,
+        "time_err_coverage": 0.75,
+        "reemergence_center_err_med": 0.012202009580035606,
+        "reemergence_time_err_med": 20.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "config": {
+    "sources": [
+      "mot17_dev",
+      "sim"
+    ],
+    "epochs": 3,
+    "seed": 0,
+    "gate": {
+      "half": "dev",
+      "occl-buffer": "90",
+      "damping": "1.0",
+      "recover-gate": "1.5",
+      "overlap-thresh": "0.25",
+      "noise-scale": "1.0",
+      "lowconf-mode": "kf",
+      "app-gate-lost": "0.45",
+      "app-gate-recover": "0.45"
+    }
+  },
+  "results": [
+    {
+      "fraction": 0.25,
+      "n_train_ids": 76,
+      "occ_rank1": 0.8519685039370078,
+      "id_retention_assoc": 0.5257731958762887,
+      "n_assoc_scope": 97,
+      "id_retention": 0.30357142857142855,
+      "center_err": 0.007417923649489285
+    },
+    {
+      "fraction": 1.0,
+      "n_train_ids": 305,
+      "occ_rank1": 0.8913385826771654,
+      "id_retention_assoc": 0.5670103092783505,
+      "n_assoc_scope": 97,
+      "id_retention": 0.3273809523809524,
+      "center_err": 0.006619501815275828
+    }
+  ]
+}

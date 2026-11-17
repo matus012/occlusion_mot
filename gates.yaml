@@ -1,0 +1,113 @@
+# Quality gates — scripts/check_gates.py is the executable interpretation.
+#
+# Semantics:
+# - A criterion is {min: x} or {max: x} against a key in the gate's results JSON,
+#   or {rel_min/rel_max: {source: <file>:<key>, offset: <f>}} resolved at check time.
+# - frozen: false + missing results  -> gate reports PENDING (loop continues, NEVER hard-fails).
+# - frozen: false + results present -> gate is evaluated advisorily; freezing = setting frozen: true
+#   and replacing provisional numbers with measured ones (commit that change with message "Gx: freeze").
+# - Freeze protocol: G0 freezes FIRST; G1/G2 relative thresholds become meaningful only after G0.
+# - AMENDMENT (2026-07-22): G2.reemergence_time_err_med carries freeze_order: last — it must NOT
+#   hard-fail (or count against gate passage) before the hidden-state module exists and it is
+#   explicitly frozen. G2 position error and id_retention freeze first.
+# - Hard failure: only via a HARD_FAIL marker file in repo root (check_gates exits 2).
+version: 1
+
+gates:
+  G0_repro:
+    description: >
+      FROZEN 2026-07-22 (D15). Implementation equivalence proven at the official operating
+      point (activation 0.6) on identical cached yolo11x detections, MOT17 val half:
+      ours HOTA 45.70 / IDF1 53.03 vs reference (supervision 0.29.1) 46.22 / 53.10
+      -> dHOTA 0.52, dIDF1 0.07. Operating baseline for G1/G2 = ours at activation 0.25:
+      HOTA 49.98, IDF1 58.28, MOTA 45.23, IDsw 359 (results/baseline_ours.json).
+    frozen: true
+    results:
+      ours: results/g0_equivalence/ours_at_0.6.json
+      reference: results/g0_equivalence/reference_at_0.6.json
+      baseline: results/baseline_ours.json
+    criteria:
+      abs_delta_hota: {max: 1.0, between: [ours.hota, reference.hota]}
+      abs_delta_idf1: {max: 1.0, between: [ours.idf1, reference.idf1]}
+      baseline_hota_floor: {min: 49.0, key: baseline.hota,
+                            note: guards regressions of the frozen operating baseline (measured 49.98)}
+
+  G1_parity:
+    description: Occlusion-aware tracker vs frozen baseline, identical cached detections.
+    frozen: false
+    depends_on: G0_repro
+    results:
+      ours: results/tracker_ours.json
+      baseline: results/baseline_ours.json
+    criteria:
+      hota: {rel_min: {source: "results/baseline_ours.json:hota", offset: -0.5}, key: ours.hota}
+      idf1: {rel_min: {source: "results/baseline_ours.json:idf1", offset: -0.5}, key: ours.idf1}
+      idsw: {rel_max: {source: "results/baseline_ours.json:idsw", offset: 0}, key: ours.idsw}
+
+  G2_hidden:
+    description: >
+      Hidden-state prediction on occlusion segments. Segment def (D14): pedestrian GT
+      between two visibility >= 0.5 anchors, gap >= 5 frames staying < 0.5 with a dip
+      below 0.25 (unannotated frames count as occluded).
+    frozen: false
+    depends_on: G0_repro
+    results:
+      hidden: results/hidden_state.json
+    # D26 (2026-07-23): retention gate SPLIT + coverage made conditional. Val-time
+    # STANDING REQUIREMENT: report the failure taxonomy (pre_match_rate, oracle_ceiling)
+    # alongside metrics so amendment premises are verifiable (aggregate emits them).
+    criteria:
+      reemergence_center_err_med:
+        {max: 0.015, key: hidden.reemergence_center_err_med, unit: fraction_of_image_diagonal,
+         freeze_order: 1,
+         note: FROZEN 2026-07-22 (D16) — beats baseline coasting median 0.0155 AND the
+               trivial stay-put predictor (median gap displacement 0.020)}
+      cov_prematched:
+        {min: 0.90, key: hidden.cov_prematched, freeze_order: 1,
+         note: AMENDED 2026-07-23 (D26) — definitional repair of D16 coverage (which was
+               arithmetically capped by pre_match_rate 0.768); conditional on pre-matched
+               segments; functions as a regression floor on val (dev currently 0.914)}
+      id_retention_assoc:
+        {min: 0.58, key: hidden.id_retention_assoc, freeze_order: 1,
+         note: G2a-floor AMENDED 2026-07-23 (D28-final) — REGRESSION-FLOOR semantics only
+               (same as cov_prematched), NOT the module claim; recalibrated from the L1
+               audit (baseline assoc 0.505 + 1.5 sigma at n=97; dev best 0.598)}
+      g2a_paired_p:
+        {max: 0.05, key: hidden.g2a_paired_p, freeze_order: 1,
+         note: G2a-paired (D28-final) — THE discriminating criterion. Trained embedder vs
+               ImageNet-R18 null on the IDENTICAL segment set (intersection of both
+               configs' association scopes; fixed denominator kills per-config n drift).
+               McNemar exact one-sided p < 0.05. Produced by scripts/paired_test.py
+               (--canonical merges p + discordant counts + outcome vectors reference into
+               hidden_state.json). Inclusion rule (hidden_eval IoU>=0.5 pre/post match),
+               intersection definition, and test code are VAL-INVARIANT from this commit.}
+      id_retention:
+        {min: 0.55, key: hidden.id_retention, freeze_order: last, provisional: true,
+         note: G2b RETAINED 2026-07-23 (D26) — end-to-end retention, CONTINGENT on the
+               detector-upgrade workstream (MOT/CARLA-finetuned detector on PERUN raising
+               the oracle ceiling); must not hard-fail before that workstream lands}
+      reemergence_time_err_med:
+        {max: 5, key: hidden.reemergence_time_err_med, unit: frames,
+         freeze_order: last, provisional: true,
+         note: LAST sub-gate to freeze (user amendment) — never hard-fails / never blocks
+               before hidden-state module exists; baseline median 25.5 frames for reference}
+      n_segments:
+        {min: 100, key: hidden.n_segments, note: eval covers 133 val-half segments (D14)}
+
+  G3_quality:
+    description: Code quality — enforced live by check_gates (runs pytest + ruff + coverage).
+    frozen: true
+    criteria:
+      pytest: pass
+      ruff: clean
+      coverage_core: {min: 0.80, paths: [src/omot]}
+
+  G4_carla:
+    description: CARLA occlusion-scenario feeder (P2).
+    frozen: true
+    results:
+      feeder: results/carla_feeder.json
+    criteria:
+      n_scenarios: {min: 20, key: feeder.n_scenarios}
+      has_visibility_gt: {equals: true, key: feeder.has_visibility_gt}
+      demo_runs: {equals: true, key: feeder.demo_runs}

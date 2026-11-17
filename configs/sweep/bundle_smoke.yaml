@@ -1,0 +1,35 @@
+# D47 bundle self-containment smoke: the SMALLEST config that still walks the whole
+# embedder path (train_reid -> cache_embeddings -> run_hidden -> result JSON).
+#
+# Its job is not to produce a number. It is run from the UNPACKED BUNDLE TREE, never
+# from the dev tree, so that a missing input in the bundle surfaces as a crash here
+# instead of on a compute node with no internet. Arm B is the cheapest trained arm
+# (sim-only, 36 fixed identities); arm A adds the no-training path for free.
+#
+#   scripts/sweep_unit.py --config configs/sweep/bundle_smoke.yaml --unit B:full:0
+#
+# Detector units are OFF: the detector path needs a ~5 GB dataset prep and a real
+# finetune, which is what the CLUSTER-side smoke job (submit_smoke.sbatch) is for.
+name: bundle_smoke
+half: dev
+gate_probe: [0.45]
+epochs: 1
+batches_per_epoch: 5
+eval_every: 1
+seeds: [0]
+pools: [null]
+
+arms:
+  A:
+    sources: null
+  B:
+    sources: [sim]
+
+mcnemar_pairs:
+  - [B, A]
+
+detector:
+  enabled: false
+
+env:
+  device: cuda

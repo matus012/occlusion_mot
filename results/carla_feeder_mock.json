@@ -1,0 +1,7 @@
+{
+  "n_scenarios": 24,
+  "backend": "mock",
+  "has_visibility_gt": true,
+  "demo_runs": true,
+  "n_occlusion_segments": 237
+}

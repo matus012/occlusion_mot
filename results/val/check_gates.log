@@ -1,0 +1,32 @@
+GATE REPORT (gates.yaml v1)
+
+[PASS] G0_repro (frozen)
+    abs_delta_hota: |45.70-46.22|=0.52 (max 1.0)
+    abs_delta_idf1: |53.03-53.10|=0.07 (max 1.0)
+    baseline_hota_floor: 49.98 >= 49.0
+
+[PASS] G1_parity (UNFROZEN)
+    hota: 51.07 >= 49.48 (baseline 49.98)
+    idf1: 60.09 >= 57.78 (baseline 58.28)
+    idsw: 298.00 <= 359.00 (baseline 359.00)
+
+[FAIL] G2_hidden (UNFROZEN)
+    reemergence_center_err_med: 0.01 <= 0.015
+    cov_prematched: 0.91 >= 0.9
+    id_retention_assoc: 0.44 >= 0.58
+    g2a_paired_p: 0.41 <= 0.05
+    id_retention: freeze_order=last, gate unfrozen -> not evaluated
+    reemergence_time_err_med: freeze_order=last, gate unfrozen -> not evaluated
+    n_segments: 133.00 >= 100
+
+[PASS] G3_quality (frozen)
+    ruff: clean
+    pytest: pass
+    coverage: 85.1% (min 80%)
+
+[PASS] G4_carla (frozen)
+    n_scenarios: 24.00 >= 20
+    has_visibility_gt: True (expected True)
+    demo_runs: True (expected True)
+
+OVERALL: IN PROGRESS

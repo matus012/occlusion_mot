@@ -1,0 +1,76 @@
+{
+  "overall": {
+    "n_segments": 133,
+    "id_retention": 0.2631578947368421,
+    "pre_match_rate": 0.8120300751879699,
+    "center_err_coverage": 0.7518796992481203,
+    "time_err_coverage": 0.8120300751879699,
+    "reemergence_center_err_med": 0.015533092364988212,
+    "reemergence_time_err_med": 25.5
+  },
+  "per_sequence": {
+    "MOT17-02-FRCNN": {
+      "n_segments": 41,
+      "id_retention": 0.4146341463414634,
+      "pre_match_rate": 0.8780487804878049,
+      "center_err_coverage": 0.8048780487804879,
+      "time_err_coverage": 0.8780487804878049,
+      "reemergence_center_err_med": 0.006151540649089618,
+      "reemergence_time_err_med": 33.5
+    },
+    "MOT17-04-FRCNN": {
+      "n_segments": 3,
+      "id_retention": 0.3333333333333333,
+      "pre_match_rate": 1.0,
+      "center_err_coverage": 1.0,
+      "time_err_coverage": 1.0,
+      "reemergence_center_err_med": 0.017618728028929956,
+      "reemergence_time_err_med": 190.0
+    },
+    "MOT17-05-FRCNN": {
+      "n_segments": 28,
+      "id_retention": 0.21428571428571427,
+      "pre_match_rate": 0.8214285714285714,
+      "center_err_coverage": 0.7857142857142857,
+      "time_err_coverage": 0.8214285714285714,
+      "reemergence_center_err_med": 0.041043223246188816,
+      "reemergence_time_err_med": 8.0
+    },
+    "MOT17-09-FRCNN": {
+      "n_segments": 11,
+      "id_retention": 0.2727272727272727,
+      "pre_match_rate": 1.0,
+      "center_err_coverage": 1.0,
+      "time_err_coverage": 1.0,
+      "reemergence_center_err_med": 0.026090406021972178,
+      "reemergence_time_err_med": 16.0
+    },
+    "MOT17-10-FRCNN": {
+      "n_segments": 30,
+      "id_retention": 0.03333333333333333,
+      "pre_match_rate": 0.5666666666666667,
+      "center_err_coverage": 0.5333333333333333,
+      "time_err_coverage": 0.5666666666666667,
+      "reemergence_center_err_med": 0.010976019143272722,
+      "reemergence_time_err_med": 31.0
+    },
+    "MOT17-11-FRCNN": {
+      "n_segments": 14,
+      "id_retention": 0.2857142857142857,
+      "pre_match_rate": 0.8571428571428571,
+      "center_err_coverage": 0.6428571428571429,
+      "time_err_coverage": 0.8571428571428571,
+      "reemergence_center_err_med": 0.04395538609149468,
+      "reemergence_time_err_med": 22.0
+    },
+    "MOT17-13-FRCNN": {
+      "n_segments": 6,
+      "id_retention": 0.5,
+      "pre_match_rate": 1.0,
+      "center_err_coverage": 1.0,
+      "time_err_coverage": 1.0,
+      "reemergence_center_err_med": 0.011059527161904007,
+      "reemergence_time_err_med": 22.5
+    }
+  }
+}

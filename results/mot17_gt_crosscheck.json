@@ -1,0 +1,58 @@
+{
+  "MOT17-02": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 15430,
+    "ref_rows": 15430,
+    "status": "ok"
+  },
+  "MOT17-04": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 54149,
+    "ref_rows": 54149,
+    "status": "ok"
+  },
+  "MOT17-05": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 3387,
+    "ref_rows": 3387,
+    "status": "ok"
+  },
+  "MOT17-09": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 5761,
+    "ref_rows": 5761,
+    "status": "ok"
+  },
+  "MOT17-10": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 8153,
+    "ref_rows": 8153,
+    "status": "ok"
+  },
+  "MOT17-11": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 4706,
+    "ref_rows": 4706,
+    "status": "ok"
+  },
+  "MOT17-13": {
+    "offset": 2,
+    "match": 1.0,
+    "id_bijection": true,
+    "our_rows": 5907,
+    "ref_rows": 5907,
+    "status": "ok"
+  }
+}
