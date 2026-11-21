@@ -73,10 +73,12 @@ ALLOWED_TRACKED_VISUALS: dict[str, str] = {
     "viz/perun_sweep_identity_curve.png": "plot",
     "viz/stage0_kill_gate.png": "plot",
     "viz/stage1_dose_response.png": "plot",
+    # README figure (scripts/plot_readme_detector.py over results/sweep/perun_detector/summary.json)
+    "viz/readme_detector.png": "plot",
     "demo/s0_teaser.png": "carla-render",
     "demo/s5_blueprint_grid.png": "carla-render",
     "demo/s5_carla.mp4": "carla-render",
-    # D44: README hero GIF — 6s excerpt of demo/s5_carla.mp4, pure CARLA pixels
+    # D44: README hero GIF — 12 s cropped excerpt of demo/s5_carla.mp4, pure CARLA pixels
     "demo/s5_carla_excerpt.gif": "carla-render",
 }
 

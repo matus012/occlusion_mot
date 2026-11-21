@@ -15,7 +15,7 @@ counting people, measuring flow, following one individual — breaks when identi
 resetting.
 
 **The baseline number to remember: ByteTrack keeps the right ID through an occlusion only
-26% of the time.** Three out of four people come out the far side as a stranger.
+29% of the time.** About seven in ten people come out the far side as a stranger.
 
 ## What I built
 
@@ -28,12 +28,12 @@ moving?) and **appearance** (does this new box look like the person we lost?).
 
 ## What actually worked
 
-Measured on MOT17, a standard public benchmark, on a half of the data held back from all
-tuning.
+Measured on MOT17, a standard public benchmark, on the half of the data used for
+development. On the half held back from all tuning, the same comparison is 26% → 28%.
 
 | | keeps the ID through occlusion |
 |---|---|
-| ByteTrack baseline | 26% |
+| ByteTrack baseline | 29% |
 | + geometry | 31% |
 | + appearance (off-the-shelf features) | 33% |
 | + appearance (features I trained) | **34.5%** |
